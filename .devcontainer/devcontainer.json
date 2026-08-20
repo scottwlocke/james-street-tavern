@@ -41,7 +41,8 @@
 				"ms-vscode.powershell",
 				"golang.go",
 				"DavidAnson.vscode-markdownlint",
-				"ms-python.python"
+				"ms-python.python",
+				"Continue.continue"
 			]
 		}
 	}
