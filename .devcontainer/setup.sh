@@ -203,6 +203,83 @@ fi
 
 # Set as Default Shell
 sudo chsh vscode -s $(which pwsh)
+# ---------------------------------------------------------------------------
+# 7. Install uv + latest Python
+# ---------------------------------------------------------------------------
+step "Installing uv (Python package & version manager)..."
+
+# Official non-interactive installer
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Make sure the current shell can see uv (installer puts it in ~/.local/bin)
+export PATH="${HOME}/.local/bin:${PATH}"
+
+if ! command -v uv >/dev/null 2>&1; then
+    error "uv installation failed."
+fi
+info "uv $(uv --version | head -1) installed."
+
+step "Installing latest Python via uv..."
+
+# Install the newest stable CPython and make `python` + `python3` point to it
+uv python install --default
+
+# Optional but nice: also ensure the bin directory is permanently on PATH
+# (uv's installer already tries to do this for bash/zsh; we reinforce it)
+for rc in "${HOME}/.bashrc" "${HOME}/.zshrc"; do
+    if [ -f "$rc" ] && ! grep -q '\.local/bin' "$rc"; then
+        echo '' >> "$rc"
+        echo '# uv / Python managed by uv' >> "$rc"
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$rc"
+        info "Added ~/.local/bin to $rc"
+    fi
+done
+
+# PowerShell profile (Linux location)
+if [ -f "$PWSH_PROFILE" ] && ! grep -q '\.local/bin' "$PWSH_PROFILE" 2>/dev/null; then
+    cat >> "$PWSH_PROFILE" << 'EOF'
+
+# uv / Python managed by uv
+$env:PATH = "$env:HOME/.local/bin:$env:PATH"
+EOF
+    info "Added ~/.local/bin to PowerShell profile"
+fi
+
+info "Latest Python installed: $(uv python list --only-installed | head -1 || python --version 2>/dev/null || echo 'see uv python list')"
+
+# ---------------------------------------------------------------------------
+# 8. Install OpenCode (open-source AI coding agent)
+# ---------------------------------------------------------------------------
+step "Installing OpenCode..."
+
+curl -fsSL https://opencode.ai/install | bash
+
+# OpenCode typically installs to ~/.opencode/bin
+export PATH="${HOME}/.opencode/bin:${HOME}/.local/bin:${PATH}"
+
+if ! command -v opencode >/dev/null 2>&1; then
+    error "OpenCode installation failed."
+fi
+info "OpenCode $(opencode --version 2>/dev/null || echo 'installed') installed."
+
+# Ensure OpenCode's bin directory is on PATH
+for rc in "${HOME}/.bashrc" "${HOME}/.zshrc"; do
+    if [ -f "$rc" ] && ! grep -q '\.opencode/bin' "$rc"; then
+        echo '' >> "$rc"
+        echo '# OpenCode' >> "$rc"
+        echo 'export PATH="$HOME/.opencode/bin:$PATH"' >> "$rc"
+        info "Added ~/.opencode/bin to $rc"
+    fi
+done
+
+if [ -f "$PWSH_PROFILE" ] && ! grep -q '\.opencode/bin' "$PWSH_PROFILE" 2>/dev/null; then
+    cat >> "$PWSH_PROFILE" << 'EOF'
+
+# OpenCode
+$env:PATH = "$env:HOME/.opencode/bin:$env:PATH"
+EOF
+    info "Added ~/.opencode/bin to PowerShell profile"
+fi
 
 # ---------------------------------------------------------------------------
 # Done
@@ -216,6 +293,8 @@ echo -e "  ${GREEN}•${NC} PowerShell   →  $(pwsh -NoLogo -Command '\$PSVersi
 echo -e "  ${GREEN}•${NC} Starship     →  $(starship --version 2>/dev/null | head -1)"
 echo -e "  ${GREEN}•${NC} Font         →  FiraCode Nerd Font"
 echo -e "  ${GREEN}•${NC} Theme        →  Catppuccin Powerline (Mocha)"
+echo -e "  ${GREEN}•${NC} Python       →  $(python --version 2>/dev/null || echo 'installed')"
+echo -e "  ${GREEN}•${NC} OpenCode     →  $(opencode --version 2>/dev/null || echo 'installed')"
 echo
 warn "IMPORTANT: Set your terminal font to 'FiraCode Nerd Font' (or 'FiraCode Nerd Font Mono')"
 warn "           for the icons and powerline glyphs to render correctly."

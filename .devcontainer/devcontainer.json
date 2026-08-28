@@ -12,12 +12,14 @@
 			"extended": true,
 			"version": "latest"
 		},
-		"ghcr.io/devcontainers/features/python:1": {
-			"installTools": true,
-			"version": "latest"
-		},
+		// "ghcr.io/devcontainers/features/python:1": {
+		// 	"installTools": true,
+		// 	"version": "latest"
+		// },
 		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": true,
 			"upgradePackages": true,
+			"nonFreePackages": true,
 			"installSsl": true,
 			"username": "vscode",
 			"userUid": "1001",
