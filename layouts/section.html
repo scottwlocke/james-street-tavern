@@ -9,9 +9,7 @@
 
       {{ if .Pages }}
         <div class="menu-grid">
-          {{ range .Pages }}
-            {{ partial "menu-card.html" (dict "item" .) }}
-          {{ end }}
+          {{ partial "menu-grid-items.html" .Pages }}
         </div>
       {{ else }}
         <p class="menu-desc">No items in this section yet.</p>

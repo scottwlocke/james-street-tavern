@@ -1,0 +1,23 @@
+{{ $pendingNoImage := slice }}
+{{ range . }}
+  {{ $hasImage := false }}
+  {{ with .Resources.GetMatch "hero.*" }}
+    {{ $hasImage = true }}
+  {{ end }}
+  {{ if $hasImage }}
+    {{ if $pendingNoImage }}
+      {{ partial "menu-tile-pair.html" (dict "items" $pendingNoImage) }}
+      {{ $pendingNoImage = slice }}
+    {{ end }}
+    {{ partial "menu-card.html" (dict "item" .) }}
+  {{ else }}
+    {{ $pendingNoImage = $pendingNoImage | append . }}
+    {{ if eq (len $pendingNoImage) 2 }}
+      {{ partial "menu-tile-pair.html" (dict "items" $pendingNoImage) }}
+      {{ $pendingNoImage = slice }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ if $pendingNoImage }}
+  {{ partial "menu-tile-pair.html" (dict "items" $pendingNoImage) }}
+{{ end }}

@@ -310,8 +310,8 @@ body.nav-open {
 
 .hero-image {
   border-radius: var(--radius-xl);
-  width: 100%;
-  height: 100%;
+  width: 50%;
+  margin: 0 auto;
   object-fit: cover;
   aspect-ratio: 1 / 1;
 }
@@ -433,6 +433,28 @@ body.nav-open {
   object-fit: cover;
   width: 100%;
   margin-bottom: var(--space-lg);
+}
+
+/* No-image items: compact tiles stacked in pairs, one slot = one pictured card */
+.menu-tile-pair {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.menu-tile {
+  background-color: var(--canvas);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
+  box-shadow: 0 2px 8px rgba(26, 26, 26, 0.08);
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.menu-tile-pair:last-child .menu-tile:only-child {
+  justify-content: center;
 }
 
 .menu-header {

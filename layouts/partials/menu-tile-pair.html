@@ -1,0 +1,15 @@
+<div class="menu-tile-pair">
+  {{ range .items }}
+    <div class="menu-tile">
+      <div class="menu-header">
+        <span class="menu-name">{{ .Title }}</span>
+        {{ with .Params.price }}
+          <span class="menu-price">{{ . }}</span>
+        {{ end }}
+      </div>
+      {{ with .Params.description }}
+        <p class="menu-desc">{{ . }}</p>
+      {{ end }}
+    </div>
+  {{ end }}
+</div>
