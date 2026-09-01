@@ -255,11 +255,7 @@ body.nav-open {
 .hero {
   background-color: var(--primary);
   color: var(--on-ink);
-  padding: var(--space-xl) var(--space-xxl);
-}
-
-.hero .container {
-  padding: 0;
+  padding: var(--space-xl) 0;
 }
 
 .hero-card {
