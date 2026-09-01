@@ -11,14 +11,6 @@
 
 </head>
 <body>
-  <div class="utility-strip">
-  <div class="container">
-    <span>Flavor Town, NY</span>
-    <a href="#contact">For Business</a>
-    <a href="#contact">Sign in</a>
-  </div>
-</div>
-
   <header class="nav-bar">
   <div class="container">
     <a href="https://example.org/" class="logo">
@@ -30,9 +22,21 @@
       <li><a href="#menu" >Menu</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
+    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-nav">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
   </div>
 </header>
 
+<div id="mobile-nav" class="mobile-nav" aria-hidden="true">
+  <ul class="mobile-nav-links">
+    <li><a href="https://example.org/">Home</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</div>
 
   <main>
     
@@ -53,10 +57,10 @@
 
 <div class="menu-card">
   
-    <img src="/pizza/margherita/hero.jpg" alt="Classic Margherita">
+    <img src="/pizza/margherita/hero.jpg" alt="Classic Pizza">
   
   <div class="menu-header">
-    <span class="menu-name">Classic Margherita</span>
+    <span class="menu-name">Classic Pizza</span>
     
       <span class="menu-price">$14.99</span>
     
@@ -204,5 +208,7 @@
   </div>
 </footer>
 
+
+  <script src="/js/main.js"></script>
 </body>
 </html>

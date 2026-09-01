@@ -1,8 +1,10 @@
 {{ $section := .section }}
 
-<h2 class="section-title">{{ $section.Title }}</h2>
-<div class="menu-grid">
-  {{ range $section.Pages }}
-    {{ partial "menu-card.html" (dict "item" .) }}
-  {{ end }}
+<div class="menu-section-card">
+  <h2 class="section-title">{{ $section.Title }}</h2>
+  <div class="menu-grid">
+    {{ range $section.Pages }}
+      {{ partial "menu-card.html" (dict "item" .) }}
+    {{ end }}
+  </div>
 </div>

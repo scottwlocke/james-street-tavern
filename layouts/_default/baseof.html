@@ -4,7 +4,6 @@
   {{ partial "head.html" . }}
 </head>
 <body>
-  {{ partial "utility-strip.html" . }}
   {{ partial "nav.html" . }}
 
   <main>
@@ -13,5 +12,7 @@
 
   {{ partial "help-band.html" . }}
   {{ partial "footer.html" . }}
+
+  <script src="{{ "js/main.js" | relURL }}"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 {{ define "main" }}
   {{ partial "hero.html" . }}
 
-  <section id="menu" class="section-cloud">
+  <section id="menu" class="section-primary">
     <div class="container">
       {{ $sections := where .Site.Sections "Kind" "section" }}
       {{ if $sections }}
