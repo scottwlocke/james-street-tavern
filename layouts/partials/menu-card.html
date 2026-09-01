@@ -1,0 +1,20 @@
+{{ $item := .item }}
+{{ $image := "" }}
+{{ with $item.Resources.GetMatch "hero.*" }}
+  {{ $image = .RelPermalink }}
+{{ end }}
+
+<div class="menu-card">
+  {{ if $image }}
+    <img src="{{ $image }}" alt="{{ $item.Title }}">
+  {{ end }}
+  <div class="menu-header"{{ if not $image }} style="margin-top: 0;"{{ end }}>
+    <span class="menu-name">{{ $item.Title }}</span>
+    {{ with $item.Params.price }}
+      <span class="menu-price">{{ . }}</span>
+    {{ end }}
+  </div>
+  {{ with $item.Params.description }}
+    <p class="menu-desc">{{ . }}</p>
+  {{ end }}
+</div>

@@ -2,10 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/categories/</loc>
+    <loc>https://example.org/wings/buffalo/</loc>
+  </url><url>
+    <loc>https://example.org/pizza/margherita/</loc>
+  </url><url>
+    <loc>https://example.org/salads/garden/</loc>
+  </url><url>
+    <loc>https://example.org/pizza/</loc>
+  </url><url>
+    <loc>https://example.org/wings/bbq/</loc>
+  </url><url>
+    <loc>https://example.org/pizza/vegetarian/</loc>
+  </url><url>
+    <loc>https://example.org/salads/caesar/</loc>
+  </url><url>
+    <loc>https://example.org/wings/loaded-potato-skins/</loc>
+  </url><url>
+    <loc>https://example.org/pizza/pepperoni/</loc>
+  </url><url>
+    <loc>https://example.org/wings/</loc>
+  </url><url>
+    <loc>https://example.org/pizza/garlic-knots/</loc>
+  </url><url>
+    <loc>https://example.org/salads/greek/</loc>
+  </url><url>
+    <loc>https://example.org/wings/lemon-pepper/</loc>
+  </url><url>
+    <loc>https://example.org/salads/</loc>
+  </url><url>
+    <loc>https://example.org/salads/caprese/</loc>
+  </url><url>
+    <loc>https://example.org/pizza/tiramisu/</loc>
   </url><url>
     <loc>https://example.org/</loc>
-  </url><url>
-    <loc>https://example.org/tags/</loc>
   </url>
 </urlset>

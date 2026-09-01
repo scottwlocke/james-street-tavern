@@ -1,0 +1,35 @@
+{{ $heroImage := "" }}
+{{ with .Site.Home }}
+  {{ with .Resources.GetMatch "hero.*" }}
+    {{ $heroImage = .RelPermalink }}
+  {{ end }}
+{{ end }}
+{{ if and (not $heroImage) (.Site.Params.heroImage) }}
+  {{ $heroImage = .Site.Params.heroImage }}
+{{ end }}
+{{ if not $heroImage }}
+  {{ $heroImage = "images/hero.svg" | relURL }}
+{{ end }}
+
+<section id="home" class="hero">
+  <div class="container">
+    <div class="hero-card">
+      <span class="chevron left" aria-hidden="true"></span>
+      <span class="chevron right" aria-hidden="true"></span>
+      <div class="hero-copy">
+        <div class="hero-eyebrow">{{ default "Wood-Fired &amp; Hand-Tossed" .Site.Params.heroEyebrow }}</div>
+        <h1>{{ default "Authentic Italian Wood-Fired Pizza" .Site.Params.heroTitle }}</h1>
+        <p>{{ default "Fresh ingredients, hand-tossed dough, and a passion for tradition baked into every slice." .Site.Params.heroDescription }}</p>
+        <div class="hero-actions">
+          <a href="#menu" class="btn">View Our Menu</a>
+          <a href="#contact" class="btn btn-outline">Book a Table</a>
+        </div>
+      </div>
+      {{ if $heroImage }}
+        <img src="{{ $heroImage }}" alt="{{ default "Fresh wood-fired pizza" .Site.Params.heroImageAlt }}" class="hero-image">
+      {{ else }}
+        <div class="hero-image-placeholder" aria-hidden="true"></div>
+      {{ end }}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,13 @@
+<header class="nav-bar">
+  <div class="container">
+    <a href="{{ .Site.BaseURL }}" class="logo">
+      <span class="logo-mark">🍕</span>
+      <span class="logo-text">{{ .Site.Title }}</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="{{ .Site.BaseURL }}" {{ if .IsHome }}class="active"{{ end }}>Home</a></li>
+      <li><a href="#menu" {{ if eq .Section "menu" }}class="active"{{ end }}>Menu</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</header>

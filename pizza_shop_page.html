@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James Street Tavern - Fresh, Hot &amp; Delicious Pizza</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #024ad8;
+            --primary-bright: #296ef9;
+            --primary-deep: #0e3191;
+            --primary-soft: #c9e0fc;
+            --on-primary: #ffffff;
+            --ink: #1a1a1a;
+            --ink-deep: #000000;
+            --on-ink: #ffffff;
+            --canvas: #ffffff;
+            --cloud: #f7f7f7;
+            --fog: #e8e8e8;
+            --steel: #c2c2c2;
+            --charcoal: #3d3d3d;
+            --graphite: #636363;
+            --hairline: #e8e8e8;
+            --bloom-coral: #ff5050;
+            --bloom-deep: #b3262b;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background-color: var(--canvas);
+            color: var(--ink);
+            font-family: 'Inter', 'Manrope', Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+        }
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        a:hover {
+            color: var(--primary-deep);
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
+        .container {
+            max-width: 1366px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+        h1, h2, h3 {
+            font-weight: 500;
+            line-height: 1.0;
+            letter-spacing: 0;
+        }
+
+        /* ---- Utility strip ---- */
+        .utility-strip {
+            background-color: var(--ink);
+            color: var(--on-ink);
+            font-size: 14px;
+            line-height: 1.5;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+        }
+        .utility-strip .container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 24px;
+            width: 100%;
+        }
+        .utility-strip a {
+            color: var(--on-ink);
+            font-size: 14px;
+        }
+        .utility-strip a:hover {
+            color: var(--primary-soft);
+        }
+
+        /* ---- Top nav ---- */
+        .nav-bar {
+            background-color: var(--canvas);
+            height: 64px;
+            border-bottom: 1px solid var(--hairline);
+            padding: 0 32px;
+        }
+        .nav-bar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            padding: 0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-mark {
+            font-size: 20px;
+            line-height: 1;
+        }
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.126px;
+            color: var(--ink);
+            text-transform: none;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--ink);
+            font-size: 16px;
+            font-weight: 400;
+            padding: 8px 16px;
+        }
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        /* ---- Hero ---- */
+        .hero {
+            background-color: var(--ink);
+            color: var(--on-ink);
+            padding: 24px 32px;
+        }
+        .hero .container {
+            padding: 0;
+        }
+        .hero-card {
+            background-color: var(--canvas);
+            color: var(--ink);
+            border-radius: 16px;
+            padding: 32px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-copy {
+            z-index: 1;
+        }
+        .hero-eyebrow {
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            margin-bottom: 16px;
+        }
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 500;
+            line-height: 1.0;
+            margin-bottom: 24px;
+        }
+        .hero p {
+            font-size: 18px;
+            line-height: 1.4;
+            color: var(--charcoal);
+            margin-bottom: 32px;
+            max-width: 480px;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .hero img {
+            border-radius: 16px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            aspect-ratio: 1 / 1;
+        }
+        .hero .chevron {
+            position: absolute;
+            width: 120px;
+            top: -40px;
+            bottom: -40px;
+            background-color: var(--primary);
+            transform: skewX(-30deg);
+            display: block;
+        }
+        .hero .chevron.left { left: -40px; }
+        .hero .chevron.right { right: -40px; }
+
+        /* ---- Buttons ---- */
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--on-primary);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            line-height: 1.4;
+            padding: 12px 24px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            height: 44px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: var(--primary-deep);
+            color: var(--on-primary);
+        }
+        .btn-outline {
+            background-color: var(--canvas);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .btn-outline:hover {
+            color: var(--primary-deep);
+            border-color: var(--primary-deep);
+            background-color: var(--canvas);
+        }
+
+        /* ---- Sections ---- */
+        .section {
+            padding: 80px 0;
+        }
+        .section-cloud {
+            background-color: var(--cloud);
+            padding: 80px 0;
+        }
+        .section-title {
+            text-align: center;
+            font-family: 'Limelight', 'Inter', sans-serif;
+            font-size: 44px;
+            font-weight: 400;
+            line-height: 1.0;
+            color: var(--ink);
+            margin-bottom: 48px;
+        }
+        .section-subtitle {
+            text-align: center;
+            font-family: 'Limelight', 'Inter', sans-serif;
+            font-size: 32px;
+            font-weight: 400;
+            line-height: 1.2;
+            color: var(--ink);
+            margin: 80px 0 48px;
+        }
+
+        /* ---- Menu grid / cards ---- */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .menu-card {
+            background-color: var(--canvas);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(26, 26, 26, 0.08);
+        }
+        .menu-card img {
+            border-radius: 16px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+        .menu-name {
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 1.0;
+            color: var(--ink);
+        }
+        .menu-price {
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.17;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+        .menu-desc {
+            color: var(--charcoal);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* ---- Contact ---- */
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+        .contact-info h3,
+        .contact-form h3 {
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.17;
+            margin-bottom: 16px;
+        }
+        .contact-info p {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--charcoal);
+            font-size: 16px;
+        }
+        .contact-info .hours-heading {
+            margin-top: 32px;
+        }
+        .contact-form {
+            background-color: var(--canvas);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(26, 26, 26, 0.08);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--steel);
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: inherit;
+            color: var(--ink);
+            background-color: var(--canvas);
+            height: 44px;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        /* ---- Footer / help band ---- */
+        .help-band {
+            background-color: var(--ink);
+            color: var(--on-ink);
+            padding: 64px 32px;
+            text-align: center;
+        }
+        .help-band h2 {
+            font-size: 32px;
+            font-weight: 500;
+            line-height: 1.0;
+            color: var(--on-ink);
+            margin-bottom: 24px;
+        }
+        .help-band p {
+            color: var(--primary-soft);
+            margin-bottom: 32px;
+        }
+        .footer-dark {
+            background-color: var(--ink);
+            color: var(--on-ink);
+            padding: 64px 32px 32px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 32px;
+            max-width: 1366px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+        .footer-col h4 {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            color: var(--on-ink);
+        }
+        .footer-col a {
+            display: block;
+            color: var(--steel);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        .footer-col a:hover {
+            color: var(--on-ink);
+        }
+        .footer-bottom {
+            max-width: 1366px;
+            margin: 32px auto 0;
+            padding: 24px 32px 0;
+            border-top: 1px solid var(--charcoal);
+            color: var(--steel);
+            font-size: 12px;
+            line-height: 1.33;
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 1024px) {
+            .menu-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .hero-card {
+                grid-template-columns: 1fr;
+            }
+            .hero img {
+                aspect-ratio: 16 / 9;
+            }
+            .hero .chevron { display: none; }
+        }
+        @media (max-width: 767px) {
+            .section, .section-cloud { padding: 48px 0; }
+            .hero h1 { font-size: 44px; }
+            .nav-links { display: none; }
+            .menu-grid { grid-template-columns: repeat(2, 1fr); }
+            .contact-container { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 479px) {
+            .menu-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="utility-strip">
+        <div class="container">
+            <span>Flavor Town, NY</span>
+            <a href="#contact">For Business</a>
+            <a href="#contact">Sign in</a>
+        </div>
+    </div>
+
+    <header class="nav-bar">
+        <div class="container">
+            <a href="#home" class="logo">
+                <span class="logo-mark">🍕</span>
+                <span class="logo-text">James Street Tavern</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-card">
+                <span class="chevron left" aria-hidden="true"></span>
+                <span class="chevron right" aria-hidden="true"></span>
+                <div class="hero-copy">
+                    <div class="hero-eyebrow">Wood-Fired &amp; Hand-Tossed</div>
+                    <h1>Authentic Italian Wood-Fired Pizza</h1>
+                    <p>Fresh ingredients, hand-tossed dough, and a passion for tradition baked into every slice.</p>
+                    <div class="hero-actions">
+                        <a href="#menu" class="btn">View Our Menu</a>
+                        <a href="#contact" class="btn btn-outline">Book a Table</a>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80" alt="Fresh wood-fired pizza">
+            </div>
+        </div>
+    </section>
+
+    <section id="menu" class="section-cloud">
+        <div class="container">
+            <h2 class="section-title">Our Specialty Menu</h2>
+            <div class="menu-grid">
+
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?auto=format&fit=crop&w=500&q=80" alt="Classic Margherita Pizza">
+                    <div class="menu-header">
+                        <span class="menu-name">Classic Margherita</span>
+                        <span class="menu-price">$14.99</span>
+                    </div>
+                    <p class="menu-desc">San Marzano tomatoes, fresh mozzarella, fresh basil, and a drizzle of extra virgin olive oil.</p>
+                </div>
+
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80" alt="Ultimate Pepperoni Pizza">
+                    <div class="menu-header">
+                        <span class="menu-name">Ultimate Pepperoni</span>
+                        <span class="menu-price">$16.99</span>
+                    </div>
+                    <p class="menu-desc">Loaded with spicy pepperoni, mozzarella cheese, and our signature herb tomato sauce.</p>
+                </div>
+
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=500&q=80" alt="Vegetarian Supreme Pizza">
+                    <div class="menu-header">
+                        <span class="menu-name">Vegetarian Supreme</span>
+                        <span class="menu-price">$15.99</span>
+                    </div>
+                    <p class="menu-desc">Bell peppers, red onions, mushrooms, black olives, and sweet corn over mozzarella.</p>
+                </div>
+
+                <div class="menu-card">
+                    <div class="menu-header" style="margin-top: 0;">
+                        <span class="menu-name">Garlic Knots (6pc)</span>
+                        <span class="menu-price">$5.99</span>
+                    </div>
+                    <p class="menu-desc">Freshly baked dough tied up, brushed with rich garlic butter, and sprinkled with parmesan cheese.</p>
+                </div>
+
+                <div class="menu-card">
+                    <div class="menu-header">
+                        <span class="menu-name">Caesar Salad</span>
+                        <span class="menu-price">$8.99</span>
+                    </div>
+                    <p class="menu-desc">Crisp romaine lettuce, creamy Caesar dressing, shaved parmesan cheese, and garlic croutons.</p>
+                </div>
+
+                <div class="menu-card">
+                    <div class="menu-header">
+                        <span class="menu-name">Tiramisu</span>
+                        <span class="menu-price">$6.50</span>
+                    </div>
+                    <p class="menu-desc">Classic Italian dessert made with coffee-dipped ladyfingers, mascarpone cream, and cocoa powder.</p>
+                </div>
+
+            </div>
+
+            <h2 class="section-subtitle">Wings &amp; Things</h2>
+            <div class="menu-grid">
+
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=500&q=80" alt="Buffalo Wings">
+                    <div class="menu-header">
+                        <span class="menu-name">Buffalo Wings</span>
+                        <span class="menu-price">$11.99</span>
+                    </div>
+                    <p class="menu-desc">Crispy chicken wings tossed in our signature hot buffalo sauce, served with ranch or blue cheese.</p>
+                </div>
+
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1608039755401-742074f0548d?auto=format&fit=crop&w=500&q=80" alt="BBQ Glazed Wings">
+                    <div class="menu-header">
+                        <span class="menu-name">BBQ Glazed Wings</span>
+                        <span class="menu-price">$12.99</span>
+                    </div>
+                    <p class="menu-desc">Slow-glazed wings brushed with smoky barbecue sauce and finished with toasted sesame.</p>
+                </div>
+
+                <div class="menu-card">
+                    <div class="menu-header">
+                        <span class="menu-name">Lemon Pepper Wings</span>
+                        <span class="menu-price">$12.49</span>
+                    </div>
+                    <p class="menu-desc">Golden wings dusted with a bright lemon pepper seasoning, served with fresh-cut celery.</p>
+                </div>
+
+                <div class="menu-card">
+                    <div class="menu-header">
+                        <span class="menu-name">Loaded Potato Skins</span>
+                        <span class="menu-price">$9.99</span>
+                    </div>
+                    <p class="menu-desc">Crispy potato skins topped with melted cheese, bacon, chives, and a dollop of sour cream.</p>
+                </div>
+
+            </div>
+
+            <h2 class="section-subtitle">Salads</h2>
+            <div class="menu-grid">
+
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=500&q=80" alt="Garden Salad">
+                    <div class="menu-header">
+                        <span class="menu-name">Garden Salad</span>
+                        <span class="menu-price">$7.99</span>
+                    </div>
+                    <p class="menu-desc">Crisp mixed greens with cherry tomatoes, cucumbers, red onion, and shredded carrots.</p>
+                </div>
+
+                <div class="menu-card">
+                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80" alt="Caesar Salad">
+                    <div class="menu-header">
+                        <span class="menu-name">Caesar Salad</span>
+                        <span class="menu-price">$8.99</span>
+                    </div>
+                    <p class="menu-desc">Crisp romaine lettuce, creamy Caesar dressing, shaved parmesan cheese, and garlic croutons.</p>
+                </div>
+
+                <div class="menu-card">
+                    <div class="menu-header">
+                        <span class="menu-name">Greek Salad</span>
+                        <span class="menu-price">$9.49</span>
+                    </div>
+                    <p class="menu-desc">Romaine with feta, kalamata olives, red onion, cucumber, and a tangy vinaigrette.</p>
+                </div>
+
+                <div class="menu-card">
+                    <div class="menu-header">
+                        <span class="menu-name">Caprese Salad</span>
+                        <span class="menu-price">$9.99</span>
+                    </div>
+                    <p class="menu-desc">Fresh mozzarella, vine-ripened tomatoes, and basil drizzled with balsamic glaze and olive oil.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section">
+        <div class="container">
+            <h2 class="section-title">Contact &amp; Location</h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Visit Us</h3>
+                    <p>📍 123 Pizza Lane, Flavor Town, NY 10001</p>
+                    <p>📞 (555) 123-4567</p>
+                    <p>✉️ info@pizzeriabella.com</p>
+
+                    <h3 class="hours-heading">Hours of Operation</h3>
+                    <p>Mon - Thu: 11:00 AM - 10:00 PM</p>
+                    <p>Fri - Sat: 11:00 AM - 11:00 PM</p>
+                    <p>Sunday: 12:00 PM - 9:00 PM</p>
+                </div>
+
+                <div class="contact-form">
+                    <h3>Send a Message</h3>
+                    <form action="mailto:info@jst-tavern.com" method="post" enctype="text/plain">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="help-band">
+        <div class="container">
+            <h2>How can we help?</h2>
+            <p>Questions about catering, reservations, or private events?</p>
+            <a href="#contact" class="btn">Contact Us</a>
+        </div>
+    </section>
+
+    <footer class="footer-dark">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <a href="#menu">Pizzas</a>
+                <a href="#menu">Sides</a>
+                <a href="#menu">Desserts</a>
+            </div>
+            <div class="footer-col">
+                <h4>Visit</h4>
+                <a href="#contact">Location</a>
+                <a href="#contact">Hours</a>
+                <a href="#contact">Reservations</a>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <a href="#home">About</a>
+                <a href="#home">Careers</a>
+                <a href="#home">News</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="#contact">Contact</a>
+                <a href="#contact">FAQ</a>
+                <a href="#contact">Feedback</a>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <a href="#home">Instagram</a>
+                <a href="#home">Facebook</a>
+                <a href="#home">Twitter</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 James Street Tavern. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

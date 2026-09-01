@@ -1,0 +1,37 @@
+<footer class="footer-dark">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Shop</h4>
+      {{ range .Site.Sections }}
+        <a href="#menu">{{ .Title }}</a>
+      {{ end }}
+    </div>
+    <div class="footer-col">
+      <h4>Visit</h4>
+      <a href="#contact">Location</a>
+      <a href="#contact">Hours</a>
+      <a href="#contact">Reservations</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="{{ .Site.BaseURL }}">About</a>
+      <a href="{{ .Site.BaseURL }}">Careers</a>
+      <a href="{{ .Site.BaseURL }}">News</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a href="#contact">Contact</a>
+      <a href="#contact">FAQ</a>
+      <a href="#contact">Feedback</a>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <a href="{{ .Site.BaseURL }}">Instagram</a>
+      <a href="{{ .Site.BaseURL }}">Facebook</a>
+      <a href="{{ .Site.BaseURL }}">Twitter</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; {{ now.Year }} {{ .Site.Title }}. All rights reserved.</p>
+  </div>
+</footer>

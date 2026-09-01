@@ -1,0 +1,644 @@
+/* ============================================
+   James Street Tavern — Design System Tokens
+   Based on DESIGN.md
+   ============================================ */
+
+:root {
+  /* Brand & Accent */
+  --primary: #024ad8;
+  --primary-bright: #296ef9;
+  --primary-deep: #0e3191;
+  --primary-soft: #c9e0fc;
+  --on-primary: #ffffff;
+
+  /* Surface */
+  --canvas: #ffffff;
+  --paper: #ffffff;
+  --cloud: #f7f7f7;
+  --fog: #e8e8e8;
+  --steel: #c2c2c2;
+
+  /* Text */
+  --ink: #1a1a1a;
+  --ink-deep: #000000;
+  --ink-soft: #292929;
+  --on-ink: #ffffff;
+  --charcoal: #3d3d3d;
+  --graphite: #636363;
+
+  /* Semantic */
+  --hairline: #e8e8e8;
+  --hairline-strong: #c2c2c2;
+  --bloom-coral: #ff5050;
+  --bloom-deep: #b3262b;
+
+  /* Rounded */
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
+
+  /* Spacing */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 20px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+  --space-section: 80px;
+}
+
+/* ============================================
+   Reset & Base
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: 'Inter', 'Manrope', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--primary-deep);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 500;
+  line-height: 1.0;
+  letter-spacing: 0;
+}
+
+/* ============================================
+   Container
+   ============================================ */
+.container {
+  max-width: 1366px;
+  margin: 0 auto;
+  padding: 0 var(--space-xxl);
+}
+
+/* ============================================
+   Utility Strip
+   ============================================ */
+.utility-strip {
+  background-color: var(--ink);
+  color: var(--on-ink);
+  font-size: 14px;
+  line-height: 1.5;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-xxl);
+}
+
+.utility-strip .container {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-xl);
+  width: 100%;
+}
+
+.utility-strip a {
+  color: var(--on-ink);
+  font-size: 14px;
+}
+
+.utility-strip a:hover {
+  color: var(--primary-soft);
+}
+
+/* ============================================
+   Navigation Bar
+   ============================================ */
+.nav-bar {
+  background-color: var(--canvas);
+  height: 64px;
+  border-bottom: 1px solid var(--hairline);
+  padding: 0 var(--space-xxl);
+}
+
+.nav-bar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.logo-mark {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.126px;
+  color: var(--ink);
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 400;
+  padding: var(--space-xs) var(--space-md);
+}
+
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+.nav-links a.active {
+  color: var(--primary);
+}
+
+/* ============================================
+   Hero Section
+   ============================================ */
+.hero {
+  background-color: var(--ink);
+  color: var(--on-ink);
+  padding: var(--space-xl) var(--space-xxl);
+}
+
+.hero .container {
+  padding: 0;
+}
+
+.hero-card {
+  background-color: var(--canvas);
+  color: var(--ink);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xxl);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xxl);
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-copy {
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  color: var(--primary);
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: var(--space-md);
+}
+
+.hero h1 {
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 1.0;
+  margin-bottom: var(--space-xl);
+}
+
+.hero p {
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--charcoal);
+  margin-bottom: var(--space-xxl);
+  max-width: 480px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.hero-image {
+  border-radius: var(--radius-xl);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+}
+
+.hero .chevron {
+  position: absolute;
+  width: 120px;
+  top: -40px;
+  bottom: -40px;
+  background-color: var(--primary);
+  transform: skewX(-30deg);
+  display: block;
+}
+
+.hero .chevron.left {
+  left: -40px;
+}
+
+.hero .chevron.right {
+  right: -40px;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+.btn {
+  display: inline-block;
+  background-color: var(--primary);
+  color: var(--on-primary);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  line-height: 1.4;
+  padding: var(--space-sm) var(--space-xl);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  height: 44px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background-color: var(--primary-deep);
+  color: var(--on-primary);
+}
+
+.btn-outline {
+  background-color: var(--canvas);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.btn-outline:hover {
+  color: var(--primary-deep);
+  border-color: var(--primary-deep);
+  background-color: var(--canvas);
+}
+
+/* ============================================
+   Sections
+   ============================================ */
+.section {
+  padding: var(--space-section) 0;
+}
+
+.section-cloud {
+  background-color: var(--cloud);
+  padding: var(--space-section) 0;
+}
+
+.section-title {
+  text-align: center;
+  font-family: 'Inter', 'Manrope', Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1.0;
+  letter-spacing: 0;
+  color: var(--ink);
+  margin-bottom: 48px;
+}
+
+.section-subtitle {
+  text-align: center;
+  font-family: 'Inter', 'Manrope', Arial, sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.0;
+  letter-spacing: 0;
+  color: var(--ink);
+  margin: 80px 0 48px;
+}
+
+/* ============================================
+   Menu Grid & Cards
+   ============================================ */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-xl);
+}
+
+.menu-card {
+  background-color: var(--canvas);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: 0 2px 8px rgba(26, 26, 26, 0.08);
+}
+
+.menu-card img {
+  border-radius: var(--radius-xl);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  width: 100%;
+  margin-bottom: var(--space-lg);
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-xs);
+  gap: var(--space-xs);
+}
+
+.menu-name {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.0;
+  color: var(--ink);
+}
+
+.menu-price {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.17;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+.menu-desc {
+  color: var(--charcoal);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ============================================
+   Contact Section
+   ============================================ */
+.contact-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xxl);
+  align-items: start;
+}
+
+.contact-info h3,
+.contact-form h3 {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.17;
+  margin-bottom: var(--space-md);
+}
+
+.contact-info p {
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--charcoal);
+  font-size: 16px;
+}
+
+.contact-info .hours-heading {
+  margin-top: var(--space-xxl);
+}
+
+.contact-form {
+  background-color: var(--canvas);
+  padding: var(--space-xxl);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 2px 8px rgba(26, 26, 26, 0.08);
+}
+
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--steel);
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-family: inherit;
+  color: var(--ink);
+  background-color: var(--canvas);
+  height: 44px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.form-group textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+/* ============================================
+   Section intro / single item pages
+   ============================================ */
+.section-intro {
+  max-width: 720px;
+  margin: 0 auto 48px;
+  color: var(--charcoal);
+  font-size: 16px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.single-item-card {
+  max-width: 480px;
+  margin: 0 auto 48px;
+}
+
+.single-item-card img {
+  width: 100%;
+  border-radius: var(--radius-xl);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  margin-bottom: var(--space-lg);
+}
+
+.single-content {
+  text-align: left;
+}
+
+.single-content p {
+  margin-bottom: var(--space-md);
+}
+
+/* ============================================
+   Help Band
+   ============================================ */
+.help-band {
+  background-color: var(--ink);
+  color: var(--on-ink);
+  padding: 64px var(--space-xxl);
+  text-align: center;
+}
+
+.help-band h2 {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.0;
+  color: var(--on-ink);
+  margin-bottom: var(--space-xl);
+}
+
+.help-band p {
+  color: var(--primary-soft);
+  margin-bottom: var(--space-xxl);
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.footer-dark {
+  background-color: var(--ink);
+  color: var(--on-ink);
+  padding: 64px var(--space-xxl) var(--space-xxl);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-xxl);
+  max-width: 1366px;
+  margin: 0 auto;
+  padding: 0 var(--space-xxl);
+}
+
+.footer-col h4 {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: var(--space-md);
+  color: var(--on-ink);
+}
+
+.footer-col a {
+  display: block;
+  color: var(--steel);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: var(--space-xs);
+}
+
+.footer-col a:hover {
+  color: var(--on-ink);
+}
+
+.footer-bottom {
+  max-width: 1366px;
+  margin: var(--space-xxl) auto 0;
+  padding: var(--space-xl) var(--space-xxl) 0;
+  border-top: 1px solid var(--charcoal);
+  color: var(--steel);
+  font-size: 12px;
+  line-height: 1.33;
+}
+
+/* ============================================
+   Responsive — Tablet (≤ 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+  .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hero-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-image {
+    aspect-ratio: 16 / 9;
+  }
+
+  .hero .chevron {
+    display: none;
+  }
+}
+
+/* ============================================
+   Responsive — Mobile Large (≤ 767px)
+   ============================================ */
+@media (max-width: 767px) {
+  .section,
+  .section-cloud {
+    padding: 48px 0;
+  }
+
+  .hero h1 {
+    font-size: 44px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-container {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================
+   Responsive — Mobile (≤ 479px)
+   ============================================ */
+@media (max-width: 479px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero h1 {
+    font-size: 36px;
+  }
+}

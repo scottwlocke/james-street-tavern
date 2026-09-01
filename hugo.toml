@@ -1,3 +1,18 @@
 baseURL = 'https://example.org/'
 locale = 'en-us'
 title = 'James Street Tavern'
+
+[taxonomies]
+  tag = []
+  category = []
+
+[params]
+  location = "Flavor Town, NY"
+  address = "123 Pizza Lane, Flavor Town, NY 10001"
+  phone = "(555) 123-4567"
+  email = "info@jst-tavern.com"
+  heroEyebrow = "Wood-Fired & Hand-Tossed"
+  heroTitle = "Authentic Italian Wood-Fired Pizza"
+  heroDescription = "Fresh ingredients, hand-tossed dough, and a passion for tradition baked into every slice."
+  helpBandText = "Questions about catering, reservations, or private events?"
+  hours = ["Mon - Thu: 11:00 AM - 10:00 PM", "Fri - Sat: 11:00 AM - 11:00 PM", "Sunday: 12:00 PM - 9:00 PM"]

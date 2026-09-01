@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzeria Bella - Fresh, Hot & Delicious Pizza</title>
+    <style>
+        :root {
+            --primary: #c1272d;
+            --secondary: #d97706;
+            --dark: #1f2937;
+            --light: #fefcbf;
+            --bg: #fffbf0;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: var(--light);
+        }
+        section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        #home {
+            text-align: center;
+            padding: 6rem 2rem;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            color: white;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+        #home h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+        #home p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #b45309;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary);
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: var(--secondary);
+            margin: 0.5rem auto 0;
+            border-radius: 2px;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .menu-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s;
+        }
+        .menu-card:hover {
+            transform: translateY(-5px);
+        }
+        .menu-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .menu-info {
+            padding: 1.5rem;
+        }
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.5rem;
+        }
+        .menu-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        .menu-price {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        .menu-desc {
+            color: #4b5563;
+            font-size: 0.95rem;
+        }
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+        .contact-info h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        .contact-info p {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .contact-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            resize: vertical;
+            height: 120px;
+        }
+        footer {
+            background-color: var(--dark);
+            color: #9ca3af;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        @media (max-width: 768px) {
+            #home h1 { font-size: 2.3rem; }
+            .nav-links { display: none; } /* Kept simple for raw HTML single file */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="#home" class="logo">🍕 Pizzeria Bella</a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home">
+        <h1>Authentic Italian Wood-Fired Pizza</h1>
+        <p>Fresh ingredients, hand-tossed dough, and a passion for tradition baked into every slice.</p>
+        <a href="#menu" class="btn">View Our Menu</a>
+    </section>
+
+    <section id="menu">
+        <h2 class="section-title">Our Specialty Menu</h2>
+        <div class="menu-grid">
+            
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?auto=format&fit=crop&w=500&q=80" alt="Classic Margherita Pizza" class="menu-img">
+                <div class="menu-info">
+                    <div class="menu-header">
+                        <span class="menu-name">Classic Margherita</span>
+                        <span class="menu-price">$14.99</span>
+                    </div>
+                    <p class="menu-desc">San Marzano tomatoes, fresh mozzarella, fresh basil, and a drizzle of extra virgin olive oil.</p>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80" alt="Ultimate Pepperoni Pizza" class="menu-img">
+                <div class="menu-info">
+                    <div class="menu-header">
+                        <span class="menu-name">Ultimate Pepperoni</span>
+                        <span class="menu-price">$16.99</span>
+                    </div>
+                    <p class="menu-desc">Loaded with spicy pepperoni, mozzarella cheese, and our signature herb tomato sauce.</p>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=500&q=80" alt="Vegetarian Supreme Pizza" class="menu-img">
+                <div class="menu-info">
+                    <div class="menu-header">
+                        <span class="menu-name">Vegetarian Supreme</span>
+                        <span class="menu-price">$15.99</span>
+                    </div>
+                    <p class="menu-desc">Bell peppers, red onions, mushrooms, black olives, and sweet sweet corn over mozzarella.</p>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <div class="menu-info" style="padding-top: 2rem;">
+                    <div class="menu-header">
+                        <span class="menu-name">Garlic Knots (6pc)</span>
+                        <span class="menu-price">$5.99</span>
+                    </div>
+                    <p class="menu-desc">Freshly baked dough tied up, brushed with rich garlic butter, and sprinkled with parmesan cheese.</p>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <div class="menu-info" style="padding-top: 2rem;">
+                    <div class="menu-header">
+                        <span class="menu-name">Caesar Salad</span>
+                        <span class="menu-price">$8.99</span>
+                    </div>
+                    <p class="menu-desc">Crisp romaine lettuce, creamy Caesar dressing, shaved parmesan cheese, and garlic croutons.</p>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <div class="menu-info" style="padding-top: 2rem;">
+                    <div class="menu-header">
+                        <span class="menu-name">Tiramisu</span>
+                        <span class="menu-price">$6.50</span>
+                    </div>
+                    <p class="menu-desc">Classic Italian dessert made with coffee-dipped ladyfingers, mascarpone cream, and cocoa powder.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2 class="section-title">Contact & Location</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Visit Us</h3>
+                <p>📍 123 Pizza Lane, Flavor Town, NY 10001</p>
+                <p>📞 (555) 123-4567</p>
+                <p>✉️ info@pizzeriabella.com</p>
+                
+                <h3 style="margin-top: 2rem;">Hours of Operation</h3>
+                <p>Mon - Thu: 11:00 AM - 10:00 PM</p>
+                <p>Fri - Sat: 11:00 AM - 11:00 PM</p>
+                <p>Sunday: 12:00 PM - 9:00 PM</p>
+            </div>
+            
+            <div class="contact-form">
+                <h3>Send a Message</h3>
+                <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Message sent successfully!');">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Pizzeria Bella. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

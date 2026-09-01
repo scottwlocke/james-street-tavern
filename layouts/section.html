@@ -1,0 +1,21 @@
+{{ define "main" }}
+  <section id="menu" class="section-cloud">
+    <div class="container">
+      <h2 class="section-title">{{ .Title }}</h2>
+
+      {{ with .Content }}
+        <div class="section-intro">{{ . }}</div>
+      {{ end }}
+
+      {{ if .Pages }}
+        <div class="menu-grid">
+          {{ range .Pages }}
+            {{ partial "menu-card.html" (dict "item" .) }}
+          {{ end }}
+        </div>
+      {{ else }}
+        <p class="menu-desc">No items in this section yet.</p>
+      {{ end }}
+    </div>
+  </section>
+{{ end }}
