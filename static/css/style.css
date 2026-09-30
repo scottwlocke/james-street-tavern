@@ -47,13 +47,18 @@
   --space-2xl: 64px;
   --space-3xl: 96px;
 
-  /* ---- Radius (§6) ---- */
-  --radius-sm: 4px;            /* buttons */
-  --radius-md: 8px;            /* cards */
+  /* ---- Radius (§14 — border radius scale) ---- */
+  --radius-none: 0px;
+  --radius-flourish: 2px;        /* chalk price underline, hairline ends */
+  --radius-sm: 4px;              /* buttons, toggles, the JST shield */
+  --radius-md: 8px;              /* cards, panels, chalkboard, dropdowns */
+  --radius-badge: 50%;           /* the circular logo badge */
 
-  /* ---- Elevation (§6 — soft, warm) ---- */
-  --shadow-warm: 0 8px 24px rgba(44, 27, 16, 0.35);
-  --shadow-lift: 0 12px 32px rgba(44, 27, 16, 0.5);
+  /* ---- Elevation (§15 — depth levels) ---- */
+  --shadow-warm: 0 8px 24px rgba(44, 27, 16, 0.35);      /* L1 — resting cards */
+  --shadow-lift: 0 12px 32px rgba(44, 27, 16, 0.5);     /* L2 — hover lift */
+  --shadow-recessed: var(--shadow-warm), inset 0 0 90px rgba(0, 0, 0, 0.75);  /* L3 — chalkboard */
+  --vignette-hero: inset 0 0 220px 60px rgba(26, 26, 26, 0.9);                /* L4 — hero edge */
 
   /* ---- Motion (§9) ---- */
   --duration: 250ms;
@@ -257,7 +262,7 @@ h3 {
   width: 44px;
   height: 44px;
   flex: 0 0 auto;
-  border-radius: 50%;
+  border-radius: var(--radius-badge);
   background-color: var(--tavern-navy);
   border: 2px solid var(--chalk-gold);
 }
@@ -655,7 +660,7 @@ body.nav-open {
   position: absolute;
   inset: 0;
   z-index: -1;
-  box-shadow: inset 0 0 220px 60px rgba(26, 26, 26, 0.9);
+  box-shadow: var(--vignette-hero);
   pointer-events: none;
 }
 
@@ -727,7 +732,7 @@ body.nav-open {
   background-blend-mode: overlay;
   border: 10px solid var(--barn-wood);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-warm), inset 0 0 90px rgba(0, 0, 0, 0.75);
+  box-shadow: var(--shadow-recessed);
   padding: var(--space-2xl);
   overflow: hidden;
 }
@@ -840,7 +845,7 @@ body.nav-open {
     var(--chalk-gold) 80%,
     transparent
   );
-  border-radius: 2px;
+  border-radius: var(--radius-flourish);
 }
 
 .chalk-lead {
