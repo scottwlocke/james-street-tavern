@@ -12,13 +12,26 @@
     </a>
 
     <nav aria-label="Main">
+      {{- /* All eight top-level sections roll up under one "Menu" control so the
+             bar reads Logo / Menu / Contact / Find Us instead of nine links.
+             Below 1024px this whole block is hidden and #mobile-nav takes over. */ -}}
+      <div class="nav-menu">
+        <button class="nav-menu-toggle" type="button"
+                aria-expanded="false" aria-controls="nav-menu-panel">
+          <span>Menu</span>
+          <span class="nav-menu-caret" aria-hidden="true"></span>
+        </button>
+        <ul class="nav-menu-panel" id="nav-menu-panel">
+          {{ range .Site.Sections }}
+            <li>
+              <a href="{{ .RelPermalink }}"
+                 {{ if eq $.RelPermalink .RelPermalink }}class="active" aria-current="page"{{ end }}>{{ .Title }}</a>
+            </li>
+          {{ end }}
+        </ul>
+      </div>
+
       <ul class="nav-links">
-        {{ range .Site.Sections }}
-          <li>
-            <a href="{{ .RelPermalink }}"
-               {{ if eq $.RelPermalink .RelPermalink }}class="active" aria-current="page"{{ end }}>{{ .Title }}</a>
-          </li>
-        {{ end }}
         <li><a href="{{ $home }}#contact">Contact</a></li>
       </ul>
     </nav>
@@ -43,6 +56,10 @@
 </header>
 
 <div id="mobile-nav" class="mobile-nav" aria-hidden="true">
+  {{- /* Same "Menu" grouping as the desktop control, so the two navigations
+         read identically. The drawer already lists every section, so no
+         progressive disclosure is needed here. */ -}}
+  <p class="mobile-nav-heading">Menu</p>
   <ul class="mobile-nav-links">
     <li><a href="{{ $home }}">Home</a></li>
     {{ range .Site.Sections }}

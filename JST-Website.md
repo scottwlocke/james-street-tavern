@@ -94,8 +94,8 @@ layouts/
 ├── partials/
 │   ├── head.html       # <head>: meta, Google Fonts (Oswald, Source Sans 3,
 │   │                   #   Permanent Marker), css/style.css
-│   ├── nav.html        # Utility strip + logo + inline links (desktop)
-│   │                   #   + hamburger toggle + mobile drawer
+│   ├── nav.html        # Logo + `Menu` dropdown (8 sections) + Contact +
+│   │                   # "Find Us" link, plus hamburger + mobile drawer
 │   ├── hero.html       # Hero: copy + image (home-bundle resource via photoGlob → fallback)
 │   ├── specials.html   # Monday Night Wings chalkboard special (DESIGN.md §4)
 │   ├── menu-section.html   # Section title + menu grid
@@ -111,12 +111,12 @@ assets/
                         #   Served via Hugo's pipeline with a sha256 fingerprint, so
                         #   the URL changes whenever the CSS changes.
 static/
-├── js/main.js          # Hamburger drawer toggle logic
+├── js/main.js          # Menu dropdown + hamburger drawer toggle logic
 └── logo-jst-monogram.svg  # Favicon + wordmark monogram
 ```
 
-> The top bar, the "Find Us" link and the mobile drawer all live in `nav.html`;
-> there is no separate `utility-strip.html` partial.
+> The top bar, the `Menu` dropdown, the "Find Us" link and the mobile drawer all
+> live in `nav.html`; there is no separate `utility-strip.html` partial.
 
 ---
 
@@ -140,8 +140,17 @@ static/
 6. **Hero image resolution order:**
    Home-page bundle resource (`content/photo-tavern-hero.jpg`, matched by `photoGlob`) → `heroImage` site param → no image. If the hero renders copy with no photo, the home bundle resource is missing **and** no `heroImage` param is set. This currently falls through to the last case: `DESIGN.md` §10 calls for copy + image, so restore the bundle photo or set `heroImage`.
 
-7. **Hamburger nav (mobile) per DESIGN.md.**
-   Below **1024px** the inline `.nav-links` and the "Find Us" link are hidden and a 44px hamburger toggle appears. It opens a full-canvas drawer sliding from the right, below the sticky nav bar (`min-height: 68px` + 2px border ≈ 70px). Drawer closes on link click, Escape, or resizing above 1024px. Accessibility states (`aria-expanded`, `aria-hidden`) are maintained in `static/js/main.js`.
+7. **Nav rollup (desktop) + hamburger drawer (mobile) per DESIGN.md.**
+   On **desktop** the eight top-level sections roll up under a single `Menu`
+   control, so the bar reads `Logo / Menu / Contact / Find Us`. The panel lists
+   every section with the active one marked (`aria-current` + gold inset bar),
+   and closes on outside click, `Escape` (focus returns to the toggle), or
+   resizing below 1024px. Below **1024px** `.nav-menu`, `.nav-links` and the
+   "Find Us" link are hidden and a 44px hamburger appears, opening a full-canvas
+   drawer sliding from the right below the sticky nav bar (`min-height: 68px` +
+   2px border ≈ 70px), headed `Menu`. The drawer closes on link click, `Escape`,
+   or resizing above 1024px. Accessibility states (`aria-expanded`,
+   `aria-hidden`, `aria-controls`) are maintained in `static/js/main.js`.
 
 8. **Taxonomies disabled.**
    `[taxonomies] tag = [] category = []` in `hugo.toml` removes the auto-generated category/tag taxonomy pages that triggered "no layout file for kind taxonomy" build warnings.

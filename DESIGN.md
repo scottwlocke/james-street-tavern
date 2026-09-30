@@ -223,7 +223,13 @@ by §14 and depth by §15.
 ### Navigation
 - Sticky top bar on dark wood or semi-transparent
 - Gold underline on active link
-- Mobile: full-width drawer with chalkboard background
+- **The eight top-level sections roll up under a single `Menu` control**, so the
+  bar reads `Logo / Menu / Contact / Find Us` instead of nine inline links. The
+  dropdown panel lists every section with the active one marked, closes on
+  outside click and on Escape (focus returns to the toggle), and is desktop
+  only — below 1024px `.nav-menu` is `display:none` and the drawer takes over.
+- Mobile: full-width drawer with chalkboard background, opening with a `Menu`
+  heading above the same section list so both navigations read alike
 
 ---
 
@@ -385,15 +391,16 @@ fixed set of pages, and extra breakpoints only add untested states.
 |---|---|---|
 | Mobile | < 768px | Single-column everything; hamburger drawer; gutters 24px; section padding 56px; hero ≥ 520px |
 | Tablet | 768–1023px | Two-column card and menu grids; 3-column footer; detail and contact layouts stack; gutters 24px |
-| Desktop | ≥ 1024px | Three-column grids; full inline nav and the "Find Us" link; gutters 40px |
+| Desktop | ≥ 1024px | Three-column grids; `Menu` dropdown, `Contact`, and the "Find Us" link; gutters 40px |
 
 **Collapsing strategy**
 
 - **"Find Us" link** — hidden below 1024px. It anchors to `#map` in the contact
   band, where the address, phone, and hours are also rendered, so nothing is lost.
-- **Top nav** — the inline link list and the "Find Us" link collapse into a
-  44px hamburger below 1024px. The drawer is full-canvas chalkboard with 56px link
-  rows. Closes on link click, `Escape`, or resizing above 1024px.
+- **Top nav** — the `Menu` dropdown, `Contact`, and the "Find Us" link collapse
+  into a 44px hamburger below 1024px. The drawer is full-canvas chalkboard with
+  56px link rows and a `Menu` heading. Closes on link click, `Escape`, or
+  resizing above 1024px.
 - **Card / menu grids** — 3 columns → 2 → 1. Cards keep `{rounded.md}` and their
   shadow at every size; only the column count changes.
 - **Detail and contact layouts** — the 5/7 two-column split stacks to one column
@@ -443,11 +450,12 @@ are separate entries, never buried in prose.
 | `contact-map` | `.contact-map` | `{rounded.md}`, desaturated iframe |
 | `nav-bar` | `.nav-bar` | Sticky chalkboard, 2px gold underline |
 | `nav-link` + active | `.nav-links a`, `.active` | `{type.nav}`, gold scaleX underline |
+| `menu-dropdown` | `.nav-menu-toggle`, `.nav-menu-panel` | Rolls the 8 sections under one `Menu` control; caret flips on open; active row gets a gold inset bar |
 | `logo` | `.logo`, `.logo-badge`, `.logo-shield` | `{rounded.badge}`, `{colors.barn-red}` |
 | `logo--mono` | `.logo--mono` | White monochrome for chalkboard (§4) |
 | `logo--gold` | `.logo--gold` | Single-colour gold for premium moments |
 | `find-us-link` | `.nav-utility-toggle` | `{rounded.sm}`, honey-oak → gold on hover; anchors to `#map` |
-| `mobile-drawer` | `.mobile-nav.open` | Full-canvas chalkboard, 56px rows |
+| `mobile-drawer` | `.mobile-nav.open` | Full-canvas chalkboard, 56px rows, `Menu` heading above the list |
 | `section-band-wood` | `.section-wood` | Wood gradient + grain |
 | `help-band` | `.help-band` | Wood gradient, double gold rule |
 | `footer` | `.site-footer` | `{colors.table-top}`, 5-column grid |
