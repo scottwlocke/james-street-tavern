@@ -171,7 +171,7 @@ static/
 | `helpBandText` | Questions about catering, reservations, or private events? |
 | `photoGlob` | `photo-*-hero.*` — the asset-naming pattern layouts resolve images by |
 | `barHours` / `restaurantHours` | Mon–Fri 3PM–2AM; Sat & Sun 12PM–2AM (both columns) |
-| `sections.<name>` | Section blurbs. Currently defined for `pizza`, `wings`, `salads` only — the other five sections fall back to their own front matter. |
+| `sections.<name>` | Section blurbs for the card grid. Defined for all 8 sections, ordered by section weight. Note precedence is reversed from appearances: a section's own `description`, then `summary`, win — these are the last fallback. |
 
 ---
 
@@ -200,7 +200,6 @@ Shown twice on the homepage — once under **Bar**, once under **Restaurant** �
 
 - [ ] Set the real domain in `hugo.toml` (`baseURL`) before deploy.
 - [ ] **Restore the hero image.** `content/photo-tavern-hero.jpg` was moved to `content-old/` during the content restructure, so `DESIGN.md` §10's hero currently renders copy with no photo. Either move it back to `content/` or set a `heroImage` param.
-- [ ] Add `[params.sections]` blurbs for the five sections that lack one: `appetizers`, `burgers`, `eggrolls`, `hoagies-sandwiches`, `stromboli`.
 - [ ] Consider adding real menus/PDFs, catering info, or opening navigation links to actual URLs (many footer/nav links still point to `#` anchors).
 - [ ] The site has no per-item description body pages beyond the card (single.html renders the card + any `.Content`). Expand if needed.
 - [ ] Contact form was removed — if a working form is wanted later, wire a form endpoint or use a service instead of the removed `mailto:` form.

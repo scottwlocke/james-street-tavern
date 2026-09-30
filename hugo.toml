@@ -43,8 +43,17 @@ title = 'James Street Tavern'
   menuIntro = "Everything's made to order. If it's on the board, we've got it."
   helpBandText = "Got a big party coming, or a question about catering? Give us a call — we'll sort you out."
 
-  # Section blurbs for the card grid. Falls back to each section's own front matter.
+  # Section blurbs for the card grid, ordered by section weight so this list
+  # reads in the same order the homepage renders them. Note the precedence is
+  # the reverse of what it looks like: layouts/partials/section-card.html tries
+  # a section's own `description`, then `summary`, and only falls back to these.
+  # A section listed here with no front matter always shows its blurb below.
   [params.sections]
     pizza = "Wood-fired pies, 60 seconds in the oven."
     wings = "Jumbo whole wings, tossed in house sauce."
+    appetizers = "Baskets, rings and sticks. Pass them around."
+    burgers = "Half-pound Angus patties. Fries on the side."
+    hoagies-sandwiches = "Steaks, sausage and cold cuts on bread."
+    eggrolls = "Homemade, deep fried. Buffalo or pepperoni."
+    stromboli = "Rolled and baked. Mozz and provolone."
     salads = "Cold plates, crisp greens, house dressing."
