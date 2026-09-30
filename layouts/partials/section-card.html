@@ -1,12 +1,13 @@
 {{ $page := .page }}
 {{ $blurbs := .blurbs }}
+{{ $glob := .Site.Params.photoGlob | default "photo-*-hero.*" }}
 {{ $image := "" }}
-{{ with $page.Resources.GetMatch "hero.*" }}
+{{ with $page.Resources.GetMatch $glob }}
   {{ $image = .RelPermalink }}
 {{ end }}
 {{ if not $image }}
   {{ range $page.Pages.ByWeight }}
-    {{ with .Resources.GetMatch "hero.*" }}
+    {{ with .Resources.GetMatch $glob }}
       {{ $image = .RelPermalink }}
     {{ end }}
   {{ end }}

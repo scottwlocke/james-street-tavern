@@ -3,6 +3,7 @@
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}</title>
 <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.heroDescription }}{{ end }}">
 <meta name="theme-color" content="#1A1A1A">
+<link rel="icon" href="{{ "logo-jst-monogram.svg" | relURL }}" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Permanent+Marker&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">

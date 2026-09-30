@@ -14,7 +14,12 @@ title = 'James Street Tavern'
   barHours = ["Monday - Friday: 3PM - 2AM", "Saturday: 12PM - 2AM", "Sunday: 12PM - 2AM"]
   restaurantHours = ["Monday - Friday: 3PM - 2AM", "Saturday: 12PM - 2AM", "Sunday: 12PM - 2AM"]
 
-  # ---- Hero (Design-grok.md §10 — friendly, direct, local) ----
+  # ---- Assets (DESIGN.md §12 — <type>-<subject>-<variant>.<ext>) ----
+  # Page-bundle photography follows `photo-<subject>-hero.<ext>`; layouts
+  # resolve images through this glob rather than a hardcoded filename.
+  photoGlob = "photo-*-hero.*"
+
+  # ---- Hero (DESIGN.md §10 — friendly, direct, local) ----
   heroKicker = "Your Neighborhood Tavern"
   heroTitle = "Come Hungry. Leave Happy."
   heroDescription = "Jumbo whole wings, cold beer, and a wood-fired kitchen that's been feeding Monroeville for years. No frills, no nonsense — just a good time."

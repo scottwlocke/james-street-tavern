@@ -1,7 +1,7 @@
 /* ============================================
    James Street Tavern
    Design system: "Rustic Country Tavern"
-   Source of truth: Design-grok.md
+   Source of truth: DESIGN.md
    Dark mode is the default (§13)
    ============================================ */
 
@@ -61,7 +61,10 @@
 
   /* ---- Layout (§7) ---- */
   --container: 1200px;
-  --gutter: 24px;
+  --gutter: 40px;               /* §7 — 24px mobile → 40px desktop */
+
+  /* ---- Logo (§4 — clear space equal to the JST badge height) ---- */
+  --logo-clear: 44px;
 
   /* ---- Textures (§8, §13) ---- */
   --chalkboard-gradient: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
@@ -93,6 +96,10 @@ html {
 
 body {
   background-color: var(--canvas);
+  /* §8 — "avoid pure flat digital surfaces"; grain carries through every
+     band that doesn't declare its own texture (§5 film grain) */
+  background-image: var(--noise);
+  background-blend-mode: overlay;
   color: var(--off-white);
   font-family: var(--font-sans);
   font-size: 1.125rem;          /* §3 body */
@@ -188,6 +195,12 @@ h3 {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);   /* §3 chalk dust */
 }
 
+/* §11 — honey oak on barn wood measures 4.32:1 and misses AA for normal
+   text; chalk gold on the same band is 6.01:1 */
+.section-wood .section-kicker {
+  color: var(--chalk-gold);
+}
+
 .section-title {
   font-size: 2.25rem;            /* §3 section title */
   font-weight: 600;
@@ -230,6 +243,11 @@ h3 {
   gap: var(--space-md);
   margin-right: auto;
   min-height: 44px;             /* §11 touch target */
+  /* §4 clear space — the 44px badge height, held horizontally by the
+     container gutter (40px desktop / 24px mobile) and capped vertically
+     by the 68px nav bar. */
+  padding: var(--space-sm);
+  margin-left: calc(-1 * var(--space-sm));
 }
 
 .logo-badge {
@@ -277,6 +295,28 @@ h3 {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--honey-oak);
+}
+
+/* §4 — logo variations. The nav sits on chalkboard, so it takes the
+   white monochrome lockup; `.logo--mono` / `.logo--gold` are the
+   approved alternates for other surfaces. */
+.logo--mono .logo-badge {
+  background-color: transparent;
+  border-color: var(--beer-foam);
+}
+
+.logo--mono .logo-text {
+  color: var(--beer-foam);
+}
+
+.logo--gold .logo-badge {
+  background-color: transparent;
+  border-color: var(--chalk-gold);
+}
+
+.logo--gold .logo-text,
+.logo--gold .logo-loc {
+  color: var(--chalk-gold);
 }
 
 .nav-links {
@@ -486,6 +526,7 @@ body.nav-open {
    ============================================ */
 
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -504,6 +545,25 @@ body.nav-open {
               color var(--duration) var(--easing);
 }
 
+/* §6 — "hover: lighten 8% + subtle gold underline" */
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  left: var(--space-lg);
+  right: var(--space-lg);
+  bottom: 6px;
+  height: 2px;
+  background-color: var(--chalk-gold);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--duration) var(--easing);
+}
+
+.btn-primary:hover::after,
+.btn-primary:focus-visible::after {
+  transform: scaleX(1);
+}
+
 /* Primary — navy bg, cream text */
 .btn-primary {
   background-color: var(--tavern-navy);
@@ -515,6 +575,11 @@ body.nav-open {
   background-color: #163a75;    /* lighten 8% */
   border-color: #163a75;
   color: var(--beer-foam);
+}
+
+.btn-primary:active {
+  background-color: #0a1f42;    /* darker navy */
+  border-color: #0a1f42;
 }
 
 /* Secondary / Outline — gold border, gold text */
@@ -629,6 +694,27 @@ body.nav-open {
   flex-wrap: wrap;
   gap: var(--space-md);
 }
+
+/* §9 — "page load: soft fade + slight scale on hero elements".
+   Grounded easing only; the reduced-motion block below neutralises it. */
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hero-copy > * {
+  animation: hero-enter 600ms var(--easing) both;
+}
+
+.hero-copy > *:nth-child(2) { animation-delay: 90ms; }
+.hero-copy > *:nth-child(3) { animation-delay: 180ms; }
+.hero-copy > *:nth-child(4) { animation-delay: 270ms; }
 
 /* ============================================
    Chalkboard Panel (§6) — the specials board

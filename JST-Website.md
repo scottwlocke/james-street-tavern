@@ -33,7 +33,7 @@ The layouts follow `DESIGN.md` (an HP-style design system) as closely as possibl
 - Each menu section is a top-level folder under `content/` (e.g. `content/pizza/`).
 - Each section has a `_index.md` whose `title` becomes the homepage section heading; a `weight` controls section order.
 - Each menu item is one Markdown file:
-  - **With a picture:** a page bundle — `content/<section>/<item>/index.md` + `content/<section>/<item>/hero.jpg`. The layout auto-detects the image via `.Resources.GetMatch "hero.*"`.
+  - **With a picture:** a page bundle — `content/<section>/<item>/index.md` + `content/<section>/<item>/photo-<subject>-hero.jpg` (DESIGN.md §12 naming). The layout auto-detects the image via `.Resources.GetMatch` on the `photoGlob` site param.
   - **Without a picture:** a plain file — `content/<section>/<item>.md`. The card renders without an `<img>`.
 - Item front matter (TOML):
   ```toml
@@ -99,10 +99,10 @@ static/
    An initial draft used invalid CSS arithmetic (`var(--space-xxl) * 1.5`). These were replaced with concrete pixel values (48px, 64px, 32px, 80px) matching the reference and DESIGN.md spacing.
 
 5. **Image strategy — page bundles auto-detect images.**
-   Items with photos live in bundles so the image ships with its markdown. The card template looks for a `hero.*` resource; flat `.md` files naturally skip the `<img>` — no front-matter flag needed.
+   Items with photos live in bundles so the image ships with its markdown. The card template looks for a `photo-*-hero.*` resource (via the `photoGlob` site param); flat `.md` files naturally skip the `<img>` — no front-matter flag needed.
 
 6. **Hero image resolution order:**
-   Home-page bundle resource (`content/hero.jpg`) → `heroImage` site param → `/images/hero.svg` placeholder. Used `.Site.Home` + `.Resources.GetMatch` because `GetPage "content/_index.md"` did not resolve the home bundle resources.
+   Home-page bundle resource (`content/photo-tavern-hero.jpg`) → `heroImage` site param → `/images/hero.svg` placeholder. Used `.Site.Home` + `.Resources.GetMatch` because `GetPage "content/_index.md"` did not resolve the home bundle resources.
 
 7. **Hamburger nav (mobile) per DESIGN.md.**
    Below **1024px** the inline `.nav-links` are hidden and a 44px hamburger toggle appears. It opens a full-canvas drawer sliding from the right (below the 36px utility strip + 64px nav = 100px) with `body-lg` links and a sticky "Sign in" CTA. Drawer closes on link click, Escape, or resizing above 1024px. Accessibility states (`aria-expanded`, `aria-hidden`) are maintained in `static/js/main.js`.
@@ -148,7 +148,7 @@ Shown twice on the homepage — once under **Bar**, once under **Restaurant** �
 
 ## 8. How to Add / Change Menu Items
 
-1. **With a photo:** create `content/<section>/<item>/index.md` and drop the photo in as `hero.jpg` (or any `hero.*`).
+1. **With a photo:** create `content/<section>/<item>/index.md` and drop the photo in as `photo-<subject>-hero.jpg` (DESIGN.md §12).
 2. **Without a photo:** create `content/<section>/<item>.md`.
 3. Front matter: `title`, `price`, `description`, `weight`.
 4. To start a new section: create `content/<newsection>/_index.md` with `title` + `weight`; it appears automatically on the homepage.
@@ -158,7 +158,7 @@ Shown twice on the homepage — once under **Bar**, once under **Restaurant** �
 ## 9. Outstanding / Next Steps
 
 - [ ] Set the real domain in `hugo.toml` (`baseURL`) before deploy.
-- [ ] Replace placeholder hero image (`content/hero.jpg`) with final photography if desired.
+- [ ] Replace placeholder hero image (`content/photo-tavern-hero.jpg`) with final photography if desired.
 - [ ] Consider adding real menus/PDFs, catering info, or opening navigation links to actual URLs (many footer/nav links still point to `#` anchors).
 - [ ] The site has no per-item description body pages beyond the card (single.html renders the card + any `.Content`). Expand if needed.
 - [ ] Contact form was removed — if a working form is wanted later, wire a form endpoint or use a service instead of the removed `mailto:` form.

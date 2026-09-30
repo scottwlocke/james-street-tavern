@@ -1,6 +1,7 @@
 {{ $item := .item }}
 {{ $image := "" }}
-{{ with $item.Resources.GetMatch "hero.*" }}
+{{ $glob := .Site.Params.photoGlob | default "photo-*-hero.*" }}
+{{ with $item.Resources.GetMatch $glob }}
   {{ $image = .RelPermalink }}
 {{ end }}
 
