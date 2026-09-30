@@ -396,68 +396,14 @@ h3 {
   color: var(--chalk-gold);
 }
 
-.nav-utility-caret {
+/* Downward marker: signals the control scrolls down the page to #map. */
+.nav-utility-arrow {
   width: 0;
   height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
   border-top: 5px solid currentColor;
   transition: transform var(--duration) var(--easing);
-}
-
-.nav-utility-toggle[aria-expanded="true"] .nav-utility-caret {
-  transform: rotate(180deg);
-}
-
-.nav-utility-panel {
-  position: absolute;
-  top: calc(100% + var(--space-sm));
-  right: 0;
-  min-width: 280px;
-  padding: var(--space-lg);
-  background-color: var(--table-top);
-  background-image: var(--noise);
-  background-blend-mode: overlay;
-  border: 1px solid var(--border-wood-strong);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-warm);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-4px);
-  transition: opacity var(--duration) var(--easing),
-              transform var(--duration) var(--easing),
-              visibility var(--duration) var(--easing);
-}
-
-.nav-utility.open .nav-utility-panel {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.nav-utility-label {
-  font-family: var(--font-display);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--chalk-gold);
-  margin-bottom: var(--space-sm);
-}
-
-.nav-utility-panel a,
-.nav-utility-panel p {
-  display: block;
-  font-size: 0.9375rem;
-  color: var(--beer-foam);
-  opacity: 0.9;
-  padding-block: 4px;
-}
-
-.nav-utility-divider {
-  height: 1px;
-  background-color: var(--border-wood-strong);
-  margin-block: var(--space-sm);
 }
 
 /* ---- Mobile drawer (§6 — chalkboard background) ---- */

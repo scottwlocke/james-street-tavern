@@ -21,7 +21,7 @@ Use this to pick up work quickly.
 
 - **Colors:** tavern navy `#0F2C5B` (`--tavern-navy`) for the dark canvas; chalk gold `#E8C547` (`--chalk-gold`) rationed as the single accent; chalkboard green-black (`--chalkboard`) for panels; barn wood (`--barn-wood`), honey oak, barn red and beer foam as surface/secondary tones. Off-white for body text.
 - **Typography:** three families, each with one job. **Oswald** (500/600/700) for signage — headings, nav, buttons, prices, wordmark. **Source Sans 3** (400/600) for all body copy. **Permanent Marker** (400) is hand-lettered chalk, restricted to exactly two roles: the specials kicker and the specials title. Full role/weight/size/leading map is `DESIGN.md` §3.
-- **Shapes:** two radii only. Buttons, toggles and the JST shield at 4px (`--radius-sm`); cards, panels, the chalkboard and dropdowns at 8px (`--radius-md`); 50% (`--radius-badge`) is exclusive to the circular logo badge. Sharp buttons, soft containers.
+- **Shapes:** two radii only. Buttons, toggles, the "Find Us" link and the JST shield at 4px (`--radius-sm`); cards, panels and the chalkboard at 8px (`--radius-md`); 50% (`--radius-badge`) is exclusive to the circular logo badge. Sharp buttons, soft containers.
 - **Spacing:** `--space-*` scale; 96px section padding; 40px grid gutter dropping to 24px below 1024px.
 - **Depth:** five levels, every shadow warm `rgba(44, 27, 16, …)` rather than grey. Recessed and vignette levels are single-use (chalkboard, hero).
 - **Tokens** are declared as CSS custom properties at the top of `assets/css/style.css` and mirror `DESIGN.md`'s token names (`--tavern-navy`, `--chalk-gold`, `--space-2xl`, `--radius-md`, `--shadow-recessed`, etc.).
@@ -115,8 +115,8 @@ static/
 └── logo-jst-monogram.svg  # Favicon + wordmark monogram
 ```
 
-> The utility strip is part of `nav.html`; there is no separate
-> `utility-strip.html` partial.
+> The top bar, the "Find Us" link and the mobile drawer all live in `nav.html`;
+> there is no separate `utility-strip.html` partial.
 
 ---
 
@@ -141,7 +141,7 @@ static/
    Home-page bundle resource (`content/photo-tavern-hero.jpg`, matched by `photoGlob`) → `heroImage` site param → no image. If the hero renders copy with no photo, the home bundle resource is missing **and** no `heroImage` param is set. This currently falls through to the last case: `DESIGN.md` §10 calls for copy + image, so restore the bundle photo or set `heroImage`.
 
 7. **Hamburger nav (mobile) per DESIGN.md.**
-   Below **1024px** the inline `.nav-links` are hidden and a 44px hamburger toggle appears. It opens a full-canvas drawer sliding from the right (below the 36px utility strip + 64px nav = 100px) with `body-lg` links and a sticky "Sign in" CTA. Drawer closes on link click, Escape, or resizing above 1024px. Accessibility states (`aria-expanded`, `aria-hidden`) are maintained in `static/js/main.js`.
+   Below **1024px** the inline `.nav-links` and the "Find Us" link are hidden and a 44px hamburger toggle appears. It opens a full-canvas drawer sliding from the right, below the sticky nav bar (`min-height: 68px` + 2px border ≈ 70px). Drawer closes on link click, Escape, or resizing above 1024px. Accessibility states (`aria-expanded`, `aria-hidden`) are maintained in `static/js/main.js`.
 
 8. **Taxonomies disabled.**
    `[taxonomies] tag = [] category = []` in `hugo.toml` removes the auto-generated category/tag taxonomy pages that triggered "no layout file for kind taxonomy" build warnings.
@@ -158,7 +158,7 @@ static/
 
 | Param | Value |
 | --- | --- |
-| `location` | Monroeville, PA (utility strip) |
+| `location` | Monroeville, PA (the line under the wordmark in `nav.html`) |
 | `address` | 1224 James St, Monroeville, PA 15146 |
 | `phone` | 412-824-8884 |
 | `email` | info@jst-tavern.com |

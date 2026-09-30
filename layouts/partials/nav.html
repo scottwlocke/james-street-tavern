@@ -24,27 +24,13 @@
     </nav>
 
     <div class="nav-utility">
-      <button class="nav-utility-toggle" type="button"
-              aria-expanded="false" aria-controls="nav-utility-panel">
+      {{- /* Jumps to the embedded map at the foot of the page. Everything the
+             old dropdown listed — address, phone, email, hours — is rendered in
+             the contact section it lands on, so nothing is lost. */ -}}
+      <a class="nav-utility-toggle" href="{{ $home }}#map">
         <span>Find Us</span>
-        <span class="nav-utility-caret" aria-hidden="true"></span>
-      </button>
-      <div class="nav-utility-panel" id="nav-utility-panel">
-        <p class="nav-utility-label">Come See Us</p>
-        <p>{{ default "1224 James St, Monroeville, PA 15146" .Site.Params.address }}</p>
-        <p class="nav-utility-divider"></p>
-        <a href="tel:{{ replaceRE "[^0-9+]" "" (default "412-824-8884" .Site.Params.phone) }}">
-          {{ default "412-824-8884" .Site.Params.phone }}
-        </a>
-        <a href="mailto:{{ default "info@jst-tavern.com" .Site.Params.email }}">
-          {{ default "info@jst-tavern.com" .Site.Params.email }}
-        </a>
-        <p class="nav-utility-divider"></p>
-        {{ range first 1 (default (slice "Monday - Friday: 3PM - 2AM") .Site.Params.restaurantHours) }}
-          <p>{{ . }}</p>
-        {{ end }}
-        <p>Saturday &amp; Sunday: 12PM - 2AM</p>
-      </div>
+        <span class="nav-utility-arrow" aria-hidden="true"></span>
+      </a>
     </div>
 
     <button class="nav-toggle" type="button" aria-label="Toggle menu"

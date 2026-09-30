@@ -113,7 +113,7 @@ get their shape from the font rather than from leading.
 | `{type.eyebrow-sm}` | `.footer-col h4` | Oswald | 600 | 0.9375rem | 1.6 † | 0.14em | Footer column headings |
 | `{type.body}` | `body` | Source Sans 3 | 400 | 1.125rem | 1.6 | 0 | Default body copy |
 | `{type.body-sm}` | `.card-meta`, `.menu-desc` | Source Sans 3 | 400 | 1rem | 1.6 | 0 | Card and menu descriptions |
-| `{type.caption}` | `.footer-col a` | Source Sans 3 | 400 | 0.9375rem | 1.6 † | 0 | Footer links, utility panel |
+| `{type.caption}` | `.footer-col a` | Source Sans 3 | 400 | 0.9375rem | 1.6 † | 0 | Footer links |
 
 **Principles**
 
@@ -332,7 +332,7 @@ content.
 |---|---|---|
 | `{rounded.none}` | `0px` | Chalkboard corner flourishes, hairline ends, full-bleed bands |
 | `{rounded.flourish}` | `2px` | Price underline, hairline caps |
-| `{rounded.sm}` | `4px` | All buttons, the nav toggle, the "Find Us" selector, the JST shield |
+| `{rounded.sm}` | `4px` | All buttons, the nav toggle, the "Find Us" link, the JST shield |
 | `{rounded.md}` | `8px` | Cards, chalkboard panel, detail panels, contact cards, map, dropdowns |
 | `{rounded.badge}` | `50%` | The circular logo badge only |
 
@@ -385,13 +385,13 @@ fixed set of pages, and extra breakpoints only add untested states.
 |---|---|---|
 | Mobile | < 768px | Single-column everything; hamburger drawer; gutters 24px; section padding 56px; hero ≥ 520px |
 | Tablet | 768–1023px | Two-column card and menu grids; 3-column footer; detail and contact layouts stack; gutters 24px |
-| Desktop | ≥ 1024px | Three-column grids; full inline nav and utility selector; gutters 40px |
+| Desktop | ≥ 1024px | Three-column grids; full inline nav and the "Find Us" link; gutters 40px |
 
 **Collapsing strategy**
 
-- **Utility strip** — hidden below 1024px. Address, phone, and hours remain
-  reachable in the footer and the contact band, so nothing is lost.
-- **Top nav** — the inline link list and the "Find Us" selector collapse into a
+- **"Find Us" link** — hidden below 1024px. It anchors to `#map` in the contact
+  band, where the address, phone, and hours are also rendered, so nothing is lost.
+- **Top nav** — the inline link list and the "Find Us" link collapse into a
   44px hamburger below 1024px. The drawer is full-canvas chalkboard with 56px link
   rows. Closes on link click, `Escape`, or resizing above 1024px.
 - **Card / menu grids** — 3 columns → 2 → 1. Cards keep `{rounded.md}` and their
@@ -446,7 +446,7 @@ are separate entries, never buried in prose.
 | `logo` | `.logo`, `.logo-badge`, `.logo-shield` | `{rounded.badge}`, `{colors.barn-red}` |
 | `logo--mono` | `.logo--mono` | White monochrome for chalkboard (§4) |
 | `logo--gold` | `.logo--gold` | Single-colour gold for premium moments |
-| `utility-panel` | `.nav-utility` + panel | `{rounded.md}`, `{elev.rest}` |
+| `find-us-link` | `.nav-utility-toggle` | `{rounded.sm}`, honey-oak → gold on hover; anchors to `#map` |
 | `mobile-drawer` | `.mobile-nav.open` | Full-canvas chalkboard, 56px rows |
 | `section-band-wood` | `.section-wood` | Wood gradient + grain |
 | `help-band` | `.help-band` | Wood gradient, double gold rule |

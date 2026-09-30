@@ -4,6 +4,9 @@
       <h2>Big Party? Give Us a Ring.</h2>
       <p>{{ default "Got a big party coming, or a question about catering? Give us a call — we'll sort you out." .Site.Params.helpBandText }}</p>
     </div>
-    <a href="#contact" class="btn btn-gold">Get in Touch</a>
+    {{- /* This band renders on every page via baseof.html, but the contact
+           section only exists on the home page, so the target must be
+           addressed through the home permalink — same as nav and footer. */ -}}
+    <a href="{{ .Site.Home.RelPermalink }}#contact" class="btn btn-gold">Get in Touch</a>
   </div>
 </section>

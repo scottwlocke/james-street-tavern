@@ -39,35 +39,6 @@
     });
   }
 
-  // ---- Top-right utility selector ----
-  const utility = document.querySelector('.nav-utility');
-  const utilityToggle = utility
-    ? utility.querySelector('.nav-utility-toggle')
-    : null;
-
-  if (utility && utilityToggle) {
-    const panel = utility.querySelector('.nav-utility-panel');
-
-    function setUtility(open) {
-      utility.classList.toggle('open', open);
-      utilityToggle.setAttribute('aria-expanded', String(open));
-    }
-
-    utilityToggle.addEventListener('click', function (event) {
-      event.stopPropagation();
-      setUtility(utilityToggle.getAttribute('aria-expanded') !== 'true');
-    });
-
-    document.addEventListener('click', function (event) {
-      if (!utility.contains(event.target)) {
-        setUtility(false);
-      }
-    });
-
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') {
-        setUtility(false);
-      }
-    });
-  }
+  // The top-right "Find Us" control is a plain link to #map, so there is no
+  // dropdown logic left to maintain here.
 })();
