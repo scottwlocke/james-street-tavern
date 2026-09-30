@@ -16,15 +16,28 @@ Use this to pick up work quickly.
 
 ## 2. Design System (DESIGN.md)
 
-The layouts follow `DESIGN.md` (an HP-style design system) as closely as possible:
+**`DESIGN.md` is the only design specification for this site.** The layouts and
+`static/css/style.css` implement it and nothing else.
 
-- **Colors:** Electric Blue `#024ad8` (`--primary`) is the lone CTA/link/price accent; near-black ink `#1a1a1a` (`--ink`) for text; white canvas `#ffffff`; cloud `#f7f7f7` for alternating section bands; dark ink slabs for help-band + footer.
-- **Typography:** single-family **Inter** (weight 400/500/600/700) with Manrope → Arial fallbacks — the closest open-source substitutes for Forma DJR Micro. Headlines at weight 500, line-height 1.0.
-- **Shapes:** cards/photos at 16px radius (`--radius-xl`), buttons/inputs at 4px (`--radius-md`). Two-tier split is intentional.
-- **Spacing:** 8px base scale; 80px section padding; 24px grid gutter.
-- **Tokens** are declared as CSS custom properties at the top of `static/css/style.css` and mirror DESIGN.md's token names (`--primary`, `--cloud`, `--space-section`, `--radius-xl`, etc.).
+- **Colors:** tavern navy `#0F2C5B` (`--tavern-navy`) for the dark canvas; chalk gold `#E8C547` (`--chalk-gold`) rationed as the single accent; chalkboard green-black (`--chalkboard`) for panels; barn wood (`--barn-wood`), honey oak, barn red and beer foam as surface/secondary tones. Off-white for body text.
+- **Typography:** three families, each with one job. **Oswald** (500/600/700) for signage — headings, nav, buttons, prices, wordmark. **Source Sans 3** (400/600) for all body copy. **Permanent Marker** (400) is hand-lettered chalk, restricted to exactly two roles: the specials kicker and the specials title. Full role/weight/size/leading map is `DESIGN.md` §3.
+- **Shapes:** two radii only. Buttons, toggles and the JST shield at 4px (`--radius-sm`); cards, panels, the chalkboard and dropdowns at 8px (`--radius-md`); 50% (`--radius-badge`) is exclusive to the circular logo badge. Sharp buttons, soft containers.
+- **Spacing:** `--space-*` scale; 96px section padding; 40px grid gutter dropping to 24px below 1024px.
+- **Depth:** five levels, every shadow warm `rgba(44, 27, 16, …)` rather than grey. Recessed and vignette levels are single-use (chalkboard, hero).
+- **Tokens** are declared as CSS custom properties at the top of `static/css/style.css` and mirror `DESIGN.md`'s token names (`--tavern-navy`, `--chalk-gold`, `--space-2xl`, `--radius-md`, `--shadow-recessed`, etc.).
 
-> **Note:** The original pizza-shop reference HTML used the Limelight display font and blue chevron decorations. Per explicit instruction ("follow the DESIGN.md as best as possible"), Limelight was replaced with single-family Inter, and the chevrons were removed at the user's request.
+> **Do not** reintroduce the retired HP Electric Blue system (Electric Blue
+> `#024ad8`, white/cloud canvas, single-family Inter, 16px card radius, blue
+> chevrons, Limelight/Forma display faces). Those specifications are not
+> authoritative and are not part of this site. See §10.
+
+### Section reference
+
+`DESIGN.md` is organised as: §1–2 identity, §3 typography, §4 chalkboard panel,
+§5 film grain, §6 layout regions, §7 palette, §8 surface depth, §9 motion,
+§10 hero, §11 CTA buttons, §12 file & asset naming, §13 implementation notes,
+§14 border radius scale, §15 elevation & depth, §16 breakpoints & collapsing
+strategy, §17 component inventory, §18 do's and don'ts, §19 iteration guide.
 
 ---
 
@@ -46,15 +59,26 @@ The layouts follow `DESIGN.md` (an HP-style design system) as closely as possibl
   ```
 - The homepage iterates `.Site.Sections` and renders every section, in `weight` order.
 
-**Current menu (14 items):**
+**Current menu (8 sections, 46 items):**
 
-| Section | With image (bundle) | Without image (flat) |
+| Section | Items | Notes |
 | --- | --- | --- |
-| **Pizza** | Margherita, Vegetarian Supreme, Ultimate Pepperoni | Garlic Knots (6pc), Tiramisu |
-| **Wings & Things** | Buffalo Wings, BBQ Glazed Wings | Lemon Pepper Wings, Loaded Potato Skins |
-| **Salads** | Garden Salad, Caesar Salad | Greek Salad, Caprese Salad |
+| **Appetizers** | 12 | Flat `.md` files |
+| **Hoagies & Sandwiches** | 9 | Flat `.md` files |
+| **Pizza** | 5 | Organised **by size** (`large`, `medium`, `small`) + `toppings` + `ultimate-pepperoni` |
+| **Salads** | 5 | Flat `.md` files |
+| **Stromboli** | 5 | Flat `.md` files |
+| **Wings** | 5 | Flat `.md` files, plus `wing-flavors` |
+| **Burgers** | 3 | Flat `.md` files |
+| **Eggrolls** | 2 | Flat `.md` files |
 
-**Note:** The reference HTML's Caesar Salad appeared in both the pizza grid and the salads grid. In this site it exists once, as a bundle item under `salads/`.
+Section order on the homepage comes from the `weight` in each section's
+`_index.md`. The homepage iterates `.Site.Sections` and renders every section in
+that order.
+
+**Note:** this content set replaced an earlier 3-section / 14-item menu, which is
+archived in `content-old/`. `pizza` is now organised by size rather than by
+variety.
 
 ---
 
@@ -63,24 +87,33 @@ The layouts follow `DESIGN.md` (an HP-style design system) as closely as possibl
 ```
 layouts/
 ├── _default/
-│   ├── baseof.html     # HTML shell: head, utility strip, nav + mobile drawer, <main>, help band, footer, main.js
+│   ├── baseof.html     # HTML shell: head, nav + mobile drawer, <main>, help band, footer, main.js
 │   └── single.html     # Individual menu item detail page
-├── index.html          # Homepage: hero → menu sections → contact
+├── index.html          # Homepage: hero → specials chalkboard → menu sections → contact
 ├── section.html        # A section's full listing (e.g. /pizza/)
 ├── partials/
-│   ├── head.html       # <head>: meta, Google Fonts (Inter), style.css
-│   ├── utility-strip.html   # Dark top bar (location, For Business, Sign in)
-│   ├── nav.html        # Logo + inline links (desktop) + hamburger toggle + mobile drawer
-│   ├── hero.html       # Hero card: copy + image (image = home-bundle resource → heroImage param → placeholder)
-│   ├── menu-section.html    # Section title + menu grid
-│   ├── menu-card.html       # One menu item card (conditional image)
+│   ├── head.html       # <head>: meta, Google Fonts (Oswald, Source Sans 3,
+│   │                   #   Permanent Marker), css/style.css
+│   ├── nav.html        # Utility strip + logo + inline links (desktop)
+│   │                   #   + hamburger toggle + mobile drawer
+│   ├── hero.html       # Hero: copy + image (home-bundle resource via photoGlob → fallback)
+│   ├── specials.html   # Monday Night Wings chalkboard special (DESIGN.md §4)
+│   ├── menu-section.html   # Section title + menu grid
+│   ├── menu-grid-items.html  # Grid container for a section's items
+│   ├── menu-card.html  # One menu item card (conditional image)
+│   ├── sections-grid.html   # Section card grid on the homepage
+│   ├── section-card.html    # One section card
 │   ├── contact.html    # Visit info + two-column Bar/Restaurant hours
 │   ├── help-band.html  # Dark "How can we help?" band
-│   └── footer.html     # 5-column dark footer
+│   └── footer.html     # Multi-column dark footer
 static/
 ├── css/style.css       # All styles (design tokens + components + responsive)
-└── js/main.js          # Hamburger drawer toggle logic
+├── js/main.js          # Hamburger drawer toggle logic
+└── logo-jst-monogram.svg  # Favicon + wordmark monogram
 ```
+
+> The utility strip is part of `nav.html`; there is no separate
+> `utility-strip.html` partial.
 
 ---
 
@@ -96,13 +129,13 @@ static/
    `static/css/style.css` declares the design tokens at `:root`, then components reference the variables. This makes DESIGN.md → CSS mapping explicit and auditable.
 
 4. **Two CSS encoding bugs fixed during development:**
-   An initial draft used invalid CSS arithmetic (`var(--space-xxl) * 1.5`). These were replaced with concrete pixel values (48px, 64px, 32px, 80px) matching the reference and DESIGN.md spacing.
+   An initial draft used invalid CSS arithmetic (`var(--space-xxl) * 1.5`). These were replaced with concrete pixel values from the `--space-*` scale, matching `DESIGN.md` §6 spacing.
 
 5. **Image strategy — page bundles auto-detect images.**
    Items with photos live in bundles so the image ships with its markdown. The card template looks for a `photo-*-hero.*` resource (via the `photoGlob` site param); flat `.md` files naturally skip the `<img>` — no front-matter flag needed.
 
 6. **Hero image resolution order:**
-   Home-page bundle resource (`content/photo-tavern-hero.jpg`) → `heroImage` site param → `/images/hero.svg` placeholder. Used `.Site.Home` + `.Resources.GetMatch` because `GetPage "content/_index.md"` did not resolve the home bundle resources.
+   Home-page bundle resource (`content/photo-tavern-hero.jpg`, matched by `photoGlob`) → `heroImage` site param → no image. If the hero renders copy with no photo, the home bundle resource is missing **and** no `heroImage` param is set. This currently falls through to the last case: `DESIGN.md` §10 calls for copy + image, so restore the bundle photo or set `heroImage`.
 
 7. **Hamburger nav (mobile) per DESIGN.md.**
    Below **1024px** the inline `.nav-links` are hidden and a 44px hamburger toggle appears. It opens a full-canvas drawer sliding from the right (below the 36px utility strip + 64px nav = 100px) with `body-lg` links and a sticky "Sign in" CTA. Drawer closes on link click, Escape, or resizing above 1024px. Accessibility states (`aria-expanded`, `aria-hidden`) are maintained in `static/js/main.js`.
@@ -126,11 +159,16 @@ static/
 | `address` | 1224 James St, Monroeville, PA 15146 |
 | `phone` | 412-824-8884 |
 | `email` | info@jst-tavern.com |
-| `heroEyebrow` | Wood-Fired & Hand-Tossed |
-| `heroTitle` | Authentic Italian Wood-Fired Pizza |
-| `heroDescription` | Fresh ingredients, hand-tossed dough... |
+| `heroKicker` | Your Neighborhood Tavern |
+| `heroTitle` | Come Hungry. Leave Happy. |
+| `heroDescription` | Jumbo whole wings, cold beer, and a wood-fired kitchen… |
+| `specialsKicker` / `specialsTitle` | Monday Night / Monday Night Wings |
+| `specialsPrice` / `specialsPriceUnit` | $1.50 / each |
+| `menuKicker` / `menuTitle` / `menuIntro` | The Chalkboard / What's On Today / … |
 | `helpBandText` | Questions about catering, reservations, or private events? |
+| `photoGlob` | `photo-*-hero.*` — the asset-naming pattern layouts resolve images by |
 | `barHours` / `restaurantHours` | Mon–Fri 3PM–2AM; Sat & Sun 12PM–2AM (both columns) |
+| `sections.<name>` | Section blurbs. Currently defined for `pizza`, `wings`, `salads` only — the other five sections fall back to their own front matter. |
 
 ---
 
@@ -158,7 +196,29 @@ Shown twice on the homepage — once under **Bar**, once under **Restaurant** �
 ## 9. Outstanding / Next Steps
 
 - [ ] Set the real domain in `hugo.toml` (`baseURL`) before deploy.
-- [ ] Replace placeholder hero image (`content/photo-tavern-hero.jpg`) with final photography if desired.
+- [ ] **Restore the hero image.** `content/photo-tavern-hero.jpg` was moved to `content-old/` during the content restructure, so `DESIGN.md` §10's hero currently renders copy with no photo. Either move it back to `content/` or set a `heroImage` param.
+- [ ] Add `[params.sections]` blurbs for the five sections that lack one: `appetizers`, `burgers`, `eggrolls`, `hoagies-sandwiches`, `stromboli`.
 - [ ] Consider adding real menus/PDFs, catering info, or opening navigation links to actual URLs (many footer/nav links still point to `#` anchors).
 - [ ] The site has no per-item description body pages beyond the card (single.html renders the card + any `.Content`). Expand if needed.
 - [ ] Contact form was removed — if a working form is wanted later, wire a form endpoint or use a service instead of the removed `mailto:` form.
+
+---
+
+## 10. Retired Specifications
+
+These are **not** design references. Do not style, lay out, or document the site
+from them. They are kept only as history:
+
+| File | What it was | Status |
+| --- | --- | --- |
+| `DESIGN-hp.md.old` | HP Electric Blue system | retired |
+| `Design2.md.old` | "Terra & Horizon" country portal | retired |
+| `.devcontainer/design-country.md.old` | Byte-identical copy of `Design2.md.old` | retired |
+| `pizza_shop_page.html.old` | Standalone 729-line HP Electric Blue mockup, titled "James Street Tavern — Fresh, Hot & Delicious Pizza". Orphan: never linked or published. | retired |
+| `pizzeria-bella-page.html.old` | Standalone "Pizzeria Bella" mockup in an unrelated palette. Orphan: never linked or published. | retired |
+| `content-old/` | Pre-restructure 3-section / 14-item menu | archive |
+| `conetnt-md` | Byte-identical duplicate of the published menu PDF | deleted |
+
+**`DESIGN.md` is the single source of truth.** If a spec conflicts with
+`DESIGN.md`, `DESIGN.md` wins — and the conflict is a bug in the other file, not
+in the code.

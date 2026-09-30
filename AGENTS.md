@@ -20,4 +20,5 @@ Hugo static site for "James Street Tavern". Load the Hugo skill (`.opencode/skil
 - **No raw HTML in Markdown.** Goldmark's default has `unsafe = false`, so inline HTML won't render; use shortcodes/templates instead.
 - **No hardcoded domains.** Use `{{ .Site.BaseURL }}` / `{{< ref >}}`.
 - **HTML/CSS style decisions reference `DESIGN.md`** — the site's design system (colors, typography, spacing, components, tokens). Consult it before writing any styling or layout markup.
+- **`DESIGN.md` is the ONLY design specification.** Never style, lay out, or document from `DESIGN-hp.md.old`, `Design2.md.old`, `.devcontainer/design-country.md.old`, or `pizza_shop_page.html` — those are retired HP / country-portal artifacts kept for history only, and they are not published. If one of them conflicts with `DESIGN.md`, `DESIGN.md` wins and the other file is wrong. The tavern brand is dark navy/gold with Oswald + Source Sans 3 + Permanent Marker; there is no white canvas, no Electric Blue, no chevrons, and no 16px card radius.
 - Load `opencode.json` — it wires the Hugo skill into OpenCode sessions.
