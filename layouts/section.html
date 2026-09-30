@@ -1,7 +1,13 @@
 {{ define "main" }}
-  <section id="menu" class="section-cloud">
+  <section class="section">
     <div class="container">
-      <h2 class="section-title">{{ .Title }}</h2>
+      <div class="section-header">
+        <span class="section-kicker">Menu</span>
+        <h1 class="section-title">{{ .Title }}</h1>
+        {{ with .Params.description }}
+          <p class="section-intro">{{ . }}</p>
+        {{ end }}
+      </div>
 
       {{ with .Content }}
         <div class="section-intro">{{ . }}</div>
@@ -12,7 +18,7 @@
           {{ partial "menu-grid-items.html" .Pages }}
         </div>
       {{ else }}
-        <p class="menu-desc">No items in this section yet.</p>
+        <p class="menu-desc">Nothing on this part of the board yet. Check back soon.</p>
       {{ end }}
     </div>
   </section>

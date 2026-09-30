@@ -1,15 +1,54 @@
+{{ $home := .Site.Home.RelPermalink }}
 <header class="nav-bar">
-  <div class="container">
-    <a href="{{ .Site.BaseURL }}" class="logo">
-      <span class="logo-mark">🍕</span>
-      <span class="logo-text">{{ .Site.Title }}</span>
+  <div class="container nav-inner">
+    <a href="{{ $home }}" class="logo">
+      <span class="logo-badge">
+        <span class="logo-shield">JST</span>
+      </span>
+      <span class="logo-wordmark">
+        <span class="logo-text">{{ .Site.Title }}</span>
+        <span class="logo-loc">{{ default "Monroeville, PA" .Site.Params.location }}</span>
+      </span>
     </a>
-    <ul class="nav-links">
-      <li><a href="{{ .Site.BaseURL }}" {{ if .IsHome }}class="active"{{ end }}>Home</a></li>
-      <li><a href="#menu" {{ if eq .Section "menu" }}class="active"{{ end }}>Menu</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-nav">
+
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        {{ range .Site.Sections }}
+          <li>
+            <a href="{{ .RelPermalink }}"
+               {{ if eq $.RelPermalink .RelPermalink }}class="active" aria-current="page"{{ end }}>{{ .Title }}</a>
+          </li>
+        {{ end }}
+        <li><a href="{{ $home }}#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-utility">
+      <button class="nav-utility-toggle" type="button"
+              aria-expanded="false" aria-controls="nav-utility-panel">
+        <span>Find Us</span>
+        <span class="nav-utility-caret" aria-hidden="true"></span>
+      </button>
+      <div class="nav-utility-panel" id="nav-utility-panel">
+        <p class="nav-utility-label">Come See Us</p>
+        <p>{{ default "1224 James St, Monroeville, PA 15146" .Site.Params.address }}</p>
+        <p class="nav-utility-divider"></p>
+        <a href="tel:{{ replaceRE "[^0-9+]" "" (default "412-824-8884" .Site.Params.phone) }}">
+          {{ default "412-824-8884" .Site.Params.phone }}
+        </a>
+        <a href="mailto:{{ default "info@jst-tavern.com" .Site.Params.email }}">
+          {{ default "info@jst-tavern.com" .Site.Params.email }}
+        </a>
+        <p class="nav-utility-divider"></p>
+        {{ range first 1 (default (slice "Monday - Friday: 3PM - 2AM") .Site.Params.restaurantHours) }}
+          <p>{{ . }}</p>
+        {{ end }}
+        <p>Saturday &amp; Sunday: 12PM - 2AM</p>
+      </div>
+    </div>
+
+    <button class="nav-toggle" type="button" aria-label="Toggle menu"
+            aria-expanded="false" aria-controls="mobile-nav">
       <span class="nav-toggle-bar"></span>
       <span class="nav-toggle-bar"></span>
       <span class="nav-toggle-bar"></span>
@@ -19,8 +58,10 @@
 
 <div id="mobile-nav" class="mobile-nav" aria-hidden="true">
   <ul class="mobile-nav-links">
-    <li><a href="{{ .Site.BaseURL }}">Home</a></li>
-    <li><a href="#menu">Menu</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="{{ $home }}">Home</a></li>
+    {{ range .Site.Sections }}
+      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{ end }}
+    <li><a href="{{ $home }}#contact">Contact</a></li>
   </ul>
 </div>

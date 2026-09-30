@@ -11,9 +11,35 @@ title = 'James Street Tavern'
   address = "1224 James St, Monroeville, PA 15146"
   phone = "412-824-8884"
   email = "info@jst-tavern.com"
-  heroEyebrow = "Wood-Fired & Hand-Tossed"
-  heroTitle = "Authentic Italian Wood-Fired Pizza"
-  heroDescription = "Fresh ingredients, hand-tossed dough, and a passion for tradition baked into every slice."
-  helpBandText = "Questions about catering, reservations, or private events?"
   barHours = ["Monday - Friday: 3PM - 2AM", "Saturday: 12PM - 2AM", "Sunday: 12PM - 2AM"]
   restaurantHours = ["Monday - Friday: 3PM - 2AM", "Saturday: 12PM - 2AM", "Sunday: 12PM - 2AM"]
+
+  # ---- Hero (Design-grok.md §10 — friendly, direct, local) ----
+  heroKicker = "Your Neighborhood Tavern"
+  heroTitle = "Come Hungry. Leave Happy."
+  heroDescription = "Jumbo whole wings, cold beer, and a wood-fired kitchen that's been feeding Monroeville for years. No frills, no nonsense — just a good time."
+
+  # ---- Monday Night Wings chalkboard special (§4 Chalkboard Panel) ----
+  specialsKicker = "Monday Night"
+  specialsTitle = "Monday Night Wings"
+  specialsPrice = "$1.50"
+  specialsPriceUnit = "each"
+  specialsLead = "Minimum of 3 of the same flavor. Dine-in only."
+  specialsDetails = [
+    "Jumbo whole wings",
+    "Any flavor you want",
+    "Free fries with the basket",
+    "Every Monday, 3PM 'til close",
+  ]
+
+  # ---- Menu section grid ----
+  menuKicker = "The Chalkboard"
+  menuTitle = "What's On Today"
+  menuIntro = "Everything's made to order. If it's on the board, we've got it."
+  helpBandText = "Got a big party coming, or a question about catering? Give us a call — we'll sort you out."
+
+  # Section blurbs for the card grid. Falls back to each section's own front matter.
+  [params.sections]
+    pizza = "Wood-fired pies, 60 seconds in the oven."
+    wings = "Jumbo whole wings, tossed in house sauce."
+    salads = "Cold plates, crisp greens, house dressing."

@@ -2,38 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://example.org/wings/buffalo/</loc>
+    <loc>http://localhost:1313/wings/buffalo/</loc>
   </url><url>
-    <loc>https://example.org/pizza/margherita/</loc>
+    <loc>http://localhost:1313/pizza/margherita/</loc>
   </url><url>
-    <loc>https://example.org/salads/garden/</loc>
+    <loc>http://localhost:1313/salads/garden/</loc>
   </url><url>
-    <loc>https://example.org/pizza/</loc>
+    <loc>http://localhost:1313/pizza/</loc>
   </url><url>
-    <loc>https://example.org/wings/bbq/</loc>
+    <loc>http://localhost:1313/wings/bbq/</loc>
   </url><url>
-    <loc>https://example.org/pizza/vegetarian/</loc>
+    <loc>http://localhost:1313/pizza/vegetarian/</loc>
   </url><url>
-    <loc>https://example.org/salads/caesar/</loc>
+    <loc>http://localhost:1313/salads/caesar/</loc>
   </url><url>
-    <loc>https://example.org/wings/loaded-potato-skins/</loc>
+    <loc>http://localhost:1313/wings/loaded-potato-skins/</loc>
   </url><url>
-    <loc>https://example.org/pizza/pepperoni/</loc>
+    <loc>http://localhost:1313/pizza/pepperoni/</loc>
   </url><url>
-    <loc>https://example.org/wings/</loc>
+    <loc>http://localhost:1313/wings/</loc>
   </url><url>
-    <loc>https://example.org/pizza/garlic-knots/</loc>
+    <loc>http://localhost:1313/pizza/garlic-knots/</loc>
   </url><url>
-    <loc>https://example.org/salads/greek/</loc>
+    <loc>http://localhost:1313/salads/greek/</loc>
   </url><url>
-    <loc>https://example.org/wings/lemon-pepper/</loc>
+    <loc>http://localhost:1313/wings/lemon-pepper/</loc>
   </url><url>
-    <loc>https://example.org/salads/</loc>
+    <loc>http://localhost:1313/salads/</loc>
   </url><url>
-    <loc>https://example.org/salads/caprese/</loc>
+    <loc>http://localhost:1313/salads/caprese/</loc>
   </url><url>
-    <loc>https://example.org/pizza/tiramisu/</loc>
+    <loc>http://localhost:1313/pizza/tiramisu/</loc>
   </url><url>
-    <loc>https://example.org/</loc>
+    <loc>http://localhost:1313/</loc>
   </url>
 </urlset>

@@ -1,37 +1,35 @@
-<footer class="footer-dark">
+<footer class="site-footer">
   <div class="footer-grid">
     <div class="footer-col">
-      <h4>Shop</h4>
+      <h4>Menu</h4>
       {{ range .Site.Sections }}
-        <a href="#menu">{{ .Title }}</a>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
       {{ end }}
     </div>
     <div class="footer-col">
       <h4>Visit</h4>
-      <a href="#contact">Location</a>
-      <a href="#contact">Hours</a>
-      <a href="#contact">Reservations</a>
+      <a href="{{ .Site.Home.RelPermalink }}#contact">Location</a>
+      <a href="{{ .Site.Home.RelPermalink }}#contact">Hours</a>
+      <a href="tel:{{ replaceRE "[^0-9+]" "" (default "412-824-8884" .Site.Params.phone) }}">{{ default "412-824-8884" .Site.Params.phone }}</a>
     </div>
     <div class="footer-col">
-      <h4>Company</h4>
-      <a href="{{ .Site.BaseURL }}">About</a>
-      <a href="{{ .Site.BaseURL }}">Careers</a>
-      <a href="{{ .Site.BaseURL }}">News</a>
+      <h4>Monday</h4>
+      <a href="{{ .Site.Home.RelPermalink }}#specials">Monday Night Wings</a>
+      <a href="{{ .Site.Home.RelPermalink }}#specials">The Special</a>
     </div>
     <div class="footer-col">
-      <h4>Support</h4>
-      <a href="#contact">Contact</a>
-      <a href="#contact">FAQ</a>
-      <a href="#contact">Feedback</a>
+      <h4>More</h4>
+      <a href="{{ .Site.Home.RelPermalink }}">Catering</a>
+      <a href="{{ .Site.Home.RelPermalink }}">Private Events</a>
+      <a href="mailto:{{ default "info@jst-tavern.com" .Site.Params.email }}">{{ default "info@jst-tavern.com" .Site.Params.email }}</a>
     </div>
     <div class="footer-col">
-      <h4>Connect</h4>
-      <a href="{{ .Site.BaseURL }}">Instagram</a>
-      <a href="{{ .Site.BaseURL }}">Facebook</a>
-      <a href="{{ .Site.BaseURL }}">Twitter</a>
+      <h4>Follow</h4>
+      <a href="{{ .Site.Home.RelPermalink }}">Instagram</a>
+      <a href="{{ .Site.Home.RelPermalink }}">Facebook</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>&copy; {{ now.Year }} {{ .Site.Title }}. All rights reserved.</p>
+    <p>&copy; {{ now.Year }} {{ .Site.Title }}. Come hungry, leave happy.</p>
   </div>
 </footer>

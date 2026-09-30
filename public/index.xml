@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>James Street Tavern</title>
-		<link>https://example.org/</link>
+		<link>http://localhost:1313/</link>
 		<description>Recent content on James Street Tavern</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
@@ -10,96 +10,96 @@
 		
 		
 		
-			<atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>Buffalo Wings</title>
-				<link>https://example.org/wings/buffalo/</link>
+				<link>http://localhost:1313/wings/buffalo/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/wings/buffalo/</guid>
+				<guid>http://localhost:1313/wings/buffalo/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Classic Pizza</title>
-				<link>https://example.org/pizza/margherita/</link>
+				<link>http://localhost:1313/pizza/margherita/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/margherita/</guid>
+				<guid>http://localhost:1313/pizza/margherita/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Garden Salad</title>
-				<link>https://example.org/salads/garden/</link>
+				<link>http://localhost:1313/salads/garden/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/salads/garden/</guid>
+				<guid>http://localhost:1313/salads/garden/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>BBQ Glazed Wings</title>
-				<link>https://example.org/wings/bbq/</link>
+				<link>http://localhost:1313/wings/bbq/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/wings/bbq/</guid>
+				<guid>http://localhost:1313/wings/bbq/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Vegetarian Supreme</title>
-				<link>https://example.org/pizza/vegetarian/</link>
+				<link>http://localhost:1313/pizza/vegetarian/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/vegetarian/</guid>
+				<guid>http://localhost:1313/pizza/vegetarian/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Caesar Salad</title>
-				<link>https://example.org/salads/caesar/</link>
+				<link>http://localhost:1313/salads/caesar/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/salads/caesar/</guid>
+				<guid>http://localhost:1313/salads/caesar/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Loaded Potato Skins</title>
-				<link>https://example.org/wings/loaded-potato-skins/</link>
+				<link>http://localhost:1313/wings/loaded-potato-skins/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/wings/loaded-potato-skins/</guid>
+				<guid>http://localhost:1313/wings/loaded-potato-skins/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Ultimate Pepperoni</title>
-				<link>https://example.org/pizza/pepperoni/</link>
+				<link>http://localhost:1313/pizza/pepperoni/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/pepperoni/</guid>
+				<guid>http://localhost:1313/pizza/pepperoni/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Garlic Knots (6pc)</title>
-				<link>https://example.org/pizza/garlic-knots/</link>
+				<link>http://localhost:1313/pizza/garlic-knots/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/garlic-knots/</guid>
+				<guid>http://localhost:1313/pizza/garlic-knots/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Greek Salad</title>
-				<link>https://example.org/salads/greek/</link>
+				<link>http://localhost:1313/salads/greek/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/salads/greek/</guid>
+				<guid>http://localhost:1313/salads/greek/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Lemon Pepper Wings</title>
-				<link>https://example.org/wings/lemon-pepper/</link>
+				<link>http://localhost:1313/wings/lemon-pepper/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/wings/lemon-pepper/</guid>
+				<guid>http://localhost:1313/wings/lemon-pepper/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Caprese Salad</title>
-				<link>https://example.org/salads/caprese/</link>
+				<link>http://localhost:1313/salads/caprese/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/salads/caprese/</guid>
+				<guid>http://localhost:1313/salads/caprese/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Tiramisu</title>
-				<link>https://example.org/pizza/tiramisu/</link>
+				<link>http://localhost:1313/pizza/tiramisu/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/tiramisu/</guid>
+				<guid>http://localhost:1313/pizza/tiramisu/</guid>
 				<description></description>
 			</item>
 	</channel>

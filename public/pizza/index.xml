@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>Pizza on James Street Tavern</title>
-		<link>https://example.org/pizza/</link>
+		<link>http://localhost:1313/pizza/</link>
 		<description>Recent content in Pizza on James Street Tavern</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
@@ -10,40 +10,40 @@
 		
 		
 		
-			<atom:link href="https://example.org/pizza/index.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="http://localhost:1313/pizza/index.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>Classic Pizza</title>
-				<link>https://example.org/pizza/margherita/</link>
+				<link>http://localhost:1313/pizza/margherita/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/margherita/</guid>
+				<guid>http://localhost:1313/pizza/margherita/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Vegetarian Supreme</title>
-				<link>https://example.org/pizza/vegetarian/</link>
+				<link>http://localhost:1313/pizza/vegetarian/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/vegetarian/</guid>
+				<guid>http://localhost:1313/pizza/vegetarian/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Ultimate Pepperoni</title>
-				<link>https://example.org/pizza/pepperoni/</link>
+				<link>http://localhost:1313/pizza/pepperoni/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/pepperoni/</guid>
+				<guid>http://localhost:1313/pizza/pepperoni/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Garlic Knots (6pc)</title>
-				<link>https://example.org/pizza/garlic-knots/</link>
+				<link>http://localhost:1313/pizza/garlic-knots/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/garlic-knots/</guid>
+				<guid>http://localhost:1313/pizza/garlic-knots/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Tiramisu</title>
-				<link>https://example.org/pizza/tiramisu/</link>
+				<link>http://localhost:1313/pizza/tiramisu/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/pizza/tiramisu/</guid>
+				<guid>http://localhost:1313/pizza/tiramisu/</guid>
 				<description></description>
 			</item>
 	</channel>

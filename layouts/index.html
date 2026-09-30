@@ -1,8 +1,16 @@
 {{ define "main" }}
   {{ partial "hero.html" . }}
+  {{ partial "specials.html" . }}
+  {{ partial "sections-grid.html" . }}
 
-  <section id="menu" class="section-primary">
+  <section id="menu" class="section section-wood">
     <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Full Menu</span>
+        <h2 class="section-title">The Whole Board</h2>
+        <p class="section-intro">Straight from the kitchen. Prices are what you pay at the bar — no service charge, no funny business.</p>
+      </div>
+
       {{ $sections := where .Site.Sections "Kind" "section" }}
       {{ if $sections }}
         {{ range $sections }}

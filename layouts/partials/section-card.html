@@ -1,0 +1,39 @@
+{{ $page := .page }}
+{{ $blurbs := .blurbs }}
+{{ $image := "" }}
+{{ with $page.Resources.GetMatch "hero.*" }}
+  {{ $image = .RelPermalink }}
+{{ end }}
+{{ if not $image }}
+  {{ range $page.Pages.ByWeight }}
+    {{ with .Resources.GetMatch "hero.*" }}
+      {{ $image = .RelPermalink }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $blurb := "" }}
+{{ with $page.Params.description }}{{ $blurb = . }}{{ end }}
+{{ if not $blurb }}
+  {{ with $page.Params.summary }}{{ $blurb = . }}{{ end }}
+{{ end }}
+{{ if and (not $blurb) $blurbs }}
+  {{ with index $blurbs $page.Section }}{{ $blurb = . }}{{ end }}
+{{ end }}
+
+<a class="card" href="{{ $page.RelPermalink }}">
+  <div class="card-media">
+    {{ with $image }}
+      <img src="{{ . }}" alt="" loading="lazy" aria-hidden="true">
+    {{ else }}
+      <span class="card-media-empty" aria-hidden="true"></span>
+    {{ end }}
+  </div>
+  <div class="card-body">
+    <h3 class="card-title">{{ $page.Title }}</h3>
+    {{ with $blurb }}
+      <p class="card-meta">{{ . }}</p>
+    {{ end }}
+    <span class="card-cta">See the {{ $page.Title }}</span>
+  </div>
+</a>

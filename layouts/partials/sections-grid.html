@@ -1,0 +1,19 @@
+{{ $pages := where .Site.Sections "Kind" "section" }}
+{{ if $pages }}
+  <section id="browse" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">{{ default "The Chalkboard" .Site.Params.menuKicker }}</span>
+        <h2 class="section-title">{{ default "What's On Today" .Site.Params.menuTitle }}</h2>
+        <p class="section-intro">{{ default "Everything's made to order. If it's on the board, we've got it." .Site.Params.menuIntro }}</p>
+      </div>
+
+      <div class="card-grid">
+        {{ $blurbs := .Site.Params.sections }}
+        {{ range $pages }}
+          {{ partial "section-card.html" (dict "page" . "blurbs" $blurbs) }}
+        {{ end }}
+      </div>
+    </div>
+  </section>
+{{ end }}

@@ -4,11 +4,15 @@
   {{ $image = .RelPermalink }}
 {{ end }}
 
-<div class="menu-card">
-  {{ if $image }}
-    <img src="{{ $image }}" alt="{{ $item.Title }}">
-  {{ end }}
-  <div class="menu-header"{{ if not $image }} style="margin-top: 0;"{{ end }}>
+<a class="card" href="{{ $item.RelPermalink }}">
+  <div class="card-media">
+    {{ with $image }}
+      <img src="{{ . }}" alt="" loading="lazy" aria-hidden="true">
+    {{ else }}
+      <span class="card-media-empty" aria-hidden="true"></span>
+    {{ end }}
+  </div>
+  <div class="menu-header">
     <span class="menu-name">{{ $item.Title }}</span>
     {{ with $item.Params.price }}
       <span class="menu-price">{{ . }}</span>
@@ -17,4 +21,4 @@
   {{ with $item.Params.description }}
     <p class="menu-desc">{{ . }}</p>
   {{ end }}
-</div>
+</a>

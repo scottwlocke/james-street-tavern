@@ -1,29 +1,35 @@
 {{ define "main" }}
-  <section id="menu" class="section-cloud">
-    <div class="container">
-      {{ $image := "" }}
-      {{ with .Resources.GetMatch "hero.*" }}
-        {{ $image = .RelPermalink }}
-      {{ end }}
+  {{ $image := "" }}
+  {{ with .Resources.GetMatch "hero.*" }}
+    {{ $image = .RelPermalink }}
+  {{ end }}
 
-      <div class="menu-card single-item-card">
-        {{ if $image }}
-          <img src="{{ $image }}" alt="{{ .Title }}">
+  <section class="section">
+    <div class="container">
+      <span class="section-kicker">{{ with .Parent }}{{ .Title }}{{ end }}</span>
+
+      <div class="detail-layout">
+        {{ with $image }}
+          <div class="detail-media">
+            <img src="{{ . }}" alt="{{ $.Title }}">
+          </div>
         {{ end }}
-        <div class="menu-header"{{ if not $image }} style="margin-top: 0;"{{ end }}>
-          <span class="menu-name">{{ .Title }}</span>
-          {{ with .Params.price }}
-            <span class="menu-price">{{ . }}</span>
+
+        <div class="detail-panel">
+          <div class="menu-header">
+            <span class="menu-name">{{ .Title }}</span>
+            {{ with .Params.price }}
+              <span class="menu-price">{{ . }}</span>
+            {{ end }}
+          </div>
+          {{ with .Params.description }}
+            <p class="menu-desc">{{ . }}</p>
+          {{ end }}
+          {{ with .Content }}
+            <div class="single-content">{{ . }}</div>
           {{ end }}
         </div>
-        {{ with .Params.description }}
-          <p class="menu-desc">{{ . }}</p>
-        {{ end }}
       </div>
-
-      {{ with .Content }}
-        <div class="single-content">{{ . }}</div>
-      {{ end }}
     </div>
   </section>
 {{ end }}

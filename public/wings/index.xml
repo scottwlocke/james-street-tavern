@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>Wings &amp; Things on James Street Tavern</title>
-		<link>https://example.org/wings/</link>
+		<link>http://localhost:1313/wings/</link>
 		<description>Recent content in Wings &amp; Things on James Street Tavern</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
@@ -10,33 +10,33 @@
 		
 		
 		
-			<atom:link href="https://example.org/wings/index.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="http://localhost:1313/wings/index.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>Buffalo Wings</title>
-				<link>https://example.org/wings/buffalo/</link>
+				<link>http://localhost:1313/wings/buffalo/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/wings/buffalo/</guid>
+				<guid>http://localhost:1313/wings/buffalo/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>BBQ Glazed Wings</title>
-				<link>https://example.org/wings/bbq/</link>
+				<link>http://localhost:1313/wings/bbq/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/wings/bbq/</guid>
+				<guid>http://localhost:1313/wings/bbq/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Loaded Potato Skins</title>
-				<link>https://example.org/wings/loaded-potato-skins/</link>
+				<link>http://localhost:1313/wings/loaded-potato-skins/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/wings/loaded-potato-skins/</guid>
+				<guid>http://localhost:1313/wings/loaded-potato-skins/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Lemon Pepper Wings</title>
-				<link>https://example.org/wings/lemon-pepper/</link>
+				<link>http://localhost:1313/wings/lemon-pepper/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-				<guid>https://example.org/wings/lemon-pepper/</guid>
+				<guid>http://localhost:1313/wings/lemon-pepper/</guid>
 				<description></description>
 			</item>
 	</channel>

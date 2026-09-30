@@ -1,28 +1,79 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Salads — James Street Tavern</title>
+<meta name="description" content="Jumbo whole wings, cold beer, and a wood-fired kitchen that&#39;s been feeding Monroeville for years. No frills, no nonsense — just a good time.">
+<meta name="theme-color" content="#1A1A1A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Permanent+Marker&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
 
 </head>
 <body>
-  <header class="nav-bar">
-  <div class="container">
-    <a href="https://example.org/" class="logo">
-      <span class="logo-mark">🍕</span>
-      <span class="logo-text">James Street Tavern</span>
+  
+<header class="nav-bar">
+  <div class="container nav-inner">
+    <a href="/" class="logo">
+      <span class="logo-badge">
+        <span class="logo-shield">JST</span>
+      </span>
+      <span class="logo-wordmark">
+        <span class="logo-text">James Street Tavern</span>
+        <span class="logo-loc">Monroeville, PA</span>
+      </span>
     </a>
-    <ul class="nav-links">
-      <li><a href="https://example.org/" >Home</a></li>
-      <li><a href="#menu" >Menu</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-nav">
+
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        
+          <li>
+            <a href="/pizza/"
+               >Pizza</a>
+          </li>
+        
+          <li>
+            <a href="/wings/"
+               >Wings &amp; Things</a>
+          </li>
+        
+          <li>
+            <a href="/salads/"
+               class="active" aria-current="page">Salads</a>
+          </li>
+        
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-utility">
+      <button class="nav-utility-toggle" type="button"
+              aria-expanded="false" aria-controls="nav-utility-panel">
+        <span>Find Us</span>
+        <span class="nav-utility-caret" aria-hidden="true"></span>
+      </button>
+      <div class="nav-utility-panel" id="nav-utility-panel">
+        <p class="nav-utility-label">Come See Us</p>
+        <p>1224 James St, Monroeville, PA 15146</p>
+        <p class="nav-utility-divider"></p>
+        <a href="tel:4128248884">
+          412-824-8884
+        </a>
+        <a href="mailto:info@jst-tavern.com">
+          info@jst-tavern.com
+        </a>
+        <p class="nav-utility-divider"></p>
+        
+          <p>Monday - Friday: 3PM - 2AM</p>
+        
+        <p>Saturday &amp; Sunday: 12PM - 2AM</p>
+      </div>
+    </div>
+
+    <button class="nav-toggle" type="button" aria-label="Toggle menu"
+            aria-expanded="false" aria-controls="mobile-nav">
       <span class="nav-toggle-bar"></span>
       <span class="nav-toggle-bar"></span>
       <span class="nav-toggle-bar"></span>
@@ -32,40 +83,46 @@
 
 <div id="mobile-nav" class="mobile-nav" aria-hidden="true">
   <ul class="mobile-nav-links">
-    <li><a href="https://example.org/">Home</a></li>
-    <li><a href="#menu">Menu</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="/">Home</a></li>
+    
+      <li><a href="/pizza/">Pizza</a></li>
+    
+      <li><a href="/wings/">Wings &amp; Things</a></li>
+    
+      <li><a href="/salads/">Salads</a></li>
+    
+    <li><a href="/#contact">Contact</a></li>
   </ul>
 </div>
 
+
   <main>
     
-  <section id="menu" class="section-cloud">
+  <section class="section">
     <div class="container">
-      <h2 class="section-title">Salads</h2>
+      <div class="section-header">
+        <span class="section-kicker">Menu</span>
+        <h1 class="section-title">Salads</h1>
+        
+      </div>
 
       
 
       
         <div class="menu-grid">
           
+  
+
 
   
-  
+
+
+<a class="card" href="/salads/garden/">
+  <div class="card-media">
     
-  
-  
+      <img src="/salads/garden/hero.jpg" alt="" loading="lazy" aria-hidden="true">
     
-    
-
-
-  
-
-
-<div class="menu-card">
-  
-    <img src="/salads/garden/hero.jpg" alt="Garden Salad">
-  
+  </div>
   <div class="menu-header">
     <span class="menu-name">Garden Salad</span>
     
@@ -75,26 +132,21 @@
   
     <p class="menu-desc">Crisp mixed greens with cherry tomatoes, cucumbers, red onion, and shredded carrots.</p>
   
-</div>
+</a>
+
 
   
 
+
   
-  
+
+
+<a class="card" href="/salads/caesar/">
+  <div class="card-media">
     
-  
-  
+      <img src="/salads/caesar/hero.jpg" alt="" loading="lazy" aria-hidden="true">
     
-    
-
-
-  
-
-
-<div class="menu-card">
-  
-    <img src="/salads/caesar/hero.jpg" alt="Caesar Salad">
-  
+  </div>
   <div class="menu-header">
     <span class="menu-name">Caesar Salad</span>
     
@@ -104,52 +156,52 @@
   
     <p class="menu-desc">Crisp romaine lettuce, creamy Caesar dressing, shaved parmesan cheese, and garlic croutons.</p>
   
-</div>
+</a>
+
 
   
 
-  
-  
-  
+
+
+<a class="card" href="/salads/greek/">
+  <div class="card-media">
     
+      <span class="card-media-empty" aria-hidden="true"></span>
     
+  </div>
+  <div class="menu-header">
+    <span class="menu-name">Greek Salad</span>
+    
+      <span class="menu-price">$9.49</span>
+    
+  </div>
   
+    <p class="menu-desc">Romaine with feta, kalamata olives, red onion, cucumber, and a tangy vinaigrette.</p>
+  
+</a>
+
 
   
-  
-  
+
+
+
+<a class="card" href="/salads/caprese/">
+  <div class="card-media">
     
+      <span class="card-media-empty" aria-hidden="true"></span>
     
-      <div class="menu-tile-pair">
-  
-    <div class="menu-tile">
-      <div class="menu-header">
-        <span class="menu-name">Greek Salad</span>
-        
-          <span class="menu-price">$9.49</span>
-        
-      </div>
-      
-        <p class="menu-desc">Romaine with feta, kalamata olives, red onion, cucumber, and a tangy vinaigrette.</p>
-      
-    </div>
-  
-    <div class="menu-tile">
-      <div class="menu-header">
-        <span class="menu-name">Caprese Salad</span>
-        
-          <span class="menu-price">$9.99</span>
-        
-      </div>
-      
-        <p class="menu-desc">Fresh mozzarella, vine-ripened tomatoes, and basil drizzled with balsamic glaze and olive oil.</p>
-      
-    </div>
-  
-</div>
-      
+  </div>
+  <div class="menu-header">
+    <span class="menu-name">Caprese Salad</span>
     
+      <span class="menu-price">$9.99</span>
+    
+  </div>
   
+    <p class="menu-desc">Fresh mozzarella, vine-ripened tomatoes, and basil drizzled with balsamic glaze and olive oil.</p>
+  
+</a>
+
 
 
         </div>
@@ -160,52 +212,52 @@
   </main>
 
   <section class="help-band">
-  <div class="container">
-    <h2>How can we help?</h2>
-    <p>Questions about catering, reservations, or private events?</p>
-    <a href="#contact" class="btn">Contact Us</a>
+  <div class="container help-band-inner">
+    <div>
+      <h2>Big Party? Give Us a Ring.</h2>
+      <p>Got a big party coming, or a question about catering? Give us a call — we&#39;ll sort you out.</p>
+    </div>
+    <a href="#contact" class="btn btn-gold">Get in Touch</a>
   </div>
 </section>
 
-  <footer class="footer-dark">
+  <footer class="site-footer">
   <div class="footer-grid">
     <div class="footer-col">
-      <h4>Shop</h4>
+      <h4>Menu</h4>
       
-        <a href="#menu">Pizza</a>
+        <a href="/pizza/">Pizza</a>
       
-        <a href="#menu">Wings &amp; Things</a>
+        <a href="/wings/">Wings &amp; Things</a>
       
-        <a href="#menu">Salads</a>
+        <a href="/salads/">Salads</a>
       
     </div>
     <div class="footer-col">
       <h4>Visit</h4>
-      <a href="#contact">Location</a>
-      <a href="#contact">Hours</a>
-      <a href="#contact">Reservations</a>
+      <a href="/#contact">Location</a>
+      <a href="/#contact">Hours</a>
+      <a href="tel:4128248884">412-824-8884</a>
     </div>
     <div class="footer-col">
-      <h4>Company</h4>
-      <a href="https://example.org/">About</a>
-      <a href="https://example.org/">Careers</a>
-      <a href="https://example.org/">News</a>
+      <h4>Monday</h4>
+      <a href="/#specials">Monday Night Wings</a>
+      <a href="/#specials">The Special</a>
     </div>
     <div class="footer-col">
-      <h4>Support</h4>
-      <a href="#contact">Contact</a>
-      <a href="#contact">FAQ</a>
-      <a href="#contact">Feedback</a>
+      <h4>More</h4>
+      <a href="/">Catering</a>
+      <a href="/">Private Events</a>
+      <a href="mailto:info@jst-tavern.com">info@jst-tavern.com</a>
     </div>
     <div class="footer-col">
-      <h4>Connect</h4>
-      <a href="https://example.org/">Instagram</a>
-      <a href="https://example.org/">Facebook</a>
-      <a href="https://example.org/">Twitter</a>
+      <h4>Follow</h4>
+      <a href="/">Instagram</a>
+      <a href="/">Facebook</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>&copy; 2026 James Street Tavern. All rights reserved.</p>
+    <p>&copy; 2026 James Street Tavern. Come hungry, leave happy.</p>
   </div>
 </footer>
 
