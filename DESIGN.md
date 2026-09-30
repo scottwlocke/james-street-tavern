@@ -107,7 +107,7 @@ get their shape from the font rather than from leading.
 | `{type.kicker}` | `.section-kicker` | Permanent Marker | 400 | 1.25rem | 1.6 † | 0 | Eyebrow above a heading |
 | `{type.button}` | `.btn` | Oswald | 600 | 1rem | 1.6 † | 0.05em | All CTAs, uppercase |
 | `{type.nav}` | `.nav-links a` | Oswald | 500 | 1rem | 1.6 † | 0.05em | Desktop nav, uppercase |
-| `{type.wordmark}` | `.logo-text` | Oswald | 700 | 1.375rem | 1.1 | 0.02em | Nav wordmark, uppercase |
+| `{type.wordmark}` | `.logo-text` | Oswald | 700 | 1.375rem ↓ 1.0625rem ≤768px | 1.1 | 0.02em | Nav wordmark, uppercase; see §16 |
 | `{type.heading-sm}` | `.hours-col h4` | Oswald | 600 | 1rem | 1.6 † | 0.12em | Column headings, uppercase |
 | `{type.label}` | `.contact-line-label` | Oswald | 600 | 0.875rem | 1.6 † | 0.1em | Field labels, uppercase |
 | `{type.eyebrow-sm}` | `.footer-col h4` | Oswald | 600 | 0.9375rem | 1.6 † | 0.14em | Footer column headings |
@@ -395,6 +395,16 @@ fixed set of pages, and extra breakpoints only add untested states.
 
 **Collapsing strategy**
 
+- **Wordmark** — "JAMES STREET TAVERN" is 18 characters of uppercase Oswald. At
+  its `{type.wordmark}` size with `white-space: nowrap` the lockup needs ~387px,
+  which overruns the header on every viewport below ~435px (412px Pixel 9 leaves
+  364px inside its gutters; 360px leaves 312px) and drags the whole page into
+  horizontal scroll. So ≤768px the wordmark drops to 1.0625rem and `--nav-inner`
+  tightens to `{space.md}`, leaving ~54px of slack at 412px. `nowrap` is dropped
+  at the same breakpoint so the text wraps rather than overflowing on ~320px
+  handsets; wrapped, the lockup is ~50px tall and still clears the 68px bar.
+  Never solve this with `overflow-x: hidden` — that clips the logo instead of
+  fixing the width, and hides any other overflow.
 - **"Find Us" link** — hidden below 1024px. It anchors to `#map` in the contact
   band, where the address, phone, and hours are also rendered, so nothing is lost.
 - **Top nav** — the `Menu` dropdown, `Contact`, and the "Find Us" link collapse
