@@ -1,4 +1,4 @@
 +++
-title = "Wings & Things"
+title = "Wings"
 weight = 20
 +++
