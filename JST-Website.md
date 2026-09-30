@@ -17,14 +17,14 @@ Use this to pick up work quickly.
 ## 2. Design System (DESIGN.md)
 
 **`DESIGN.md` is the only design specification for this site.** The layouts and
-`static/css/style.css` implement it and nothing else.
+`assets/css/style.css` implement it and nothing else.
 
 - **Colors:** tavern navy `#0F2C5B` (`--tavern-navy`) for the dark canvas; chalk gold `#E8C547` (`--chalk-gold`) rationed as the single accent; chalkboard green-black (`--chalkboard`) for panels; barn wood (`--barn-wood`), honey oak, barn red and beer foam as surface/secondary tones. Off-white for body text.
 - **Typography:** three families, each with one job. **Oswald** (500/600/700) for signage — headings, nav, buttons, prices, wordmark. **Source Sans 3** (400/600) for all body copy. **Permanent Marker** (400) is hand-lettered chalk, restricted to exactly two roles: the specials kicker and the specials title. Full role/weight/size/leading map is `DESIGN.md` §3.
 - **Shapes:** two radii only. Buttons, toggles and the JST shield at 4px (`--radius-sm`); cards, panels, the chalkboard and dropdowns at 8px (`--radius-md`); 50% (`--radius-badge`) is exclusive to the circular logo badge. Sharp buttons, soft containers.
 - **Spacing:** `--space-*` scale; 96px section padding; 40px grid gutter dropping to 24px below 1024px.
 - **Depth:** five levels, every shadow warm `rgba(44, 27, 16, …)` rather than grey. Recessed and vignette levels are single-use (chalkboard, hero).
-- **Tokens** are declared as CSS custom properties at the top of `static/css/style.css` and mirror `DESIGN.md`'s token names (`--tavern-navy`, `--chalk-gold`, `--space-2xl`, `--radius-md`, `--shadow-recessed`, etc.).
+- **Tokens** are declared as CSS custom properties at the top of `assets/css/style.css` and mirror `DESIGN.md`'s token names (`--tavern-navy`, `--chalk-gold`, `--space-2xl`, `--radius-md`, `--shadow-recessed`, etc.).
 
 > **Do not** reintroduce the retired HP Electric Blue system (Electric Blue
 > `#024ad8`, white/cloud canvas, single-family Inter, 16px card radius, blue
@@ -106,8 +106,11 @@ layouts/
 │   ├── contact.html    # Visit info + two-column Bar/Restaurant hours
 │   ├── help-band.html  # Dark "How can we help?" band
 │   └── footer.html     # Multi-column dark footer
+assets/
+└── css/style.css       # All styles (design tokens + components + responsive).
+                        #   Served via Hugo's pipeline with a sha256 fingerprint, so
+                        #   the URL changes whenever the CSS changes.
 static/
-├── css/style.css       # All styles (design tokens + components + responsive)
 ├── js/main.js          # Hamburger drawer toggle logic
 └── logo-jst-monogram.svg  # Favicon + wordmark monogram
 ```
@@ -126,7 +129,7 @@ static/
    Address, phone, email, hours, hero copy, and help-band text all live in `[params]` in `hugo.toml`. Update them in one place.
 
 3. **CSS custom properties as the DESIGN.md token layer.**
-   `static/css/style.css` declares the design tokens at `:root`, then components reference the variables. This makes DESIGN.md → CSS mapping explicit and auditable.
+   `assets/css/style.css` declares the design tokens at `:root`, then components reference the variables. This makes DESIGN.md → CSS mapping explicit and auditable.
 
 4. **Two CSS encoding bugs fixed during development:**
    An initial draft used invalid CSS arithmetic (`var(--space-xxl) * 1.5`). These were replaced with concrete pixel values from the `--space-*` scale, matching `DESIGN.md` §6 spacing.

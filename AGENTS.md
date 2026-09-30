@@ -2,11 +2,12 @@
 
 Hugo static site for "James Street Tavern". Load the Hugo skill (`.opencode/skills/hugo/SKILL.md`) before doing site work — it encodes layout/override/guardrail workflow.
 
-## Current state (scaffold only)
+## Current state
 
-- **No theme** — `themes/` is empty and `theme` is not set in `hugo.toml`. `hugo` builds but emits "no layout file for kind home" warnings and renders nothing useful. Don't be surprised by a bare/empty build.
-- **No content, layouts, assets, static, data, or i18n** — all are empty directories.
-- **`hugo.toml` is minimal** (3 lines): `baseURL`, `locale`, `title`. `baseURL` is still the `https://example.org/` placeholder — it must be changed to the real domain before deploy.
+- **No theme** — `themes/` is empty and `theme` is not set in `hugo.toml`. All layouts are custom and live in root `layouts/`.
+- **Built and working** — 8 content sections / 46 menu items, 55 published pages, no build warnings. `content/`, `layouts/`, `assets/`, `static/`, `data/` and `i18n/` are all populated; `themes/` is the only empty one.
+- **Stylesheet** — `assets/css/style.css`, served through Hugo's asset pipeline with a sha256 fingerprint. **Do not move it to `static/`**: an unversioned `/css/style.css` lets browsers silently reuse a stale stylesheet.
+- **`hugo.toml`** carries real `[params]` (address, hours, hero and specials copy, `photoGlob`, section blurbs). `baseURL` is still the `https://example.org/` placeholder — it must be changed to the real domain before deploy.
 
 ## Build / verify
 
