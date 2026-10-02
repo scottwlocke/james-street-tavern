@@ -1,0 +1,48 @@
+{{- /* One chalkboard panel for a single special, shared by the homepage
+       rotator and the /specials/ page so the two can never drift apart.
+       Context: the special page itself.
+
+       Renders the board's *contents* only — the caller owns the wrapping
+       .chalkboard div, because the homepage rotator also needs to put
+       .is-active on that wrapper for the first board.
+
+       Expects the special to carry kicker / price / priceUnit / lead /
+       details. The title is an <h2> in both callers — the homepage h1 is the
+       hero, and /specials/ has the section title as its h1. */ -}}
+{{- $item := . -}}
+<span class="chalkboard-lights" aria-hidden="true"></span>
+
+{{ with $item.Params.kicker }}
+  <span class="chalk-kicker">{{ . }}</span>
+{{ end }}
+<h2 class="chalk-title">{{ $item.Title }}</h2>
+
+<div class="chalk-body">
+  {{ with $item.Params.price }}
+    <div class="chalk-price-block">
+      <span class="chalk-price">{{ . }}</span>
+      <span class="chalk-price-flourish" aria-hidden="true"></span>
+      <span class="chalk-price-unit">{{ $item.Params.priceUnit | default "each" }}</span>
+    </div>
+  {{ end }}
+
+  <div>
+    {{ with $item.Params.lead }}
+      <p class="chalk-lead">{{ . }}</p>
+    {{ end }}
+    {{ with $item.Params.details }}
+      <ul class="chalk-list">
+        {{ range . }}
+          <li>{{ . }}</li>
+        {{ end }}
+      </ul>
+    {{ end }}
+
+    <p class="chalk-actions">
+      <a class="btn btn-primary"
+         href="tel:{{ replaceRE "[^0-9+]" "" ($item.Site.Params.phone | default "412-824-8884") }}">
+        Call to Order
+      </a>
+    </p>
+  </div>
+</div>

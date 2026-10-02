@@ -281,6 +281,63 @@ by §14 and depth by §15.
 - White/gold chalk-style text
 - Optional hanging chain or string-light accent at top
 
+### Specials Rotator
+One chalkboard is visible at a time; the next special slides in every **20
+seconds**. The slide is 3rem of horizontal travel with a fade, on the standard
+`--duration` (250ms) / `--easing` pair — grounded, no overshoot (§9).
+
+**The markup ships every board.** `.chalkboards` is the shared wrapper: an
+ordinary grid holding all the boards, so with JS off they simply stack, spaced
+by the wrapper's `gap`, and the specials stay complete and readable.
+`assets/js/main.js` adds `.specials-rotator` to the wrapper, which is the *only*
+thing that scopes the hiding rules:
+
+| Selector | Effect |
+|---|---|
+| `.chalkboards` | `display: grid`, `gap: var(--space-xl)` — separates stacked boards. Once the rotator runs every board is in the single `1/1` cell below, so there is one row and one column and the gap stops applying. |
+| `.specials-rotator .chalkboard.is-*` | `grid-area: 1 / 1` — only state\'d boards share the cell |
+| `.specials-rotator .chalkboard.is-active` | Shown, centred |
+| `….chalkboard.is-before` | Off to the left, faded |
+| `….chalkboard.is-after` | Off to the right, faded |
+| `.specials-controls` | Dots + pause, injected by JS |
+
+Three rules that are easy to get wrong here:
+
+- **`.specials-rotator` must never appear in the template.** Every hide rule is
+  scoped under it, so emitting the class server-side hides all but the first
+  special for anyone without JS. The wrapper carries only `data-specials`.
+- **`grid-area` belongs on the `.is-*` classes, not on `.chalkboard`.** A board
+  that JS has not yet given a state stays in normal flow and fully visible, so a
+  half-initialised rotator stacks its specials instead of piling several opaque
+  boards into one cell on top of each other. Assigning the cell only once a
+  board has a state makes "JS has not run yet" degrade to readable rather than
+  to a pile.
+- **Inactive boards use `visibility: hidden`, not `display: none`.** Visibility
+  takes a board out of the tab order and the accessibility tree while still
+  transitioning discretely, so the outgoing board finishes its slide. `display:
+  none` would remove it mid-flight and it would blink out instead.
+- **`align-items: start`** on the track. The grid cell sizes to the tallest board
+  so the section does not jump as the rotation advances; without `start` the
+  shorter boards stretch to match.
+
+Rotation advances forward and wraps. Positions compare without wrapping, so the
+outgoing board always leaves leftward and the incoming one enters from the
+right; the wrap from last back to first is the one case where the incoming board
+enters from the left. Cheaper than cloning the first slide to fake an endless
+track, and invisible at a 20s interval.
+
+**A single special gets no rotator** — no controls, no timer, just the panel.
+
+### Specials Controls
+- Dots are 10px marks in a **44×44px** target (§11); the active one grows to a
+  26px gold lozenge. `border-radius: 50%` is literal — a dot's shape, not a
+  radius-scale value, so it does not borrow `{rounded.badge}` (§14).
+- Pause is a 44×44px button whose two bars become a play triangle when paused.
+  Both glyphs are drawn in CSS; the site ships no icon assets (§5).
+- The controls are built by JS, not rendered in the template. A dot that cannot
+  do anything without JS is worse than no dot at all.
+- The controls never contain text, so gold stays scarce (§18): one gold element.
+
 ### Form Inputs
 - Dark background with light cream text
 - Gold focus ring
@@ -409,6 +466,20 @@ Avoid pure flat digital surfaces. Always introduce at least a light texture or w
 - All interactive elements minimum 44×44px touch target
 - Prefer real text over text-in-image for specials when possible
 - Provide alt text that describes the rustic atmosphere and food
+- **Auto-rotating content needs a stop control.** WCAG 2.2.2 applies to the
+  specials rotator (§6): it changes by itself and runs for longer than five
+  seconds, so the pause button is mandatory, not decorative. The rotator also
+  yields to hover and to keyboard focus, so a visitor mid-read does not have a
+  board swapped out from under them, and it does not run in a background tab.
+- **An auto-rotating region is not a live region.** No `aria-live` on the track —
+  announcing every 20s is hostile. The carousel semantics are added by JS, not by
+  the template: the wrapper becomes `role="region"` +
+  `aria-roledescription="carousel"`, each board becomes `role="group"` +
+  `aria-roledescription="slide"` labelled `"n of m: <title>"`, and only the
+  active board is in the accessibility tree (§6).
+- **The pause button's label states the action**, flipping between "Pause
+  specials" and "Play specials". A label that names the current state instead
+  ("Paused") leaves the reader guessing what pressing it does.
 - **The crest is the one sanctioned text-in-image.** Its wordmark is artwork, so
   its accessible name must come from `alt` (§4). The nav link's `alt` is the
   site's brand name; decorative art elsewhere in the header should take
@@ -552,7 +623,7 @@ fixed set of pages, and extra breakpoints only add untested states.
 
 - Every interactive element clears 44×44px. Buttons are 44px tall; nav rows are
   44px; the hamburger is 44×44; footer links are 44px tall rows even though the
-  text is 15px.
+  text is 15px; the specials dots and pause button are 44×44 (§6).
 - Tap areas extend beyond the visible glyph where needed — nav and footer links
   use `min-height` rows rather than padding the text run.
 - The mobile drawer's links are 56px tall, above the 44px floor, because it is a
@@ -563,6 +634,13 @@ fixed set of pages, and extra breakpoints only add untested states.
 `@media (prefers-reduced-motion: reduce)` collapses every transition and animation
 to 0.01ms and disables smooth scrolling. This covers the hero entrance (§9) as
 well as hover transitions. Do not add motion that opts out of this block.
+
+The specials rotator (§6) is covered by this block for free: its slide is a
+transition, so reduced-motion visitors get an instant swap rather than travel.
+The 20s rotation itself still runs — the request was to rotate, and an instant
+swap is not motion — and the pause control (§11) is always there. If auto-advance
+is ever dropped wholesale under reduced motion, that is a deliberate change to
+§6, not a side effect.
 
 ---
 
@@ -579,6 +657,11 @@ are separate entries, never buried in prose.
 | `button-outline` | `.btn-outline` | `{colors.chalk-gold}` border + label |
 | `button-gold` | `.btn-gold` | `{colors.chalk-gold}` fill, chalkboard label |
 | `chalkboard-panel` | `.chalkboard` | `{elev.recessed}`, wood frame, corner flourishes |
+| `specials-rotator` | `.specials-rotator`, `.chalkboards` | JS-added, homepage only; stacks boards into one grid cell and slides one at a time every 20s (§6) |
+| `chalkboards` | `.chalkboards`, `.chalkboard` | Stack of boards; plain grid with a gap when not rotating. `/specials/` renders the same panels, all at once (§6) |
+| `specials-slide` | `.chalkboard.is-active`, `.is-before`, `.is-after` | `visibility` + `opacity` + `translateX`; `--duration`/`--easing` |
+| `specials-dot` | `.specials-dot`, `.specials-dot-mark` | 44×44 target, 10px mark; honey oak → gold lozenge when active |
+| `specials-pause` | `.specials-pause`, `.specials-pause-icon` | 44×44, CSS-drawn pause/play glyphs; required by WCAG 2.2.2 (§11) |
 | `chalk-price` | `.chalk-price`, `.chalk-price-flourish` | `{type.price-hero}`, `{rounded.flourish}` |
 | `card` | `.card` | `{colors.panel}`, `{rounded.md}`, `{elev.rest}` |
 | `card-hover` | `a.card:hover` | `{elev.hover}` + 3px lift (§9) |
@@ -652,6 +735,10 @@ these exist):
 - Don't animate anything without a `prefers-reduced-motion` fallback (§16).
 - Don't let the specials board stop being the loudest thing on the page. It is
   the reason people come on a Monday.
+- Don't add anything that rotates, auto-plays or scrolls without a way to stop
+  it (§11). If it moves on its own for more than five seconds it needs a control.
+- Don't hide content behind JS. The rotator ships every board and only
+  `.specials-rotator`, added by JS, ever hides one (§6).
 
 ---
 

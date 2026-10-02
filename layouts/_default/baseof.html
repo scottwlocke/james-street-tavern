@@ -13,6 +13,12 @@
   {{ partial "help-band.html" . }}
   {{ partial "footer.html" . }}
 
-  <script src="{{ "js/main.js" | relURL }}"></script>
+  {{- /* Also served through the asset pipeline with a content fingerprint.
+         This matters more for the JS than the CSS: an unversioned /js/main.js
+         lets a browser keep running a cached copy, and the specials rotator
+         then silently never initialises while its CSS has already shipped. The
+         symptom is every special visible at once. */ -}}
+  {{- $js := resources.Get "js/main.js" | fingerprint "sha256" -}}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 </body>
 </html>

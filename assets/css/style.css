@@ -853,6 +853,163 @@ body.nav-open {
 }
 
 /* ============================================
+   Specials rotator (§6) — one board at a time
+   ============================================
+   Progressive enhancement. Every rule here is scoped under
+   .specials-rotator, which main.js adds and only on the homepage. Without
+   JS the is-* classes do nothing and the specials stack — nothing is
+   hidden from a visitor who has no JS, and nothing is hidden from a
+   crawler or a screen reader that never runs it.
+
+   .chalkboards is the shared wrapper for a stack of boards. It is used by
+   the homepage and by /specials/, which renders the same boards all at
+   once and never gets the rotator class. The gap is what separates boards
+   in that stacked case. It has no effect once the rotator is running,
+   because every board is then in the single 1/1 cell below, leaving one
+   row and one column for the gap to apply to. */
+
+.chalkboards {
+  display: grid;
+  align-items: start;
+  gap: var(--space-xl);
+}
+
+/* All boards that JS has assigned a state to occupy the same cell, so the
+   cross-slide has somewhere to go. A board with no state class stays in
+   normal flow and fully visible, which is the fallback: if the rotator is
+   ever half-initialised, the specials stack rather than piling up opaque on
+   top of each other. Sizing to the tallest board is what keeps the section
+   from jumping as the rotation advances; align-items:start stops the shorter
+   boards from being stretched to match. */
+.specials-rotator .chalkboard.is-active,
+.specials-rotator .chalkboard.is-before,
+.specials-rotator .chalkboard.is-after {
+  grid-area: 1 / 1;
+  transition: opacity var(--duration) var(--easing),
+              transform var(--duration) var(--easing),
+              visibility var(--duration) var(--easing);
+}
+
+.specials-rotator .chalkboard.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* visibility:hidden rather than display:none — it takes an outgoing board
+   out of the tab order and the accessibility tree, while still
+   transitioning (discretely) so the slide can finish. display:none would
+   remove the element mid-flight and the board would vanish instead of
+   sliding. */
+.specials-rotator .chalkboard.is-before,
+.specials-rotator .chalkboard.is-after {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.specials-rotator .chalkboard.is-before {
+  transform: translateX(-3rem);
+}
+
+.specials-rotator .chalkboard.is-after {
+  transform: translateX(3rem);
+}
+
+/* ---- Controls ---- */
+
+.specials-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-lg);
+}
+
+.specials-dot,
+.specials-pause {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;            /* §11 touch target */
+  min-height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.specials-pause {
+  margin-left: var(--space-sm);
+}
+
+/* The dot mark is a 10px circle inside a 44px target; the active one grows
+   into a lozenge. 50% is the literal shape of a dot, not a radius-scale
+   value, so it deliberately does not borrow {rounded.badge}. */
+.specials-dot-mark {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--honey-oak);
+  transition: background-color var(--duration) var(--easing),
+              width var(--duration) var(--easing);
+}
+
+.specials-dot.is-active .specials-dot-mark {
+  width: 26px;
+  background-color: var(--chalk-gold);
+}
+
+/* Pause / play glyphs, drawn rather than shipped: the site has no icon
+   assets (§5) and an 11px PNG of two rectangles is not worth the request. */
+.specials-pause-icon {
+  position: relative;
+  width: 12px;
+  height: 14px;
+}
+
+.specials-pause-icon::before,
+.specials-pause-icon::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--beer-foam);
+}
+
+.specials-pause-icon::before {
+  left: 0;
+}
+
+.specials-pause-icon::after {
+  right: 0;
+}
+
+/* Paused: swap the two bars for a play triangle. */
+.specials-pause.is-paused .specials-pause-icon::after {
+  display: none;
+}
+
+.specials-pause.is-paused .specials-pause-icon::before {
+  left: 1px;
+  width: 0;
+  height: 0;
+  background: none;
+  border-left: 12px solid var(--beer-foam);
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+}
+
+.specials-pause:hover .specials-pause-icon::before,
+.specials-pause:hover .specials-pause-icon::after {
+  background-color: var(--chalk-gold);
+}
+
+.specials-pause.is-paused:hover .specials-pause-icon::before {
+  border-left-color: var(--chalk-gold);
+}
+
+/* ============================================
    Cards (§6)
    ============================================ */
 

@@ -3,10 +3,22 @@
        than through the menu-sections partial, because specials are
        deliberately excluded from the menu listings.
 
-       One chalkboard per special, so a single offer looks exactly as it
-       did when it was driven by hugo.toml params, and adding a second
-       stacks another board rather than needing a new layout. Renders
-       nothing at all when the section has no items.
+       Every board ships in the markup and .chalkboards is an ordinary grid,
+       so with JS off the specials simply stack and nothing is hidden or
+       unreachable. assets/js/main.js adds .specials-rotator, which stacks
+       the boards into one cell and rotates one at a time on a 20s timer.
+
+       The wrapper therefore carries no class of its own:
+       .specials-rotator is the hook that enables the hidden-board rules, so
+       emitting it here would hide every special except the first for anyone
+       without JS.
+
+       is-active is set on the first board server-side so the rotator has a
+       starting slide before JS runs. Every .is-* rule is scoped under
+       .specials-rotator, so the class is inert without JS.
+
+       The board itself lives in partials/chalkboard.html, shared with
+       /specials/ — that page renders the same panels, all at once.
 
        The id="specials" anchor stays: the footer links to it. */ -}}
 {{- with .Site.GetPage "/specials" -}}
@@ -14,47 +26,15 @@
   {{- if $items -}}
     <section id="specials" class="section section-wood">
       <div class="container">
-        {{- range $items }}
-          {{- $item := . }}
-          <div class="chalkboard">
-            <span class="chalkboard-lights" aria-hidden="true"></span>
-
-            {{ with $item.Params.kicker }}
-              <span class="chalk-kicker">{{ . }}</span>
-            {{ end }}
-            <h2 class="chalk-title">{{ $item.Title }}</h2>
-
-            <div class="chalk-body">
-              {{ with $item.Params.price }}
-                <div class="chalk-price-block">
-                  <span class="chalk-price">{{ . }}</span>
-                  <span class="chalk-price-flourish" aria-hidden="true"></span>
-                  <span class="chalk-price-unit">{{ $item.Params.priceUnit | default "each" }}</span>
-                </div>
-              {{ end }}
-
-              <div>
-                {{ with $item.Params.lead }}
-                  <p class="chalk-lead">{{ . }}</p>
-                {{ end }}
-                {{ with $item.Params.details }}
-                  <ul class="chalk-list">
-                    {{ range . }}
-                      <li>{{ . }}</li>
-                    {{ end }}
-                  </ul>
-                {{ end }}
-
-                <p class="chalk-actions">
-                  <a class="btn btn-primary"
-                     href="tel:{{ replaceRE "[^0-9+]" "" ($.Site.Params.phone | default "412-824-8884") }}">
-                    Call to Order
-                  </a>
-                </p>
+        <div data-specials>
+          <div class="chalkboards">
+            {{- range $i, $item := $items }}
+              <div class="chalkboard{{ if eq $i 0 }} is-active{{ end }}">
+                {{- partial "chalkboard.html" $item }}
               </div>
-            </div>
+            {{- end }}
           </div>
-        {{- end }}
+        </div>
       </div>
     </section>
   {{- end -}}
