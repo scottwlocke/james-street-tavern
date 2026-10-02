@@ -12,11 +12,16 @@
       <a href="{{ .Site.Home.RelPermalink }}#contact">Hours</a>
       <a href="tel:{{ replaceRE "[^0-9+]" "" (default "412-824-8884" .Site.Params.phone) }}">{{ default "412-824-8884" .Site.Params.phone }}</a>
     </div>
+    {{ with .Site.GetPage "/specials" }}
+      {{ with .Pages.ByWeight }}
     <div class="footer-col">
-      <h4>Monday</h4>
-      <a href="{{ .Site.Home.RelPermalink }}#specials">Monday Night Wings</a>
-      <a href="{{ .Site.Home.RelPermalink }}#specials">The Special</a>
+      <h4>Specials</h4>
+      {{ range . }}
+        <a href="{{ $.Site.Home.RelPermalink }}#specials">{{ .Title }}</a>
+      {{ end }}
     </div>
+      {{ end }}
+    {{ end }}
     <div class="footer-col">
       <h4>More</h4>
       <a href="{{ .Site.Home.RelPermalink }}">Catering</a>
