@@ -1,20 +1,23 @@
 {{ $home := .Site.Home.RelPermalink }}
+{{ $fullMenu := .Site.GetPage "/menu" }}
 <header class="nav-bar">
   <div class="container nav-inner">
-    <a href="{{ $home }}" class="logo logo--mono">
-      <span class="logo-badge">
-        <span class="logo-shield">JST</span>
-      </span>
-      <span class="logo-wordmark">
-        <span class="logo-text">{{ .Site.Title }}</span>
-        <span class="logo-loc">{{ default "Monroeville, PA" .Site.Params.location }}</span>
-      </span>
+    {{- /* The crest is the whole lockup — the wordmark and location line are
+           baked into the artwork. The alt text is therefore the only accessible
+           name this link has, so it carries the full site name. width/height
+           are the intrinsic pixel size, which lets the browser reserve the box
+           before the image loads; `.logo-img` scales it to --logo-clear. */ -}}
+    <a href="{{ $home }}" class="logo">
+      <img class="logo-img" src="{{ "images/jst-logo.png" | relURL }}"
+           width="287" height="265" alt="{{ .Site.Title }} — {{ default "Monroeville, PA" .Site.Params.location }}" decoding="async">
     </a>
 
     <nav aria-label="Main">
-      {{- /* All eight top-level sections roll up under one "Menu" control so the
-             bar reads Logo / Menu / Contact / Find Us instead of nine links.
-             Below 1024px this whole block is hidden and #mobile-nav takes over. */ -}}
+{{- /* All eight top-level sections roll up under one "Menu" control so the
+         bar reads Logo / Menu / Full Menu / Contact / Find Us instead of
+         nine links. Below 1024px this whole block is hidden and #mobile-nav
+         takes over. "Full Menu" is the itemised board — the homepage links to
+         it and each section still has its own page. */ -}}
       <div class="nav-menu">
         <button class="nav-menu-toggle" type="button"
                 aria-expanded="false" aria-controls="nav-menu-panel">
@@ -32,6 +35,10 @@
       </div>
 
       <ul class="nav-links">
+        {{ with $fullMenu }}
+          <li><a href="{{ .RelPermalink }}"
+             {{ if eq $.RelPermalink .RelPermalink }}class="active" aria-current="page"{{ end }}>Full Menu</a></li>
+        {{ end }}
         <li><a href="{{ $home }}#contact">Contact</a></li>
       </ul>
     </nav>
@@ -62,6 +69,9 @@
   <p class="mobile-nav-heading">Menu</p>
   <ul class="mobile-nav-links">
     <li><a href="{{ $home }}">Home</a></li>
+    {{ with $fullMenu }}
+      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{ end }}
     {{ range .Site.Sections }}
       <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
     {{ end }}

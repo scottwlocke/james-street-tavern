@@ -68,8 +68,13 @@
   --container: 1200px;
   --gutter: 40px;               /* §7 — 24px mobile → 40px desktop */
 
-  /* ---- Logo (§4 — clear space equal to the JST badge height) ---- */
-  --logo-clear: 44px;
+  /* ---- Logo & nav chrome (§4 — clear space equal to the logo height) ----
+     `--nav-h` and `--nav-clearance` derive from the logo so the bar height,
+     the mobile drawer's offset and the anchor-jump clearance can never drift
+     apart when the logo is resized. Keep `--logo-clear` as the single knob. */
+  --logo-clear: 88px;
+  --nav-h: calc(var(--logo-clear) + 2 * var(--space-sm));
+  --nav-clearance: calc(var(--nav-h) + var(--space-md));
 
   /* ---- Textures (§8, §13) ---- */
   --chalkboard-gradient: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
@@ -96,7 +101,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
+  scroll-padding-top: var(--nav-clearance);
 }
 
 body {
@@ -238,90 +243,30 @@ h3 {
   display: flex;
   align-items: center;
   gap: var(--space-lg);
-  min-height: 68px;
+  min-height: var(--nav-h);
 }
 
-/* ---- Logo (§4 — circular navy badge, red JST shield) ---- */
+/* ---- Logo (§4 — full-colour crest, clear space = logo height) ---- */
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-md);
   margin-right: auto;
-  min-height: 44px;             /* §11 touch target */
-  /* §4 clear space — the 44px badge height, held horizontally by the
-     container gutter (40px desktop / 24px mobile) and capped vertically
-     by the 68px nav bar. */
+  min-height: var(--logo-clear);    /* §11 touch target */
+  /* §4 clear space — the --logo-clear logo height, held horizontally by
+     the container gutter (40px desktop / 24px mobile) and capped vertically
+     by the --nav-h nav bar. */
   padding: var(--space-sm);
   margin-left: calc(-1 * var(--space-sm));
 }
 
-.logo-badge {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 auto;
-  border-radius: var(--radius-badge);
-  background-color: var(--tavern-navy);
-  border: 2px solid var(--chalk-gold);
-}
-
-.logo-shield {
-  font-family: var(--font-display);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--beer-foam);
-  background-color: var(--barn-red);
-  border-radius: var(--radius-sm);
-  padding: 2px 5px;
-  line-height: 1;
-}
-
-.logo-wordmark {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-
-.logo-text {
-  font-family: var(--font-display);
-  font-size: 1.375rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--beer-foam);
-  white-space: nowrap;
-}
-
-.logo-loc {
-  font-size: 0.6875rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--honey-oak);
-}
-
-/* §4 — logo variations. The nav sits on chalkboard, so it takes the
-   white monochrome lockup; `.logo--mono` / `.logo--gold` are the
-   approved alternates for other surfaces. */
-.logo--mono .logo-badge {
-  background-color: transparent;
-  border-color: var(--beer-foam);
-}
-
-.logo--mono .logo-text {
-  color: var(--beer-foam);
-}
-
-.logo--gold .logo-badge {
-  background-color: transparent;
-  border-color: var(--chalk-gold);
-}
-
-.logo--gold .logo-text,
-.logo--gold .logo-loc {
-  color: var(--chalk-gold);
+/* Intrinsic size is 287x265. Setting only the height and `width: auto` lets
+   the browser derive the ratio from the width/height attributes, so the crest
+   scales without distortion and without a layout shift. */
+.logo-img {
+  display: block;
+  height: var(--logo-clear);
+  width: auto;
+  max-width: 100%;
 }
 
 .nav-links {
@@ -494,7 +439,7 @@ h3 {
 
 .mobile-nav {
   position: fixed;
-  inset: 68px 0 0;
+  inset: var(--nav-h) 0 0;
   z-index: 99;
   padding: var(--space-lg) var(--gutter);
   background-color: var(--chalkboard);
@@ -1040,6 +985,22 @@ a.card:hover .card-cta::after {
   border-bottom: 2px solid var(--border-wood);
 }
 
+/* Full-menu page — item total sits under the intro, and the section header
+   carries the "See the full menu" button on the homepage. */
+.menu-count {
+  margin-top: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.section-header .btn {
+  margin-top: var(--space-lg);
+}
+
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1411,21 +1372,12 @@ a.card:hover .card-cta::after {
     font-size: 1.0625rem;
   }
 
-  /* The wordmark is 18 characters of uppercase Oswald. At its §3 token size
-     (1.375rem) with `white-space: nowrap` the lockup needs ~387px, but the
-     nav only has 364px inside its gutters at a 412px viewport (Pixel 9) and
-     just 312px at 360px — so the header overflowed and dragged the whole
-     page into horizontal scroll. Scale the wordmark and tighten the bar
-     gap here, and drop `nowrap` so the text wraps instead of overflowing
-     on the narrowest handsets. Wrapping costs ~50px of height, still
-     inside the 68px nav min-height. */
+  /* Tighten the bar gap on narrow handsets. This used to also shrink the
+     logo wordmark, which was 18 characters of uppercase Oswald and overflowed
+     the nav into horizontal scroll; the logo is now a fixed-height image, so
+     the crest no longer needs a size step here. */
   .nav-inner {
     gap: var(--space-md);
-  }
-
-  .logo-text {
-    font-size: 1.0625rem;
-    white-space: normal;
   }
 
   .hero {

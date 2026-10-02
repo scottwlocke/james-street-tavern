@@ -6,6 +6,11 @@
         <span class="section-kicker">{{ default "The Chalkboard" .Site.Params.menuKicker }}</span>
         <h2 class="section-title">{{ default "What's On Today" .Site.Params.menuTitle }}</h2>
         <p class="section-intro">{{ default "Everything's made to order. If it's on the board, we've got it." .Site.Params.menuIntro }}</p>
+        {{- /* The homepage lists the eight sections only; the itemised menu
+               lives on its own page so this stays a landing page. */ -}}
+        {{ with .Site.GetPage "/menu" }}
+          <a class="btn btn-outline" href="{{ .RelPermalink }}">See the full menu</a>
+        {{ end }}
       </div>
 
       <div class="card-grid">

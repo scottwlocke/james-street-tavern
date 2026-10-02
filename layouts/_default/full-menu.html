@@ -1,0 +1,30 @@
+{{ define "main" }}
+  {{- /* The whole board on one page. The homepage deliberately shows only the
+         eight top-level sections; the itemised menu lives here so the landing
+         page stays a landing page. `.Site.Sections` is the same set the
+         homepage section grid and the nav dropdown render, so this page can
+         never drift out of sync with them. */ -}}
+  {{ $sections := where .Site.Sections "Kind" "section" }}
+  {{ $count := 0 }}
+  {{ range $sections }}{{ $count = add $count (len .Pages) }}{{ end }}
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Menu</span>
+        <h1 class="section-title">{{ .Title }}</h1>
+        {{ with .Description }}
+          <p class="section-intro">{{ . }}</p>
+        {{ end }}
+        {{ with .Content }}
+          <div class="section-intro">{{ . }}</div>
+        {{ end }}
+        <p class="menu-count">{{ $count }} dishes across {{ len $sections }} sections</p>
+      </div>
+
+      {{ range $sections }}
+        {{ partial "menu-section.html" (dict "section" .) }}
+      {{ end }}
+    </div>
+  </section>
+{{ end }}

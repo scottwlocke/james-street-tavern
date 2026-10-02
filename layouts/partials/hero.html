@@ -19,7 +19,12 @@
       <h1>{{ default "Come Hungry. Leave Happy." .Site.Params.heroTitle }}</h1>
       <p class="hero-description">{{ default "Jumbo whole wings, cold beer, and a wood-fired kitchen that's been feeding Monroeville for years. No frills, no nonsense — just a good time." .Site.Params.heroDescription }}</p>
       <div class="hero-actions">
-        <a href="#menu" class="btn btn-gold">See the Board</a>
+        {{- /* Used to be href="#menu", which pointed at the itemised grid that
+               used to live on the homepage. That grid is now the Full Menu
+               page, so resolve it rather than hardcoding the path. */ -}}
+        {{ with .Site.GetPage "/menu" }}
+          <a href="{{ .RelPermalink }}" class="btn btn-gold">See the Board</a>
+        {{ end }}
         <a href="#contact" class="btn btn-outline">Book a Table</a>
       </div>
     </div>

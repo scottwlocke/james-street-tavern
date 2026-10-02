@@ -1,6 +1,9 @@
 {{ $section := .section }}
 
-<div class="menu-section">
+{{- /* The id gives each section a deep-link target on the full-menu page
+       (/menu/#pizza). `html { scroll-padding-top }` keeps the heading clear
+       of the sticky nav when the fragment is followed. */ -}}
+<div class="menu-section" id="{{ $section.Section }}">
   <h3 class="menu-section-title">{{ $section.Title }}</h3>
   {{ with $section.Content }}
     <div class="section-intro">{{ . }}</div>
