@@ -1,4 +1,4 @@
-{{ $pages := where .Site.Sections "Kind" "section" }}
+{{ $pages := partial "menu-sections.html" . }}
 {{ if $pages }}
   <section id="browse" class="section">
     <div class="container">

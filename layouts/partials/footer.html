@@ -2,7 +2,7 @@
   <div class="footer-grid">
     <div class="footer-col">
       <h4>Menu</h4>
-      {{ range .Site.Sections }}
+      {{ range partial "menu-sections.html" . }}
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
       {{ end }}
     </div>

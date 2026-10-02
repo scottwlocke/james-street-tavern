@@ -1,0 +1,14 @@
+{{- /* Sections that make up the navigable menu — the homepage card grid, the
+       nav dropdown and the Full Menu page all read this one slice.
+
+       `nonMenuSections` in hugo.toml lists sections that exist as real
+       content but must stay out of the menu, so a section is opted out in
+       a single place instead of being filtered at four call sites. A
+       Specials section belongs here: its items are offers, not dishes,
+       and should never appear as menu cards. */ -}}
+{{- $exclude := .Site.Params.nonMenuSections | default slice -}}
+{{- $pages := where .Site.Sections "Kind" "section" -}}
+{{- range $exclude -}}
+  {{- $pages = where $pages "Section" "ne" . -}}
+{{- end -}}
+{{- return $pages -}}

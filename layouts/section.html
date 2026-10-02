@@ -2,7 +2,10 @@
   <section class="section">
     <div class="container">
       <div class="section-header">
-        <span class="section-kicker">Menu</span>
+        {{- /* Defaults to "Menu", which is right for the eight menu sections. The
+       specials section opts out of that framing with its own kicker, so its
+       page is not labelled "Menu" above a "Specials" heading. */ -}}
+        <span class="section-kicker">{{ .Params.kicker | default "Menu" }}</span>
         <h1 class="section-title">{{ .Title }}</h1>
         {{ with .Params.description }}
           <p class="section-intro">{{ . }}</p>

@@ -4,7 +4,7 @@
          page stays a landing page. `.Site.Sections` is the same set the
          homepage section grid and the nav dropdown render, so this page can
          never drift out of sync with them. */ -}}
-  {{ $sections := where .Site.Sections "Kind" "section" }}
+  {{ $sections := partial "menu-sections.html" . }}
   {{ $count := 0 }}
   {{ range $sections }}{{ $count = add $count (len .Pages) }}{{ end }}
 

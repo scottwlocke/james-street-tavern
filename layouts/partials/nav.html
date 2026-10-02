@@ -1,5 +1,8 @@
 {{ $home := .Site.Home.RelPermalink }}
 {{ $fullMenu := .Site.GetPage "/menu" }}
+{{- /* Excludes nonMenuSections (specials), so the dropdown lists only
+     real menu sections. Computed once and reused by the drawer below. */ -}}
+{{ $menuSections := partial "menu-sections.html" . }}
 <header class="nav-bar">
   <div class="container nav-inner">
     {{- /* The crest is the whole lockup — the wordmark and location line are
@@ -25,7 +28,7 @@
           <span class="nav-menu-caret" aria-hidden="true"></span>
         </button>
         <ul class="nav-menu-panel" id="nav-menu-panel">
-          {{ range .Site.Sections }}
+          {{ range $menuSections }}
             <li>
               <a href="{{ .RelPermalink }}"
                  {{ if eq $.RelPermalink .RelPermalink }}class="active" aria-current="page"{{ end }}>{{ .Title }}</a>
@@ -72,7 +75,7 @@
     {{ with $fullMenu }}
       <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
     {{ end }}
-    {{ range .Site.Sections }}
+    {{ range $menuSections }}
       <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
     {{ end }}
     <li><a href="{{ $home }}#contact">Contact</a></li>

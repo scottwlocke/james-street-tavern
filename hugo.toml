@@ -24,18 +24,14 @@ title = 'James Street Tavern'
   heroTitle = "Come Hungry. Leave Happy."
   heroDescription = "Jumbo whole wings, cold beer, and a wood-fired kitchen that's been feeding Monroeville for years. No frills, no nonsense — just a good time."
 
-  # ---- Monday Night Wings chalkboard special (§4 Chalkboard Panel) ----
-  specialsKicker = "Monday Night"
-  specialsTitle = "Monday Night Wings"
-  specialsPrice = "$1.50"
-  specialsPriceUnit = "each"
-  specialsLead = "Minimum of 3 of the same flavor. Dine-in only."
-  specialsDetails = [
-    "Jumbo whole wings",
-    "Any flavor you want",
-    "Free fries with the basket",
-    "Every Monday, 3PM 'til close",
-  ]
+  # ---- Sections that are NOT part of the menu (§4 Chalkboard Panel) ----
+  # Read by layouts/partials/menu-sections.html, which is the single source
+  # of the section list behind the homepage card grid, the nav dropdown, the
+  # mobile drawer, the footer's Menu column and the Full Menu page. Specials
+  # are offers rather than dishes, so they stay out of all five while still
+  # being ordinary content in content/specials/. Add a slug here to opt a
+  # section out; nothing else needs to change.
+  nonMenuSections = ["specials"]
 
   # ---- Menu section grid ----
   menuKicker = "The Chalkboard"

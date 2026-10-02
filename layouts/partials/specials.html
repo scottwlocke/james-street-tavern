@@ -1,40 +1,61 @@
-{{ if .Site.Params.specialsTitle }}
-  <section id="specials" class="section section-wood">
-    <div class="container">
-      <div class="chalkboard">
-        <span class="chalkboard-lights" aria-hidden="true"></span>
+{{- /* Specials render on the homepage chalkboard. Items live in
+       content/specials/ and are read from that section directly rather
+       than through the menu-sections partial, because specials are
+       deliberately excluded from the menu listings.
 
-        <span class="chalk-kicker">{{ default "Monday Night" .Site.Params.specialsKicker }}</span>
-        <h2 class="chalk-title">{{ default "Monday Night Wings" .Site.Params.specialsTitle }}</h2>
+       One chalkboard per special, so a single offer looks exactly as it
+       did when it was driven by hugo.toml params, and adding a second
+       stacks another board rather than needing a new layout. Renders
+       nothing at all when the section has no items.
 
-        <div class="chalk-body">
-          <div class="chalk-price-block">
-            <span class="chalk-price">{{ default "$1.50" .Site.Params.specialsPrice }}</span>
-            <span class="chalk-price-flourish" aria-hidden="true"></span>
-            <span class="chalk-price-unit">{{ default "each" .Site.Params.specialsPriceUnit }}</span>
-          </div>
+       The id="specials" anchor stays: the footer links to it. */ -}}
+{{- with .Site.GetPage "/specials" -}}
+  {{- $items := .Pages.ByWeight -}}
+  {{- if $items -}}
+    <section id="specials" class="section section-wood">
+      <div class="container">
+        {{- range $items }}
+          {{- $item := . }}
+          <div class="chalkboard">
+            <span class="chalkboard-lights" aria-hidden="true"></span>
 
-          <div>
-            {{ with .Site.Params.specialsLead }}
-              <p class="chalk-lead">{{ . }}</p>
+            {{ with $item.Params.kicker }}
+              <span class="chalk-kicker">{{ . }}</span>
             {{ end }}
-            {{ with .Site.Params.specialsDetails }}
-              <ul class="chalk-list">
-                {{ range . }}
-                  <li>{{ . }}</li>
+            <h2 class="chalk-title">{{ $item.Title }}</h2>
+
+            <div class="chalk-body">
+              {{ with $item.Params.price }}
+                <div class="chalk-price-block">
+                  <span class="chalk-price">{{ . }}</span>
+                  <span class="chalk-price-flourish" aria-hidden="true"></span>
+                  <span class="chalk-price-unit">{{ $item.Params.priceUnit | default "each" }}</span>
+                </div>
+              {{ end }}
+
+              <div>
+                {{ with $item.Params.lead }}
+                  <p class="chalk-lead">{{ . }}</p>
                 {{ end }}
-              </ul>
-            {{ end }}
+                {{ with $item.Params.details }}
+                  <ul class="chalk-list">
+                    {{ range . }}
+                      <li>{{ . }}</li>
+                    {{ end }}
+                  </ul>
+                {{ end }}
 
-            <p class="chalk-actions">
-              <a class="btn btn-primary"
-                 href="tel:{{ replaceRE "[^0-9+]" "" (default "412-824-8884" .Site.Params.phone) }}">
-                Call to Order
-              </a>
-            </p>
+                <p class="chalk-actions">
+                  <a class="btn btn-primary"
+                     href="tel:{{ replaceRE "[^0-9+]" "" ($.Site.Params.phone | default "412-824-8884") }}">
+                    Call to Order
+                  </a>
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        {{- end }}
       </div>
-    </div>
-  </section>
-{{ end }}
+    </section>
+  {{- end -}}
+{{- end -}}
