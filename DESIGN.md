@@ -347,11 +347,18 @@ track, and invisible at a 20s interval.
 - Sticky top bar on dark wood or semi-transparent
 - Gold underline on active link
 - **The eight top-level sections roll up under a single `Menu` control**, so the
-  bar reads `Logo / Menu / Full Menu / Contact / Find Us` instead of nine inline
-  links. `Full Menu` is the itemised board (§7). The dropdown panel lists every
-  section with the active one marked, closes on outside click and on Escape
-  (focus returns to the toggle), and is desktop only — below 1024px `.nav-menu`
-  is `display:none` and the drawer takes over.
+  bar reads `Logo / Menu / Specials / Full Menu / Contact / Find Us` instead of
+  nine inline links. The dropdown panel lists every section with the active one
+  marked, closes on outside click and on Escape (focus returns to the toggle),
+  and is desktop only — below 1024px `.nav-menu` is `display:none` and the
+  drawer takes over.
+- **`Specials` is a peer control in the bar, never a row in the dropdown.** The
+  eight dropdown rows are categories of food; a special is a promotion. Putting
+  it in the panel would also undo the decision that keeps specials out of the
+  menu listings (§6, `nonMenuSections`) — the dropdown is one of those five
+  surfaces. `Full Menu` is the itemised board (§7). The link carries
+  `aria-current="page"` on `/specials/` **and on each offer's page**, so the
+  control stays marked while the visitor is anywhere in that section.
 - Mobile: full-width drawer with chalkboard background, opening with a `Menu`
   heading above the same section list so both navigations read alike
 
@@ -408,17 +415,34 @@ against the sticky bar.
 
 ### Specials are content, not config
 Specials are ordinary pages in `content/specials/`, rendered into the homepage
-chalkboard — one `.chalkboard` per item, so a single offer looks as it always
-did and a second stacks another board. The board renders nothing when the section
-is empty, and keeps `id="specials"`, which the footer links to.
+chalkboard — one `.chalkboard` per item, rotated one at a time by the specials
+rotator (§6). The board renders nothing when the section is empty, and keeps
+`id="specials"`, which the footer links to.
 
 Item front matter: `title`, `kicker`, `price`, `priceUnit`, `lead`, `details`
 (list), `weight`. The board is the loudest thing on the page (§18) — specials
 belong there and nowhere else.
 
-`/specials/` is a real section, so Hugo builds it and it is reachable by direct
-URL, but it is deliberately **unlinked**: `nonMenuSections` keeps it out of the
-five menu surfaces, and no navigation points at it.
+`/specials/` is a real section with its own page, rendering **every offer as a
+full chalkboard, all at once** — the same wood-framed panels the homepage
+rotates, stacked. `layouts/specials/section.html` renders the section header and
+then calls `partials/chalkboard.html` once per offer, ordered `ByWeight`; that
+partial also builds the homepage boards, so a special cannot look different in
+the two places. The page deliberately carries **no `data-specials` hook**, so the
+rotator never attaches and one-at-a-time never applies to it — the rotation is a
+homepage device, not something the section inherits. When the specials section is
+empty it prints "Nothing is chalked on right now." rather than an empty band.
+
+The panel itself lives in `partials/chalkboard.html`, which renders the board's
+*contents* only; the caller owns the wrapping `.chalkboard` div, because the
+homepage rotator also needs `.is-active` on that wrapper for the first board.
+
+It is linked from the top bar and the mobile drawer (§6), and is still kept out
+of the five **menu listing** surfaces by `nonMenuSections`. Those are different
+things: a menu listing is the dropdown, the homepage grid, the footer "Menu"
+column and the `/menu/` board, where a special would read as a permanent ninth
+category. A dedicated top-level link is the opposite of a leak — it is the
+specials' one permanent home.
 
 ---
 
@@ -587,7 +611,7 @@ fixed set of pages, and extra breakpoints only add untested states.
 |---|---|---|
 | Mobile | < 768px | Single-column everything; hamburger drawer; gutters 24px; section padding 56px; hero ≥ 520px |
 | Tablet | 768–1023px | Two-column card and menu grids; 3-column footer; detail and contact layouts stack; gutters 24px |
-| Desktop | ≥ 1024px | Three-column grids; `Menu` dropdown, `Full Menu`, `Contact`, and the "Find Us" link; gutters 40px |
+| Desktop | ≥ 1024px | Three-column grids; `Menu` dropdown, `Specials`, `Full Menu`, `Contact`, and the "Find Us" link; gutters 40px |
 
 **Collapsing strategy**
 
@@ -606,7 +630,7 @@ fixed set of pages, and extra breakpoints only add untested states.
   width instead.
 - **"Find Us" link** — hidden below 1024px. It anchors to `#map` in the contact
   band, where the address, phone, and hours are also rendered, so nothing is lost.
-- **Top nav** — the `Menu` dropdown, `Full Menu`, `Contact`, and the "Find Us" link collapse
+- **Top nav** — the `Menu` dropdown, `Specials`, `Full Menu`, `Contact`, and the "Find Us" link collapse
   into a 44px hamburger below 1024px. The drawer is full-canvas chalkboard with
   56px link rows and a `Menu` heading. Closes on link click, `Escape`, or
   resizing above 1024px.
@@ -670,7 +694,7 @@ are separate entries, never buried in prose.
 | `contact-card` | `.contact-card` | `{colors.panel}`, `{elev.rest}` |
 | `contact-map` | `.contact-map` | `{rounded.md}`, desaturated iframe |
 | `nav-bar` | `.nav-bar` | Sticky chalkboard, 2px gold underline |
-| `nav-link` + active | `.nav-links a`, `.active` | `{type.nav}`, gold scaleX underline |
+| `nav-link` + active | `.nav-links a`, `.active` | `{type.nav}`, gold scaleX underline. `Specials`, `Full Menu` and `Contact` are all this one class; only `Specials` sets `aria-current` across a whole section (§6) |
 | `menu-dropdown` | `.nav-menu-toggle`, `.nav-menu-panel` | Rolls the 8 sections under one `Menu` control; caret flips on open; active row gets a gold inset bar |
 | `logo` | `.logo`, `.logo-img` | `--logo-clear` height; the anchor holds the §4 clear space and the 44px touch target |
 | `nav-chrome` | `--nav-h`, `--nav-clearance` | Bar height and anchor clearance, both derived from `--logo-clear` (§4) |

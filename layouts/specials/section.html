@@ -1,0 +1,40 @@
+{{ define "main" }}
+  {{- /* /specials/ shows every offer at once, on the same chalkboards the
+         homepage rotates. It deliberately has no data-specials hook and no
+         .specials-rotator, so assets/js/main.js leaves it alone and the whole
+         board stays visible — the one-at-a-time behaviour is a homepage
+         device, not something this page should inherit.
+
+         Contents come from partials/chalkboard.html so a special looks the
+         same in both places. Ordered ByWeight, same as the homepage. */ -}}
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        {{- with .Params.kicker }}
+          <span class="section-kicker">{{ . }}</span>
+        {{ end }}
+        <h1 class="section-title">{{ .Title }}</h1>
+        {{- with .Params.description }}
+          <p class="section-intro">{{ . }}</p>
+        {{ end }}
+      </div>
+
+      {{- with .Content }}
+        <div class="section-intro">{{ . }}</div>
+      {{ end }}
+
+      {{- $items := .Pages.ByWeight }}
+      {{- if $items }}
+        <div class="chalkboards">
+          {{- range $items }}
+            <div class="chalkboard">
+              {{- partial "chalkboard.html" . }}
+            </div>
+          {{- end }}
+        </div>
+      {{- else }}
+        <p class="menu-desc">Nothing is chalked on right now. Check back soon.</p>
+      {{- end }}
+    </div>
+  </section>
+{{ end }}

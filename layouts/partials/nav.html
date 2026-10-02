@@ -1,5 +1,6 @@
 {{ $home := .Site.Home.RelPermalink }}
 {{ $fullMenu := .Site.GetPage "/menu" }}
+{{ $specials := .Site.GetPage "/specials" }}
 {{- /* Excludes nonMenuSections (specials), so the dropdown lists only
      real menu sections. Computed once and reused by the drawer below. */ -}}
 {{ $menuSections := partial "menu-sections.html" . }}
@@ -17,10 +18,10 @@
 
     <nav aria-label="Main">
 {{- /* All eight top-level sections roll up under one "Menu" control so the
-         bar reads Logo / Menu / Full Menu / Contact / Find Us instead of
-         nine links. Below 1024px this whole block is hidden and #mobile-nav
-         takes over. "Full Menu" is the itemised board — the homepage links to
-         it and each section still has its own page. */ -}}
+         bar reads Logo / Menu / Specials / Full Menu / Contact / Find Us
+         instead of nine links. Below 1024px this whole block is hidden and
+         #mobile-nav takes over. "Full Menu" is the itemised board — the
+         homepage links to it and each section still has its own page. */ -}}
       <div class="nav-menu">
         <button class="nav-menu-toggle" type="button"
                 aria-expanded="false" aria-controls="nav-menu-panel">
@@ -38,6 +39,15 @@
       </div>
 
       <ul class="nav-links">
+        {{- /* Specials gets its own top-level control rather than a row in
+               the Menu dropdown. It is deliberately not a menu section
+               (§6, nonMenuSections), so putting it in the dropdown would
+               contradict that — it is a promotion, not a category of food.
+               Marked current on the section page and on each offer's page. */ -}}
+        {{ with $specials }}
+          <li><a href="{{ .RelPermalink }}"
+             {{ if or (eq $.RelPermalink .RelPermalink) (.IsAncestor $) }}class="active" aria-current="page"{{ end }}>Specials</a></li>
+        {{ end }}
         {{ with $fullMenu }}
           <li><a href="{{ .RelPermalink }}"
              {{ if eq $.RelPermalink .RelPermalink }}class="active" aria-current="page"{{ end }}>Full Menu</a></li>
@@ -73,6 +83,9 @@
   <ul class="mobile-nav-links">
     <li><a href="{{ $home }}">Home</a></li>
     {{ with $fullMenu }}
+      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{ end }}
+    {{ with $specials }}
       <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
     {{ end }}
     {{ range $menuSections }}
