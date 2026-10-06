@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wood-gradient" x1="160" y1="0" x2="1600" y2="1000">
+      <stop offset="0%" stop-color="#5C3A21"/>
+      <stop offset="55%" stop-color="#3A2415"/>
+      <stop offset="100%" stop-color="#2C1B10"/>
+    </linearGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="turbulence"/>
+      <feDisplacementScale in="SourceGraphic" scale="10"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#wood-gradient)"/>
+  <!-- Chalk-style flourish at top -->
+  <path fill="#E8C547" d="M100 200 Q300 100 500 200 Q700 100 900 200 Q1100 100 1300 200 Q1500 100 1580 200"/>
+  <!-- Taco illustration hint: triangle/tortilla shape -->
+  <path fill="#E8C547" d="M600 400 Q800 300 1000 400 Q1200 300 1400 400"/>
+  <!-- Grain overlay -->
+  <rect width="1600" height="1000" fill="rgba(26,26,26,0.05)" filter="url(#grain)"/>
+</svg>

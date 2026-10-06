@@ -23,13 +23,12 @@
 <h2 class="chalk-title">{{ $item.Title }}</h2>
 
 {{ with $item.Params.photo }}
-  {{ $imgPath := printf "images/%s" . -}}
-  {{ $img := resources.GetMatch $imgPath -}}
+  {{ $img := resources.GetMatch . -}}
   {{ if $img }}
-    {{ $imgProcessed := $img.Process (printf "resize 480x webp q82") -}}
-    {{ $imgWebp := ($imgProcessed | fingerprint "sha256") -}}
-    {{ $imgJpegProcessed := $img.Process (printf "resize 480x jpg q82") -}}
-    {{ $imgJpeg := ($imgJpegProcessed | fingerprint "sha256") -}}
+    {{ $r := $img.Process (printf "resize 480x webp q82") -}}
+    {{ $imgWebp := ($r | fingerprint "sha256") -}}
+    {{ $r2 := $img.Process (printf "resize 480x jpg q82") -}}
+    {{ $imgJpeg := ($r2 | fingerprint "sha256") -}}
     <picture>
       <source type="image/webp" srcset="{{ $imgWebp.RelPermalink }} 480w">
       <img class="chalk-image"
