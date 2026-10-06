@@ -169,9 +169,9 @@ Three values are computed from `--logo-clear` and must stay that way:
 
 The drawer and the scroll padding are the reason this matters: `.mobile-nav` is
 `position: fixed` and begins at `--nav-h`, so a stale value slides its first rows
-under the nav; `scroll-padding-top` is what keeps the nav's Contact and Find Us
-anchor jumps clear of a sticky bar. When the logo is resized, change
-`--logo-clear` and nothing else.
+under the nav; `scroll-padding-top` is what keeps the nav's Contact anchor jump
+clear of a sticky bar. When the logo is resized, change `--logo-clear` and
+nothing else.
 
 **Logo Variations**
 
@@ -346,28 +346,31 @@ track, and invisible at a 20s interval.
 ### Navigation
 - Sticky top bar on dark wood or semi-transparent
 - Gold underline on active link
-- **The eight top-level sections roll up under a single `Menu` control**, so the
-  bar reads `Logo / Menu / Specials / Full Menu / Contact / Find Us` instead of
-  nine inline links. The dropdown panel lists every section with the active one
-  marked, closes on outside click and on Escape (focus returns to the toggle),
-  and is desktop only — below 1024px `.nav-menu` is `display:none` and the
-  drawer takes over.
-- **`Specials` is a peer control in the bar, never a row in the dropdown.** The
-  eight dropdown rows are categories of food; a special is a promotion. Putting
-  it in the panel would also undo the decision that keeps specials out of the
-  menu listings (§6, `nonMenuSections`) — the dropdown is one of those five
-  surfaces. `Full Menu` is the itemised board (§7). The link carries
-  `aria-current="page"` on `/specials/` **and on each offer's page**, so the
-  control stays marked while the visitor is anywhere in that section.
+- **The bar carries three links and no disclosure panel**: `Logo / Specials /
+  Full Menu / Contact`. The `Menu` dropdown was removed — nine inline links or a
+  dropdown panel were both worse than routing through `Full Menu`, which already
+  opens the itemised board (§7) with every section on it.
+- **`Specials` is a peer control in the bar.** It is not a category of food, so
+  it sits alongside `Full Menu` rather than among the sections; putting it in a
+  section list would also undo the decision that keeps specials out of the menu
+  listings (§6, `nonMenuSections`). `Full Menu` is the itemised board (§7). The
+  link carries `aria-current="page"` on `/specials/` **and on each offer's
+  page**, so the control stays marked while the visitor is anywhere in that
+  section.
 - Mobile: full-width drawer with chalkboard background, opening with a `Menu`
-  heading above the same section list so both navigations read alike
+  heading above the section list. Because the desktop bar no longer lists
+  sections, this drawer is one of only three places they appear — with the
+  homepage card grid and `/menu/` — so it is a primary navigation route, not a
+  mobile-only convenience
 
 ### The menu section list is centralised
 
 `layouts/partials/menu-sections.html` returns `.Site.Sections` minus
 `params.nonMenuSections`, and it is the **only** source for the section list.
-Five surfaces read it: the homepage card grid, the nav dropdown, the mobile
-drawer, the footer's `Menu` column, and the Full Menu page.
+Three surfaces read it: the homepage card grid (`sections-grid.html`), the
+mobile drawer (`nav.html`), and the Full Menu page (`full-menu.html`). The
+desktop top bar carries only Specials / Full Menu / Contact and the footer has no
+Menu column, so neither repeats the list.
 
 Opt a section out by adding its slug to `nonMenuSections` in `hugo.toml`. Never
 filter `.Site.Sections` inline at a call site — that is how a specials section
@@ -438,11 +441,10 @@ The panel itself lives in `partials/chalkboard.html`, which renders the board's
 homepage rotator also needs `.is-active` on that wrapper for the first board.
 
 It is linked from the top bar and the mobile drawer (§6), and is still kept out
-of the five **menu listing** surfaces by `nonMenuSections`. Those are different
-things: a menu listing is the dropdown, the homepage grid, the footer "Menu"
-column and the `/menu/` board, where a special would read as a permanent ninth
-category. A dedicated top-level link is the opposite of a leak — it is the
-specials' one permanent home.
+of the **menu listing** surfaces by `nonMenuSections`. Those are different
+things: a menu listing is the homepage grid and the `/menu/` board, where a
+special would read as a permanent ninth category. A dedicated top-level link is
+the opposite of a leak — it is the specials' one permanent home.
 
 ---
 
@@ -522,6 +524,7 @@ logo-jst-white.png                 NOT SUPPLIED — white variant, for dark surf
 logo-jst-monogram.svg              simplified tab monogram — present, unused (§4)
 photo-<section>-hero.svg           section placeholder art, in the section bundle
 photo-<subject>-hero.<ext>         real photography, in a page bundle
+assets/images/photo-tavern-hero.jpg  homepage photograph — assets/, not a bundle
 specials/<slug>.md                 a special; front matter per §7
 texture-wood-dark.jpg
 texture-chalkboard.png
@@ -533,6 +536,14 @@ Photography and placeholder art are both resolved through the `photoGlob` site
 param (`photo-*-hero.*`), never a hardcoded filename. Placeholders are named
 exactly like photography on purpose, so swapping one for the other needs no
 template change.
+
+**The homepage photograph is the one exception, and it must stay that way.** A
+bare file in `content/` is published verbatim to the site root as an unversioned
+`/photo-tavern-hero.jpg`, which a browser will reuse indefinitely — the same trap
+§11 records for CSS and JS. It therefore lives in `assets/images/` and is read by
+`layouts/partials/hero.html` through Hugo Pipes with a `fingerprint "sha256"`, so
+its URL changes whenever the image does. `photoGlob` is not used for it: that glob
+resolves *page resources*, and the homepage photo is no longer one.
 
 ---
 
@@ -555,8 +566,8 @@ content.
 |---|---|---|
 | `{rounded.none}` | `0px` | Chalkboard corner flourishes, hairline ends, full-bleed bands |
 | `{rounded.flourish}` | `2px` | Price underline, hairline caps |
-| `{rounded.sm}` | `4px` | All buttons, the nav toggle, the "Find Us" link |
-| `{rounded.md}` | `8px` | Cards, chalkboard panel, detail panels, contact cards, map, dropdowns |
+| `{rounded.sm}` | `4px` | All buttons, the nav toggle |
+| `{rounded.md}` | `8px` | Cards, chalkboard panel, detail panels, contact cards, map |
 | `{rounded.badge}` | `50%` | Reserved. No current consumer — the circular logo badge was replaced by the crest (§4) |
 
 **Principles**
@@ -583,15 +594,15 @@ lifted surfaces still read as wood and candlelight.
 | Level | Token | Treatment | Use |
 |---|---|---|---|
 | 0 — Flat | — | No border, no shadow | Section bands, body canvas, full-bleed hero |
-| 1 — Warm | `{elev.rest}` | `0 8px 24px rgba(44, 27, 16, 0.35)` | Cards, detail panels, contact cards, map, dropdown |
+| 1 — Warm | `{elev.rest}` | `0 8px 24px rgba(44, 27, 16, 0.35)` | Cards, detail panels, contact cards, map |
 | 2 — Lifted | `{elev.hover}` | `0 12px 32px rgba(44, 27, 16, 0.5)` | Hover state of every level-1 surface |
 | 3 — Recessed | `{elev.recessed}` | Level 1 + `inset 0 0 90px rgba(0, 0, 0, 0.75)` | The chalkboard specials panel only |
 | 4 — Vignette | `{elev.vignette}` | `inset 0 0 220px 60px rgba(26, 26, 26, 0.9)` | Hero image edge falloff only |
 
 **Principles**
 
-- Level 1 is the workhorse. Cards, panels, the map, and the dropdown are the only
-  things that get it. Section bands stay flat — the texture does that work.
+- Level 1 is the workhorse. Cards, panels, and the map are the only things that
+  get it. Section bands stay flat — the texture does that work.
 - Level 2 is reserved for hover. If a surface has a resting shadow, it gets
   exactly one lifted state.
 - Levels 3 and 4 are **single-use**. The recessed inset belongs to the chalkboard
@@ -610,8 +621,8 @@ fixed set of pages, and extra breakpoints only add untested states.
 | Name | Width | Key changes |
 |---|---|---|
 | Mobile | < 768px | Single-column everything; hamburger drawer; gutters 24px; section padding 56px; hero ≥ 520px |
-| Tablet | 768–1023px | Two-column card and menu grids; 3-column footer; detail and contact layouts stack; gutters 24px |
-| Desktop | ≥ 1024px | Three-column grids; `Menu` dropdown, `Specials`, `Full Menu`, `Contact`, and the "Find Us" link; gutters 40px |
+| Tablet | 768–1023px | Two-column card and menu grids; 2×2 footer; detail and contact layouts stack; gutters 24px |
+| Desktop | ≥ 1024px | Three-column grids; `Specials`, `Full Menu`, `Contact`; gutters 40px |
 
 **Collapsing strategy**
 
@@ -628,12 +639,11 @@ fixed set of pages, and extra breakpoints only add untested states.
   than fixing the width and hidden any other overflow. **Never reintroduce
   `overflow-x: hidden` on `.nav-bar`** to suppress a width problem; measure the
   width instead.
-- **"Find Us" link** — hidden below 1024px. It anchors to `#map` in the contact
-  band, where the address, phone, and hours are also rendered, so nothing is lost.
-- **Top nav** — the `Menu` dropdown, `Specials`, `Full Menu`, `Contact`, and the "Find Us" link collapse
-  into a 44px hamburger below 1024px. The drawer is full-canvas chalkboard with
-  56px link rows and a `Menu` heading. Closes on link click, `Escape`, or
-  resizing above 1024px.
+- **Top nav** — `Specials`, `Full Menu`, and `Contact` collapse into a 44px
+  hamburger below 1024px. The drawer is full-canvas chalkboard with 56px link
+  rows and a `Menu` heading, and is the only place the section-by-section list
+  still appears (alongside the homepage card grid and `/menu/`). Closes on link
+  click, `Escape`, or resizing above 1024px.
 - **Card / menu grids** — 3 columns → 2 → 1. Cards keep `{rounded.md}` and their
   shadow at every size; only the column count changes.
 - **Detail and contact layouts** — the 5/7 two-column split stacks to one column
@@ -695,15 +705,14 @@ are separate entries, never buried in prose.
 | `contact-map` | `.contact-map` | `{rounded.md}`, desaturated iframe |
 | `nav-bar` | `.nav-bar` | Sticky chalkboard, 2px gold underline |
 | `nav-link` + active | `.nav-links a`, `.active` | `{type.nav}`, gold scaleX underline. `Specials`, `Full Menu` and `Contact` are all this one class; only `Specials` sets `aria-current` across a whole section (§6) |
-| `menu-dropdown` | `.nav-menu-toggle`, `.nav-menu-panel` | Rolls the 8 sections under one `Menu` control; caret flips on open; active row gets a gold inset bar |
 | `logo` | `.logo`, `.logo-img` | `--logo-clear` height; the anchor holds the §4 clear space and the 44px touch target |
 | `nav-chrome` | `--nav-h`, `--nav-clearance` | Bar height and anchor clearance, both derived from `--logo-clear` (§4) |
 | `section-header-cta` | `.section-header .btn` | Pairs the section heading with its Full Menu button |
-| `find-us-link` | `.nav-utility-toggle` | `{rounded.sm}`, honey-oak → gold on hover; anchors to `#map` |
+| `not-found` | `.error-page`, `.error-code`, `.error-logo` | Centred single column; the crest runs larger than `--logo-clear` and is **never** filtered (§4), since a shadow on a transparent PNG would require `filter` |
 | `mobile-drawer` | `.mobile-nav.open` | Full-canvas chalkboard, 56px rows, `Menu` heading above the list |
 | `section-band-wood` | `.section-wood` | Wood gradient + grain |
 | `help-band` | `.help-band` | Wood gradient, double gold rule |
-| `footer` | `.site-footer` | `{colors.table-top}`, 5-column grid |
+| `footer` | `.site-footer` | `{colors.table-top}`, 4-column grid, 2×2 on tablet |
 | `hero` | `.hero`, `.hero-media` | Warm grade, wood overlay, `{elev.vignette}` |
 | `hours-grid` | `.hours-grid`, `.hours-col` | Two-up hours, hairline rules |
 

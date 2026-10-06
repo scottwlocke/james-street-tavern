@@ -5,9 +5,12 @@ Hugo static site for "James Street Tavern". Load the Hugo skill (`.opencode/skil
 ## Current state
 
 - **No theme** — `themes/` is empty and `theme` is not set in `hugo.toml`. All layouts are custom and live in root `layouts/`.
-- **Built and working** — 8 content sections / 46 menu items, 55 published pages, no build warnings. `content/`, `layouts/`, `assets/`, `static/`, `data/` and `i18n/` are all populated; `themes/` is the only empty one.
+- **Built and working** — 9 content sections (8 menu sections plus `specials`, which is deliberately kept out of the menu), 46 menu items + 2 specials, 60 published pages (59 pages plus `404.html`), no build warnings. `content/`, `layouts/`, `assets/` and `static/` are all populated. `themes/`, `data/` and `i18n/` are empty and unused — no template reads `.Site.Data` or i18n, so leave them alone unless you are adding that feature.
 - **Stylesheet** — `assets/css/style.css`, served through Hugo's asset pipeline with a sha256 fingerprint. **Do not move it to `static/`**: an unversioned `/css/style.css` lets browsers silently reuse a stale stylesheet.
+- **The same rule covers the homepage photo.** `assets/images/photo-tavern-hero.jpg` is fingerprinted by `layouts/partials/hero.html`. It must not sit loose in `content/` — a bare file there is published verbatim to the site root as an unversioned `/photo-tavern-hero.jpg`.
+- **No taxonomies.** `hugo.toml` sets `disableKinds = ["taxonomy", "term"]`. This is load-bearing: an empty `[taxonomies]` table does *not* disable tags/categories, it just blanks the values and leaves Hugo rendering unstyled `/tags/` and `/categories/` pages plus a build warning.
 - **`hugo.toml`** carries real `[params]` (address, hours, hero and specials copy, `photoGlob`, section blurbs). `baseURL` is still the `https://example.org/` placeholder — it must be changed to the real domain before deploy.
+- **Only `content/` is published.** Source documents live outside it — see `misc/` (design explorations, the vendor menu PDF) and `.opencode/skills/hugo/` (skill references). Nothing in either belongs in `content/`.
 
 ## Build / verify
 

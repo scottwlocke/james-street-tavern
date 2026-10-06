@@ -16,28 +16,17 @@
            width="287" height="265" alt="{{ .Site.Title }} — {{ default "Monroeville, PA" .Site.Params.location }}" decoding="async">
     </a>
 
-    <nav aria-label="Main">
-{{- /* All eight top-level sections roll up under one "Menu" control so the
-         bar reads Logo / Menu / Specials / Full Menu / Contact / Find Us
-         instead of nine links. Below 1024px this whole block is hidden and
-         #mobile-nav takes over. "Full Menu" is the itemised board — the
-         homepage links to it and each section still has its own page. */ -}}
-      <div class="nav-menu">
-        <button class="nav-menu-toggle" type="button"
-                aria-expanded="false" aria-controls="nav-menu-panel">
-          <span>Menu</span>
-          <span class="nav-menu-caret" aria-hidden="true"></span>
-        </button>
-        <ul class="nav-menu-panel" id="nav-menu-panel">
-          {{ range $menuSections }}
-            <li>
-              <a href="{{ .RelPermalink }}"
-                 {{ if eq $.RelPermalink .RelPermalink }}class="active" aria-current="page"{{ end }}>{{ .Title }}</a>
-            </li>
-          {{ end }}
-        </ul>
-      </div>
+<nav aria-label="Main">
+{{- /* The desktop bar carries three links only — Specials, Full Menu, Contact.
+         There is deliberately no "Menu" dropdown and no "Find Us" control here:
+         a section-by-section list is nine more entries than a top bar wants, and
+         "Full Menu" already opens the itemised board, so every section is still
+         one click away without a disclosure panel to manage.
 
+         The section list has NOT been dropped, only relocated: #mobile-nav below
+         renders the identical $menuSections sequence on phone widths, so a phone
+         visitor can still reach every section and Full Menu. Below 1024px this
+         whole <nav> is hidden and the drawer takes over. */ -}}
       <ul class="nav-links">
         {{- /* Specials gets its own top-level control rather than a row in
                the Menu dropdown. It is deliberately not a menu section
@@ -50,21 +39,11 @@
         {{ end }}
         {{ with $fullMenu }}
           <li><a href="{{ .RelPermalink }}"
-             {{ if eq $.RelPermalink .RelPermalink }}class="active" aria-current="page"{{ end }}>Full Menu</a></li>
+             {{ if eq $.RelPermalink .RelPermalink }}class="active" aria-current="page"{{ end }}>{{ .Title }}</a></li>
         {{ end }}
         <li><a href="{{ $home }}#contact">Contact</a></li>
       </ul>
     </nav>
-
-    <div class="nav-utility">
-      {{- /* Jumps to the embedded map at the foot of the page. Everything the
-             old dropdown listed — address, phone, email, hours — is rendered in
-             the contact section it lands on, so nothing is lost. */ -}}
-      <a class="nav-utility-toggle" href="{{ $home }}#map">
-        <span>Find Us</span>
-        <span class="nav-utility-arrow" aria-hidden="true"></span>
-      </a>
-    </div>
 
     <button class="nav-toggle" type="button" aria-label="Toggle menu"
             aria-expanded="false" aria-controls="mobile-nav">
@@ -76,9 +55,12 @@
 </header>
 
 <div id="mobile-nav" class="mobile-nav" aria-hidden="true">
-  {{- /* Same "Menu" grouping as the desktop control, so the two navigations
-         read identically. The drawer already lists every section, so no
-         progressive disclosure is needed here. */ -}}
+  {{- /* This is now the ONLY place the section-by-section list appears, since the
+         desktop "Menu" dropdown is gone. It carries Home, Full Menu, Specials,
+         every menu section in weight order, and Contact — driven by the same
+         $menuSections partial as before, so nothing is filtered out here and no
+         progressive disclosure is needed: on a phone the whole list fits in the
+         drawer and a nested submenu would only add taps. */ -}}
   <p class="mobile-nav-heading">Menu</p>
   <ul class="mobile-nav-links">
     <li><a href="{{ $home }}">Home</a></li>

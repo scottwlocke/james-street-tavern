@@ -311,110 +311,6 @@ h3 {
   transform: scaleX(1);
 }
 
-/* ---- Top-bar controls ----
-   "Menu" (§6) and "Find Us" are the same kind of control — a small outlined
-   uppercase button in a bordered shell — so they share one style block. */
-.nav-menu,
-.nav-utility {
-  position: relative;
-  flex: 0 0 auto;
-}
-
-.nav-menu-toggle,
-.nav-utility-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  min-height: 44px;             /* §11 */
-  padding: 0 var(--space-md);
-  background-color: transparent;
-  border: 2px solid var(--honey-oak);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-display);
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--honey-oak);
-  cursor: pointer;
-  transition: border-color var(--duration) var(--easing), color var(--duration) var(--easing);
-}
-
-.nav-menu-toggle:hover,
-.nav-utility-toggle:hover {
-  border-color: var(--chalk-gold);
-  color: var(--chalk-gold);
-}
-
-/* Downward marker. On "Find Us" it signals the control scrolls down the page
-   to #map; on "Menu" it becomes a filled caret that flips when open. */
-.nav-utility-arrow,
-.nav-menu-caret {
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 5px solid currentColor;
-  transition: transform var(--duration) var(--easing);
-}
-
-.nav-menu-toggle[aria-expanded="true"] .nav-menu-caret {
-  transform: rotate(180deg);
-}
-
-/* ---- Menu dropdown (§6 — the eight top-level sections) ---- */
-.nav-menu-panel {
-  position: absolute;
-  top: calc(100% + var(--space-sm));
-  left: 0;
-  z-index: 40;
-  min-width: 15rem;
-  margin: 0;
-  padding: var(--space-xs) 0;
-  list-style: none;
-  background-color: var(--table-top);
-  border: 1px solid var(--wood-dark);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-warm);
-  visibility: hidden;
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity var(--duration) var(--easing),
-              transform var(--duration) var(--easing),
-              visibility var(--duration) var(--easing);
-}
-
-.nav-menu.open .nav-menu-panel {
-  visibility: visible;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.nav-menu-panel a {
-  display: flex;
-  align-items: center;
-  min-height: 44px;             /* §11 */
-  padding: 0 var(--space-md);
-  font-family: var(--font-display);
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--off-white);
-  transition: color var(--duration) var(--easing),
-              background-color var(--duration) var(--easing);
-}
-
-.nav-menu-panel a:hover {
-  color: var(--chalk-gold);
-  background-color: var(--chalk-slate);
-}
-
-.nav-menu-panel a.active {
-  color: var(--chalk-gold);
-  box-shadow: inset 3px 0 0 var(--chalk-gold);
-}
-
 /* ---- Mobile drawer (§6 — chalkboard background) ---- */
 .nav-toggle {
   display: none;
@@ -473,11 +369,15 @@ h3 {
   border-bottom: 1px solid var(--border-wood);
 }
 
-/* Same "Menu" grouping as the desktop control, so both navigations read alike. */
+/* Drawer heading. It was --wood-dark, which is not a defined token anywhere in
+   this file; an unresolved var() invalidates the whole declaration at
+   computed-value time, so this border was silently rendering in currentColor
+   (cream) instead of the intended dark wood. --border-wood is the real token
+   and is what .mobile-nav-links a uses directly below. */
 .mobile-nav-heading {
   margin: 0 0 var(--space-sm);
   padding: 0 var(--space-lg) var(--space-xs);
-  border-bottom: 1px solid var(--wood-dark);
+  border-bottom: 1px solid var(--border-wood);
   font-family: var(--font-display);
   font-size: 0.75rem;
   font-weight: 500;
@@ -1273,6 +1173,65 @@ a.card:hover .card-cta::after {
 }
 
 /* ============================================
+   404
+   ============================================ */
+
+/* Centred single column. min-height rather than a fixed height so the page
+   still breathes on a short desktop without the crest drifting off-centre. */
+.error-page {
+  display: flex;
+  align-items: center;
+  min-height: 56vh;
+  padding-block: var(--space-3xl);
+  text-align: center;
+}
+
+.error-page-inner {
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+/* The crest is the focal point and the whole brand lockup, so it runs larger
+   than the --logo-clear nav sizing. Width is fixed and height stays automatic
+   so the intrinsic 287×265 aspect holds; the min() keeps it sane on phones.
+   §4 — it is a raster PNG that cannot be recoloured in CSS, and that its low
+   contrast against the chalkboard is accepted, so there is deliberately no
+   filter and no drop-shadow here. A shadow on an irregular transparent PNG
+   would need `filter`, which §4 rules out. */
+.error-logo {
+  display: block;
+  width: min(190px, 46vw);
+  height: auto;
+  margin: 0 auto var(--space-xl);
+}
+
+.error-code {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 16vw, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--chalk-gold);
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  margin-bottom: var(--space-md);
+}
+
+/* Inherits the centred text from .error-page; only the rhythm is added. */
+.error-page .section-title,
+.error-page .section-intro {
+  margin-inline: auto;
+}
+
+.error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+/* ============================================
    Contact
    ============================================ */
 
@@ -1432,9 +1391,13 @@ a.card:hover .card-cta::after {
   padding-block: var(--space-2xl) var(--space-lg);
 }
 
+/* Four columns: Visit / Specials / More / Follow. The "Menu" column is gone,
+   so this was repeat(5, 1fr). Note the Specials column is conditional in
+   footer.html — if specials content ever disappears the grid renders three
+   columns and this still lays out correctly, just a row short. */
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-lg);
   max-width: var(--container);
   margin-inline: auto;
@@ -1488,9 +1451,10 @@ a.card:hover .card-cta::after {
     --gutter: 24px;
   }
 
-  .nav-menu,
-  .nav-links,
-  .nav-utility {
+  /* Only .nav-links is left in the desktop bar, so that is the only thing to
+     hide here; .nav-menu and .nav-utility were removed along with their markup.
+     #mobile-nav is the section-by-section list on these widths. */
+  .nav-links {
     display: none;
   }
 
@@ -1503,8 +1467,10 @@ a.card:hover .card-cta::after {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* Was 3 across the old five columns. Four columns in a 3-wide grid leaves a
+     single orphan on the second row, so this steps down to a balanced 2×2. */
   .footer-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .contact-layout,

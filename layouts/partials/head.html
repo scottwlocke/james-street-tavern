@@ -1,6 +1,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{{- /* The 404 layout has no front matter to title itself, so Hugo would fall
+       back to its English default ("404 Page not found"). Say it in the same
+       voice as the page body instead. Also kept out of search indexes — a soft
+       404 is thin content and should never be a result. */ -}}
+{{- if eq .Kind "404" -}}
+<title>Page not found — {{ .Site.Title }}</title>
+<meta name="robots" content="noindex, follow">
+{{- else -}}
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}</title>
+{{- end -}}
 <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.heroDescription }}{{ end }}">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="{{ "images/jst-logo.png" | relURL }}" type="image/png">

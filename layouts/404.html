@@ -1,0 +1,36 @@
+{{ define "main" }}
+  {{- /* Soft 404 — Hugo serves this for any path that matches no page, so the
+         only job is to give the visitor a way out: the crest dead centre (it is
+         the whole brand lockup, wordmark and location line baked in), a plain
+         explanation, and two routes back. nav, help band and footer all come
+         from baseof.html, so this page matches the rest of the site. */ -}}
+  <section class="error-page">
+    <div class="container">
+      <div class="error-page-inner">
+        {{- /* Same crest the nav bar uses. DESIGN.md §4 is explicit that it is a
+               raster PNG that cannot be recoloured in CSS, and that its low
+               contrast against the chalkboard is accepted — hence no class that
+               filters it. */ -}}
+        <img class="error-logo" src="{{ "images/jst-logo.png" | relURL }}"
+             width="287" height="265"
+             alt="{{ .Site.Title }} — {{ default "Monroeville, PA" .Site.Params.location }}"
+             decoding="async">
+
+        <span class="error-code">404</span>
+        <h1 class="section-title">Nothing on this part of the board.</h1>
+        <p class="section-intro">
+          That page isn't on the menu — it's either been renamed or was never
+          here to begin with. Have a look at what's cooking, or head back to
+          the front.
+        </p>
+
+        <div class="error-actions">
+          {{ with .Site.GetPage "/menu" }}
+            <a href="{{ .RelPermalink }}" class="btn btn-gold">See the Board</a>
+          {{ end }}
+          <a href="{{ .Site.Home.RelPermalink }}" class="btn btn-outline">Back to the Tavern</a>
+        </div>
+      </div>
+    </div>
+  </section>
+{{ end }}

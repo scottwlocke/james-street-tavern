@@ -1,11 +1,10 @@
 <footer class="site-footer">
   <div class="footer-grid">
-    <div class="footer-col">
-      <h4>Menu</h4>
-      {{ range partial "menu-sections.html" . }}
-        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-      {{ end }}
-    </div>
+    {{- /* No "Menu" column here any more. A section-by-section list repeated in
+           the footer duplicated what the top bar already offered and left the
+           four remaining columns stranded in a five-wide grid. The section list
+           still has exactly one generator — menu-sections.html — read by the
+           homepage card grid, the mobile drawer and the Full Menu page. */ -}}
     <div class="footer-col">
       <h4>Visit</h4>
       <a href="{{ .Site.Home.RelPermalink }}#contact">Location</a>

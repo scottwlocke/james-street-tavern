@@ -2,9 +2,12 @@ baseURL = 'https://example.org/'
 locale = 'en-us'
 title = 'James Street Tavern'
 
-[taxonomies]
-  tag = []
-  category = []
+# This site has no taxonomies: nothing in content/ carries tags or categories.
+# They must be switched off explicitly — an empty `[taxonomies]` table does NOT
+# disable them, it just resets the values to empty and leaves Hugo rendering an
+# unstyled /tags/ and /categories/ page. `disableKinds` is what actually turns
+# those pages off. Add `tag = "tags"` under `[taxonomies]` if that changes.
+disableKinds = ["taxonomy", "term"]
 
 [params]
   location = "Monroeville, PA"

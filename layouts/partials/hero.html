@@ -1,9 +1,12 @@
+{{- /* The homepage photograph lives in assets/, not the content bundle. A bare
+       file sitting in content/ gets published to the site root verbatim, which
+       means an unversioned /photo-tavern-hero.jpg a browser will happily reuse
+       forever — the same trap baseof.html calls out for CSS and JS. Reading it
+       through Hugo Pipes and fingerprinting it gives the URL a content hash, so
+       a changed photo can never be served from cache. */ -}}
 {{ $heroImage := "" }}
-{{ $glob := .Site.Params.photoGlob | default "photo-*-hero.*" }}
-{{ with .Site.Home }}
-  {{ with .Resources.GetMatch $glob }}
-    {{ $heroImage = .RelPermalink }}
-  {{ end }}
+{{ with resources.GetMatch "images/photo-*-hero.*" }}
+  {{ $heroImage = (. | fingerprint "sha256").RelPermalink }}
 {{ end }}
 {{ if and (not $heroImage) (.Site.Params.heroImage) }}
   {{ $heroImage = .Site.Params.heroImage }}
