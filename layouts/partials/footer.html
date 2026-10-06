@@ -1,39 +1,70 @@
 <footer class="site-footer">
-  <div class="footer-grid">
-    {{- /* No "Menu" column here any more. A section-by-section list repeated in
-           the footer duplicated what the top bar already offered and left the
-           four remaining columns stranded in a five-wide grid. The section list
-           still has exactly one generator — menu-sections.html — read by the
-           homepage card grid, the mobile drawer and the Full Menu page. */ -}}
-    <div class="footer-col">
-      <h4>Visit</h4>
-      <a href="{{ .Site.Home.RelPermalink }}#contact">Location</a>
-      <a href="{{ .Site.Home.RelPermalink }}#contact">Hours</a>
-      <a href="tel:{{ replaceRE "[^0-9+]" "" (default "412-824-8884" .Site.Params.phone) }}">{{ default "412-824-8884" .Site.Params.phone }}</a>
-    </div>
-    {{ with .Site.GetPage "/specials" }}
-      {{ with .Pages.ByWeight }}
-    <div class="footer-col">
-      <h4>Specials</h4>
-      {{ range . }}
-        <a href="{{ $.Site.Home.RelPermalink }}#specials">{{ .Title }}</a>
-      {{ end }}
-    </div>
-      {{ end }}
-    {{ end }}
-    <div class="footer-col">
-      <h4>More</h4>
-      <a href="{{ .Site.Home.RelPermalink }}">Catering</a>
-      <a href="{{ .Site.Home.RelPermalink }}">Private Events</a>
-      <a href="mailto:{{ default "info@jst-tavern.com" .Site.Params.email }}">{{ default "info@jst-tavern.com" .Site.Params.email }}</a>
-    </div>
-    <div class="footer-col">
-      <h4>Follow</h4>
-      <a href="{{ .Site.Home.RelPermalink }}">Instagram</a>
-      <a href="{{ .Site.Home.RelPermalink }}">Facebook</a>
-    </div>
-  </div>
+  {{- /* The four link columns are gone: Visit / Specials / More / Follow.
+
+         "More" and "Follow" were four placeholders — Catering, Private Events,
+         Instagram, Facebook — that all pointed at the homepage, and "Specials"
+         pointed all four of its links at the same #specials anchor. None of
+         them reached anywhere the rest of the site does not already reach, so
+         there is still no grid here: .footer-grid, .footer-col h4 and
+         .footer-col a are not in the stylesheet and neither are the two
+         responsive column counts that used to reflow them.
+
+         What remains is the one thing a footer should never lose — how to find
+         and reach the place — plus the copyright line. That is a single row of
+         contact details, not a column grid, so .footer-contact lays it out as a
+         wrapping flex row rather than resurrecting a grid for one cell.
+
+         Everything here is read from hugo.toml params with `with` guards rather
+         than the inline `default "..."` literals the old Visit column used.
+         The phone number was previously written out as a literal in four
+         places — chalkboard.html, contact.html, this file and hugo.toml — and a
+         `with` guard degrades to nothing if a param is dropped where a literal
+         default would have quietly kept the old number rendering.
+
+         The address is plain text, not a link: the only map URL this site holds
+         is the embed iframe in contact.html, which is not a shareable
+         directions link, and inventing one is not this template's job. #contact
+         keeps its referrers in nav.html (x2), help-band.html and hero.html.
+
+         The homepage #specials anchor has no internal referrer now that the
+         footer no longer lists specials; specials.html keeps the id as a
+         deep-link target. */ -}}
   <div class="footer-bottom">
-    <p>&copy; {{ now.Year }} {{ .Site.Title }}. Come hungry, leave happy.</p>
+    <div class="footer-contact">
+      {{- /* The crest and the address as one left-hand block, the phone and
+             email still hard right. The address is a sibling of the image, not
+             a child of a link, so "centred next to the logo" is just
+             `align-items: center` on .footer-brand — the address line sits on
+             the crest's vertical midline instead of hanging off its top edge.
+
+             `alt=""` here, unlike the nav's mandated alt (§4). The crest bakes
+             the wordmark and "Monroeville, PA" into the artwork, and in the
+             footer the address beside it already states the location while the
+             nav link above already announces the site name — a third reading of
+             the same two facts. §4's alt rule exists because that nav link has
+             no other accessible name; this image is neither a link nor the only
+             source of its own content, so it is decorative per §11.
+
+             No filter, per §4: the crest is a raster PNG and cannot be
+             recoloured in CSS. That means it sits on --table-top rather than
+             --chalkboard, a darker field than the low contrast §4 accepts on
+             the nav — see the note added to §4. */ -}}
+      <div class="footer-brand">
+        <img class="footer-logo" src="{{ "images/jst-logo.png" | relURL }}"
+             width="287" height="265" alt="" aria-hidden="true" decoding="async">
+        {{- with .Site.Params.address }}
+          <p class="footer-address">{{ . }}</p>
+        {{- end }}
+      </div>
+      <div class="footer-contact-links">
+        {{- with .Site.Params.phone }}
+          <a href="tel:{{ replaceRE "[^0-9+]" "" . }}">{{ . }}</a>
+        {{- end }}
+        {{- with .Site.Params.email }}
+          <a href="mailto:{{ . }}">{{ . }}</a>
+        {{- end }}
+      </div>
+    </div>
+    <p class="footer-copy">&copy; {{ now.Year }} {{ .Site.Title }}. Come hungry, leave happy.</p>
   </div>
 </footer>

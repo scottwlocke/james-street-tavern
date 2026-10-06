@@ -14,9 +14,10 @@
       </div>
 
       <div class="card-grid">
-        {{ $blurbs := .Site.Params.sections }}
+        {{- /* Each card resolves its own blurb through partials/blurb.html, so
+               there is no blurbs map to thread through here any more. */ -}}
         {{ range $pages }}
-          {{ partial "section-card.html" (dict "page" . "blurbs" $blurbs) }}
+          {{ partial "section-card.html" (dict "page" .) }}
         {{ end }}
       </div>
     </div>

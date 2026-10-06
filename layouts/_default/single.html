@@ -1,15 +1,52 @@
 {{ define "main" }}
   {{ $image := "" }}
   {{ $glob := .Site.Params.photoGlob | default "photo-*-hero.*" }}
-  {{ with .Resources.GetMatch $glob }}
-    {{ $image = .RelPermalink }}
+  {{- /* `showimage = false` skips the lookup entirely. Unlike menu-card.html
+         there is no empty state to fall back to here: .detail-media is dropped
+         from the markup rather than kept as a bare wood box, because a 5fr
+         column holding nothing but a background reads as a rendering fault
+         rather than a deliberate blank.
+
+         The consequence is handled by .is-full below — the panel has to take
+         the whole width, or the grid would leave the 7fr column empty. That
+         was already broken for the two specials pages, which have no page
+         bundle and so never resolved a photo; the modifier fixes them too. */ -}}
+  {{ $showImage := partial "show-image.html" . }}
+  {{ if $showImage }}
+    {{ with .Resources.GetMatch $glob }}
+      {{ $image = .RelPermalink }}
+    {{ end }}
   {{ end }}
 
   <section class="section">
     <div class="container">
-      <span class="section-kicker">{{ with .Parent }}{{ .Title }}{{ end }}</span>
+      {{- with .Parent }}
+        {{- /* The kicker is the "up one level" link, and the only route off a
+               dish page to its section. Everything else here is terminal: the
+               panel carries no outbound links, the top bar offers only Specials
+               / Full Menu / Contact (§6), and the full section list lives in
+               #mobile-nav, which is hidden above 1024px. As a plain <span> the
+               parent section was unreachable from a dish page without typing
+               the URL — a desktop dead end, since the drawer that does list the
+               sections is not visible there.
 
-      <div class="detail-layout">
+               The kicker already read the section name directly above the dish
+               name, so the hierarchy was implied by the layout and only needed
+               the anchor. It is the minimal fix available: the alternative is a
+               breadcrumb nav or restoring section links to the top bar, and
+               §6 already rejected the latter on purpose.
+
+               section.html and specials/section.html render this same class as
+               a non-link <span>, so the anchor is distinguished by element
+               rather than given a second class.
+
+               .Parent is always set here — this template renders only pages
+               inside a section — so the old `{{ with .Parent }}` guard around
+               the title text, which could emit an empty span, goes with it. */ -}}
+        <a class="section-kicker" href="{{ .RelPermalink }}">{{ .Title }}</a>
+      {{- end }}
+
+      <div class="detail-layout{{ if not $image }} is-full{{ end }}">
         {{ with $image }}
           <div class="detail-media">
             <img src="{{ . }}" alt="{{ $.Title }}">
@@ -18,7 +55,20 @@
 
         <div class="detail-panel">
           <div class="menu-header">
-            <span class="menu-name">{{ .Title }}</span>
+            {{- /* The page's only <h1>. This template renders every dish and
+                   every special page (48 of them), and it used to emit the name
+                   as a <span>, which left those pages with no top-level heading
+                   at all — the only headings were the help band and the footer
+                   columns. `.menu-name` carries the display font, size, weight,
+                   letter-spacing and colour, so the element swap is invisible
+                   visually: `.detail-panel .menu-name` still wins on size and
+                   the class beats the bare `h1, h2, h3` rule in the reset.
+
+                   The card grid keeps a <span> (menu-card.html): a card's
+                   accessible name is the whole link text, so a heading inside
+                   it would add a landmark per dish without naming anything the
+                   link does not already say. */ -}}
+            <h1 class="menu-name">{{ .Title }}</h1>
             {{ with .Params.price }}
               <span class="menu-price">{{ . }}</span>
             {{ end }}

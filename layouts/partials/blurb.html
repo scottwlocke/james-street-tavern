@@ -1,0 +1,41 @@
+{{- /* The one-line blurb for a page, resolved in a fixed order:
+
+       1. the page's own `description` — Hugo already falls back to `summary`
+          when `description` is unset, so this one lookup covers both
+       2. `[params.sections]` in hugo.toml, keyed by section slug
+       3. the page's `lead` — how a special states its pitch, and the only
+          prose a special's own page carries
+
+       Returns an empty string when none of those match, so each caller keeps
+       its own last resort rather than baking a site-wide default in here.
+
+       Steps 1 and 2 used to be duplicated. partials/section-card.html ran its
+       own `description` → `summary` → params.sections chain for the homepage
+       cards, while partials/head.html knew only about `description`. None of
+       the eight menu sections sets one, so those pages fell all the way
+       through to `heroDescription` — twelve pages publishing one identical
+       string, eight of them describing wings. Both read this partial now, so
+       the precedence is stated once and a new section picks up its blurb in
+       the cards and the meta tag together.
+
+       `.Params.lead` is deliberately last. A section blurb is written for the
+       section and beats a one-off pitch; `lead` is only reached by a page with
+       no blurb of its own, which today means the two specials. */ -}}
+{{- $blurb := "" -}}
+{{- with .Description -}}
+  {{- $blurb = . -}}
+{{- end -}}
+{{- if not $blurb -}}
+  {{- $sections := .Site.Params.sections -}}
+  {{- with $sections -}}
+    {{- with index $sections $.Section -}}
+      {{- $blurb = . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $blurb -}}
+  {{- with .Params.lead -}}
+    {{- $blurb = . -}}
+  {{- end -}}
+{{- end -}}
+{{- return $blurb -}}

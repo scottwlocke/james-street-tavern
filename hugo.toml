@@ -43,10 +43,13 @@ disableKinds = ["taxonomy", "term"]
   helpBandText = "Got a big party coming, or a question about catering? Give us a call — we'll sort you out."
 
   # Section blurbs for the card grid, ordered by section weight so this list
-  # reads in the same order the homepage renders them. Note the precedence is
-  # the reverse of what it looks like: layouts/partials/section-card.html tries
-  # a section's own `description`, then `summary`, and only falls back to these.
-  # A section listed here with no front matter always shows its blurb below.
+  # reads in the same order the homepage renders them. These are the fallback,
+  # not the first choice: layouts/partials/blurb.html resolves a blurb as the
+  # page's own `description` (which already covers `summary`), then this table,
+  # then a special's `lead`. A section listed here with no `description` in
+  # front matter therefore always shows its blurb below — in the card *and* in
+  # the meta description, which is what keeps the two from quoting different
+  # text for the same section.
   [params.sections]
     pizza = "Wood-fired pies, 60 seconds in the oven."
     wings = "Jumbo whole wings, tossed in house sauce."

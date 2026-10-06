@@ -211,6 +211,56 @@ h3 {
   color: var(--chalk-gold);
 }
 
+/* On a dish page the kicker is the anchor up to the parent section — the only
+   route off that page, since the top bar offers just Specials / Full Menu /
+   Contact (§6) and the section list sits in the drawer that is hidden above
+   1024px. Scoped to the element: the non-link kickers in section.html and
+   specials/section.html keep the plain span styling above.
+
+   §6 already gives the site's links a gold scaleX underline on hover, so that
+   is the affordance reused here rather than inventing a second one. The
+   geometry matches .nav-links a::after deliberately — same 44px box with the
+   label centred, so `bottom: 8px` sits just under the text in both.
+
+   Colour is unchanged. The 4.32:1 figure in the note above is measured against
+   barn wood; a dish page's kicker sits on the --canvas band, where honey oak
+   measures 7.45:1 and clears AA comfortably. That also keeps it clearly
+   distinct from body copy, which is off-white at 15.32:1 on the same band —
+   so no colour change is needed to make the link readable as a link. */
+a.section-kicker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;               /* §11 touch target */
+  color: inherit;
+}
+
+a.section-kicker::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 8px;
+  width: 100%;
+  height: 2px;
+  background-color: var(--chalk-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration) var(--easing);
+}
+
+/* Stated explicitly because `a:hover` (0,1,1) outranks `.section-kicker`
+   (0,1,0) and would otherwise flip the kicker to beer foam on hover by
+   accident rather than by choice. */
+a.section-kicker:hover,
+a.section-kicker:focus-visible {
+  color: var(--chalk-gold);
+}
+
+a.section-kicker:hover::after,
+a.section-kicker:focus-visible::after {
+  transform: scaleX(1);
+}
+
 .section-title {
   font-size: 2.25rem;            /* §3 section title */
   font-weight: 600;
@@ -1111,6 +1161,16 @@ a.card:hover .card-cta::after {
   margin-top: var(--space-md);
 }
 
+/* Set by single.html when there is no .detail-media to put in the first
+   column — a `showimage = false` dish, or any page with no photo to resolve.
+   Without this the panel would sit in the 5fr track with 7fr of dead space
+   beside it, which is how the specials pages rendered before this existed.
+   It is the desktop counterpart of the 1fr rule the 1024px breakpoint
+   already applies to .detail-layout. */
+.detail-layout.is-full {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .detail-media {
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -1391,50 +1451,82 @@ a.card:hover .card-cta::after {
   padding-block: var(--space-2xl) var(--space-lg);
 }
 
-/* Four columns: Visit / Specials / More / Follow. The "Menu" column is gone,
-   so this was repeat(5, 1fr). Note the Specials column is conditional in
-   footer.html — if specials content ever disappears the grid renders three
-   columns and this still lays out correctly, just a row short. */
-.footer-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-lg);
+/* The four link columns are gone, so there is no grid here any more —
+   .footer-grid, .footer-col h4 and .footer-col a were removed with the markup
+   they styled, along with their two responsive column counts. The copyright
+   line is no longer the footer's only content: address, phone and email sit
+   above it in .footer-contact. That is one row of contact details, not a
+   column grid, so it is a wrapping flex row — a one-cell grid would have
+   needed all the column rules back for no layout gain. .footer-bottom also
+   lost its border-top and its large top margin, because there is nothing left
+   above it to divide from. .site-footer's padding-block supplies the space. */
+.footer-bottom {
   max-width: var(--container);
   margin-inline: auto;
   padding-inline: var(--gutter);
-}
-
-.footer-col h4 {
-  font-family: var(--font-display);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--chalk-gold);
-  margin-bottom: var(--space-md);
-}
-
-.footer-col a {
-  display: flex;
-  align-items: center;
-  min-height: 44px;             /* §11 touch target */
-  font-size: 0.9375rem;
-  color: var(--beer-foam);
-  opacity: 0.78;
-}
-
-.footer-col a:hover {
-  color: var(--chalk-gold);
-  opacity: 1;
-}
-
-.footer-bottom {
-  max-width: var(--container);
-  margin: var(--space-2xl) auto 0;
-  padding: var(--space-lg) var(--gutter) 0;
-  border-top: 1px solid var(--border-wood);
   font-size: 0.875rem;
   color: var(--honey-oak);
+}
+
+/* Space-between puts the crest-and-address block hard left and the phone and
+   email hard right on desktop. flex-wrap is most of the responsive story:
+   below roughly 640px the two no longer share a line and the links drop beneath,
+   so this needs no breakpoint of its own. */
+.footer-contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg) var(--space-xl);
+  margin-bottom: var(--space-lg);
+}
+
+/* The crest and the address as one block. align-items: center is the whole of
+   "the address centred next to the logo" — the address sits on the crest's
+   vertical midline rather than hanging off its top edge. It wraps too, so on a
+   narrow phone the address drops below the crest instead of squeezing into a
+   two-word column beside an 88px image. */
+.footer-brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+
+/* §4 — height comes off the same --logo-clear knob as the nav crest, and the
+   intrinsic width/height attributes let the browser derive the ratio and reserve
+   the box with no layout shift. flex: 0 0 auto stops the shrink that would
+   otherwise squash the crest once the address starts wrapping. */
+.footer-logo {
+  display: block;
+  flex: 0 0 auto;
+  height: var(--logo-clear);
+  width: auto;
+}
+
+.footer-address {
+  color: var(--beer-foam);
+}
+
+.footer-contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+/* §11 — 44px touch target, the same floor .footer-col a used to carry. The
+   address beside them is not interactive, so it gets no target of its own. */
+.footer-contact-links a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--beer-foam);
+}
+
+.footer-contact-links a:hover {
+  color: var(--chalk-gold);
 }
 
 .footer-bottom p {
@@ -1464,12 +1556,6 @@ a.card:hover .card-cta::after {
 
   .card-grid,
   .menu-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  /* Was 3 across the old five columns. Four columns in a 3-wide grid leaves a
-     single orphan on the second row, so this steps down to a balanced 2×2. */
-  .footer-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -1522,8 +1608,7 @@ a.card:hover .card-cta::after {
 
   .card-grid,
   .menu-grid,
-  .hours-grid,
-  .footer-grid {
+  .hours-grid {
     grid-template-columns: 1fr;
   }
 

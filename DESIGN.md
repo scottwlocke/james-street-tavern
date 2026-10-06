@@ -109,10 +109,9 @@ get their shape from the font rather than from leading.
 | `{type.nav}` | `.nav-links a` | Oswald | 500 | 1rem | 1.6 † | 0.05em | Desktop nav, uppercase |
 | `{type.heading-sm}` | `.hours-col h4` | Oswald | 600 | 1rem | 1.6 † | 0.12em | Column headings, uppercase |
 | `{type.label}` | `.contact-line-label` | Oswald | 600 | 0.875rem | 1.6 † | 0.1em | Field labels, uppercase |
-| `{type.eyebrow-sm}` | `.footer-col h4` | Oswald | 600 | 0.9375rem | 1.6 † | 0.14em | Footer column headings |
 | `{type.body}` | `body` | Source Sans 3 | 400 | 1.125rem | 1.6 | 0 | Default body copy |
 | `{type.body-sm}` | `.card-meta`, `.menu-desc` | Source Sans 3 | 400 | 1rem | 1.6 | 0 | Card and menu descriptions |
-| `{type.caption}` | `.footer-col a` | Source Sans 3 | 400 | 0.9375rem | 1.6 † | 0 | Footer links |
+| `{type.caption}` | `.footer-bottom` | Source Sans 3 | 400 | 0.875rem | 1.6 † | 0 | Footer contact details and copyright line |
 
 **Principles**
 
@@ -151,7 +150,10 @@ derives the aspect ratio without a layout shift.
 
 `--logo-clear` is the single knob for logo height, and it is **88px**. It also
 defines the required clear space, and `.logo` carries `min-height: var(--logo-clear)`
-so the link keeps its 44px+ touch target (§11) at any logo size.
+so the link keeps its 44px+ touch target (§11) at any logo size. The footer crest
+(`.footer-logo`) reads the same knob rather than declaring a size of its own.
+The one place the crest is *not* at `--logo-clear` is the 404 page, which runs
+it larger on purpose (§17).
 
 **Clear Space**  
 Minimum clear space equal to the logo height on all sides. Horizontally this is
@@ -163,7 +165,7 @@ Three values are computed from `--logo-clear` and must stay that way:
 
 | Token | Derives | Used by |
 |---|---|---|
-| `--logo-clear` | authored (`88px`) | `.logo-img` height, `.logo` min-height |
+| `--logo-clear` | authored (`88px`) | `.logo-img` height, `.logo` min-height, `.footer-logo` height |
 | `--nav-h` | `--logo-clear + 2 × {space.sm}` (104px) | `.nav-inner` min-height, `.mobile-nav` inset |
 | `--nav-clearance` | `--nav-h + {space.md}` (120px) | `html` `scroll-padding-top` |
 
@@ -185,6 +187,13 @@ Because the crest is full-colour, its navy field sits low-contrast against the
 chalkboard nav (`#1A1A1A`). This is accepted: the crest carries enough white and
 light blue to read as a shield. If it proves illegible on the dark bar, the fix is
 a supplied white variant, never a CSS filter.
+
+The footer is the same crest on a darker field — `--table-top` (`#2C1B10`) rather
+than `--chalkboard` — so the accepted low contrast is slightly worse there, and
+the footer places it beside live address text rather than on its own. Both make
+it more legible, not less. Still unfiltered, for the same reason: recolouring a
+raster PNG in CSS is forbidden. If the footer crest ever reads as a dark smudge,
+the answer is a supplied `logo-jst-white.png` (§12), not a `filter`.
 
 **Favicon / App Icon**  
 The crest PNG, referenced by both `rel="icon"` and `rel="apple-touch-icon"`. A
@@ -240,6 +249,33 @@ from the system's own tokens, not a grey box. The convention:
 Where no art resolves at all, `.card-media-empty` renders the wood fill with the
 grain — a legitimate fallback, not a failure, but prefer a placeholder over
 leaving it bare.
+
+### `showimage` opts a dish out of its photo
+
+Every menu item carries a `showimage` boolean in front matter. `true` is the
+current state of all 46; set it to `false` to keep a dish but drop its
+photograph. The rule is opt-out, so an item with no `showimage` at all still
+shows its photo — a new item or a one-off page cannot accidentally lose its art
+by omission. `layouts/partials/show-image.html` owns that decision and both call
+sites read it, so the card and the detail page can never disagree.
+
+Turning it off is a display decision, not a deletion. Two consequences worth
+knowing before using it:
+
+- **The two surfaces handle the blank differently, on purpose.** The card keeps
+  `.card-media` and falls back to `.card-media-empty` (§5), so the grid's 16:10
+  rhythm holds and cards in a row stay level. The detail page drops
+  `.detail-media` altogether and adds `.is-full` to `.detail-layout`, because a
+  5fr column holding nothing but a background reads as a rendering fault. That
+  modifier also governs any page with no photo to resolve — which is how the two
+  specials pages render, and how they rendered before `.is-full` existed.
+- **The file still ships.** Page resources are published whatever the templates
+  do with them, so `showimage = false` removes the `<img>` from the markup but
+  leaves the PNG in the build output. Hiding a photo is not a payload saving; if
+  that is the goal, move the file out of the page bundle.
+
+**Never style this away.** The photo is not rendered at all, rather than hidden
+with CSS, so there is no `.is-hidden` variant to reach for.
 
 ---
 
@@ -362,6 +398,26 @@ track, and invisible at a 20s interval.
   sections, this drawer is one of only three places they appear — with the
   homepage card grid and `/menu/` — so it is a primary navigation route, not a
   mobile-only convenience
+- **A dish page links up to its own section.** The kicker above the dish name is
+  an anchor to `.Parent`, not a label. This is the one route off a dish page to
+  a section page, and without it the route exists only in the drawer, which is
+  hidden above 1024px — so on desktop a visitor who arrived on a single dish
+  from a search engine had no way to reach `/pizza/` and could only type the
+  URL. The kicker already read the section name directly above the dish name, so
+  the hierarchy was implied by the layout and only needed the anchor.
+- The kicker anchor is **scoped to the element**, not a second class.
+  `section.html` and `specials/section.html` render the same `.section-kicker`
+  as a plain `<span>` — those are section pages with no parent section to go up
+  to — and that must not pick up link styling or the underline.
+- The link reuses §6's **gold scaleX underline** affordance rather than
+  introducing a second one, with the same geometry as `.nav-links a::after`:
+  same 44px box, label centred, rule at `bottom: 8px`. The kicker is also a
+  target, so it needs the §11 44px minimum.
+- The kicker colour is **unchanged**. Honey oak on a dish page's `--canvas` band
+  measures 7.45:1 and clears AA comfortably — the 4.32:1 figure elsewhere in
+  this document is measured against barn wood, a different band. It is also
+  plainly distinct from body copy (off-white, 15.32:1 on the same band), so no
+  colour change is needed for the link to read as a link.
 
 ### The menu section list is centralised
 
@@ -369,8 +425,8 @@ track, and invisible at a 20s interval.
 `params.nonMenuSections`, and it is the **only** source for the section list.
 Three surfaces read it: the homepage card grid (`sections-grid.html`), the
 mobile drawer (`nav.html`), and the Full Menu page (`full-menu.html`). The
-desktop top bar carries only Specials / Full Menu / Contact and the footer has no
-Menu column, so neither repeats the list.
+desktop top bar carries only Specials / Full Menu / Contact, and the footer holds
+contact details rather than a section list, so neither repeats it.
 
 Opt a section out by adding its slug to `nonMenuSections` in `hugo.toml`. Never
 filter `.Site.Sections` inline at a call site — that is how a specials section
@@ -416,11 +472,22 @@ deep-links work. No extra scroll offset is needed for those — `html`'s
 `scroll-padding-top: var(--nav-clearance)` already covers fragment navigation
 against the sticky bar.
 
+Those fragments are a **deep-link target, not a discovered route**: `/menu/`
+lists every dish under its section heading but renders no visible link to a
+section page, so a visitor reaches `/pizza/` by scrolling or by a shared
+fragment, not by clicking. That is a deliberate limit, not a defect — the section
+list already appears on the homepage grid and in the drawer, and a dish page now
+links up to its own section (§6), so no menu page strands a visitor. Adding a
+jump-link row to `/menu/` would be the next step if the fragments ever need to
+be self-evident.
+
 ### Specials are content, not config
 Specials are ordinary pages in `content/specials/`, rendered into the homepage
 chalkboard — one `.chalkboard` per item, rotated one at a time by the specials
 rotator (§6). The board renders nothing when the section is empty, and keeps
-`id="specials"`, which the footer links to.
+`id="specials"`. That anchor has no internal referrer — the footer used to be the
+only one and its link columns have been removed — so it survives as a deep-link
+target for outside arrivals, not as something the site links to.
 
 Item front matter: `title`, `kicker`, `price`, `priceUnit`, `lead`, `details`
 (list), `weight`. The board is the loudest thing on the page (§18) — specials
@@ -512,6 +579,12 @@ Avoid pure flat digital surfaces. Always introduce at least a light texture or w
   `alt=""`. Every placeholder SVG is decorative and carries empty alt or
   `aria-hidden` — its caption text names the section, so announcing the SVG
   filename would be noise
+- **The footer crest is decorative and takes `alt=""` + `aria-hidden`.** Same
+  image as the nav, opposite decision, because the reason for the nav's alt does
+  not apply: the nav link has no other accessible name, whereas the footer crest
+  is not a link and sits beside live address text that already states its
+  location, under a nav that already announced the site name. Repeating both
+  facts a third time is noise. Do not "fix" this to match `nav.html`
 
 ---
 
@@ -621,7 +694,7 @@ fixed set of pages, and extra breakpoints only add untested states.
 | Name | Width | Key changes |
 |---|---|---|
 | Mobile | < 768px | Single-column everything; hamburger drawer; gutters 24px; section padding 56px; hero ≥ 520px |
-| Tablet | 768–1023px | Two-column card and menu grids; 2×2 footer; detail and contact layouts stack; gutters 24px |
+| Tablet | 768–1023px | Two-column card and menu grids; detail and contact layouts stack; gutters 24px |
 | Desktop | ≥ 1024px | Three-column grids; `Specials`, `Full Menu`, `Contact`; gutters 40px |
 
 **Collapsing strategy**
@@ -656,10 +729,10 @@ fixed set of pages, and extra breakpoints only add untested states.
 **Touch targets (§11)**
 
 - Every interactive element clears 44×44px. Buttons are 44px tall; nav rows are
-  44px; the hamburger is 44×44; footer links are 44px tall rows even though the
-  text is 15px; the specials dots and pause button are 44×44 (§6).
-- Tap areas extend beyond the visible glyph where needed — nav and footer links
-  use `min-height` rows rather than padding the text run.
+  44px; the hamburger is 44×44; the specials dots and pause button are 44×44 (§6);
+  the footer's phone and email are 44px rows.
+- Tap areas extend beyond the visible glyph where needed — nav links and the
+  footer contact links use `min-height` rows rather than padding the text run.
 - The mobile drawer's links are 56px tall, above the 44px floor, because it is a
   thumb-only surface.
 
@@ -712,7 +785,7 @@ are separate entries, never buried in prose.
 | `mobile-drawer` | `.mobile-nav.open` | Full-canvas chalkboard, 56px rows, `Menu` heading above the list |
 | `section-band-wood` | `.section-wood` | Wood gradient + grain |
 | `help-band` | `.help-band` | Wood gradient, double gold rule |
-| `footer` | `.site-footer` | `{colors.table-top}`, 4-column grid, 2×2 on tablet |
+| `footer` | `.site-footer`, `.footer-bottom`, `.footer-contact`, `.footer-brand`, `.footer-logo` | `{colors.table-top}`. Crest (`--logo-clear`, §4, unfiltered, decorative `alt=""`) then the address, vertically centred as a pair, with phone and email hard right. No grid — the link columns were removed |
 | `hero` | `.hero`, `.hero-media` | Warm grade, wood overlay, `{elev.vignette}` |
 | `hours-grid` | `.hours-grid`, `.hours-col` | Two-up hours, hairline rules |
 
@@ -721,6 +794,10 @@ these exist):
 
 - Form inputs (§6) — no form on the site; the contact block is address/hours only
 - Icon set (§5) — no icon assets; the core wing/beer/chalkboard/pin icons are absent
+- `{type.eyebrow-sm}` (§3) — the role is defined (Oswald 600, 0.9375rem, 0.14em,
+  uppercase) but has no consumer: its only one was `.footer-col h4`, removed with
+  the footer's link columns. Restore it if a small uppercase Oswald eyebrow is
+  ever needed, at those values
 - Texture files (§12) — wood and chalkboard are generated in CSS, not loaded as
   `texture-*.jpg`
 - Logo variants (§4, §12) — only `jst-logo.png` exists. `logo-jst-primary.png`

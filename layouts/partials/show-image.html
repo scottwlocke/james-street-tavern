@@ -1,0 +1,34 @@
+{{- /* Whether a page's photograph should be rendered, decided once for both
+       places a dish photo appears: the card in menu-card.html (section pages
+       and /menu/) and the detail panel in _default/single.html.
+
+       The rule is opt-out: an absent `showimage` shows the photo. That keeps
+       every page that predates the field rendering exactly as it did, so the
+       field could be introduced without touching a single existing value.
+
+       `isset` normalises the missing case explicitly. The obvious-looking
+       alternatives are wrong or subtle here, and both were checked against
+       Hugo 0.167 rather than assumed:
+
+         {{ .Params.showimage }}                  false for absent — inverts
+                                                  the whole rule
+         {{ .Params.showimage | default true }}   relies on `default` treating
+                                                  false as a real value, which
+                                                  is version-dependent
+         {{ if ne .Params.showimage false }}      correct, but leans on `ne`
+                                                  comparing absent against false
+
+       So: start at true, and only let a key that is actually present say
+       otherwise. An explicit `showimage = false` is the only thing that hides
+       a photo.
+
+       This deliberately does not consult whether a photo exists — callers do
+       that themselves with Resources.GetMatch. Hiding a photo and having no
+       photo both end at the same place, but for different reasons, and each
+       caller picks its own empty state: menu-card keeps .card-media and falls
+       back to .card-media-empty (§5), single drops .detail-media entirely. */ -}}
+{{- $show := true -}}
+{{- if isset .Params "showimage" -}}
+  {{- $show = .Params.showimage -}}
+{{- end -}}
+{{- return $show -}}

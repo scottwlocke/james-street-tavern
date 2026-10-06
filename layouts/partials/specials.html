@@ -20,7 +20,10 @@
        The board itself lives in partials/chalkboard.html, shared with
        /specials/ — that page renders the same panels, all at once.
 
-       The id="specials" anchor stays: the footer links to it. */ -}}
+       The id="specials" anchor stays. The footer used to be its only internal
+       referrer, but the footer no longer carries link columns; it is kept as a
+       deep-link target for anyone arriving at /#specials from outside. The nav
+       links the /specials/ page itself, not this anchor. */ -}}
 {{- with .Site.GetPage "/specials" -}}
   {{- $items := .Pages.ByWeight -}}
   {{- if $items -}}

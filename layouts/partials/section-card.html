@@ -1,5 +1,4 @@
 {{ $page := .page }}
-{{ $blurbs := .blurbs }}
 {{ $glob := .Site.Params.photoGlob | default "photo-*-hero.*" }}
 {{ $image := "" }}
 {{ with $page.Resources.GetMatch $glob }}
@@ -13,14 +12,12 @@
   {{ end }}
 {{ end }}
 
-{{ $blurb := "" }}
-{{ with $page.Params.description }}{{ $blurb = . }}{{ end }}
-{{ if not $blurb }}
-  {{ with $page.Params.summary }}{{ $blurb = . }}{{ end }}
-{{ end }}
-{{ if and (not $blurb) $blurbs }}
-  {{ with index $blurbs $page.Section }}{{ $blurb = . }}{{ end }}
-{{ end }}
+{{- /* Same resolver the meta tag uses, so a card and its section page can
+       never quote different blurbs for one section. This partial used to run
+       its own `description` → `summary` → params.sections chain and take the
+       blurbs map as an argument; blurb.html reads the site params itself, so
+       the argument is gone. */ -}}
+{{ $blurb := partial "blurb.html" $page }}
 
 <a class="card" href="{{ $page.RelPermalink }}">
   <div class="card-media">

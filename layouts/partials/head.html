@@ -10,7 +10,13 @@
 {{- else -}}
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}</title>
 {{- end -}}
-<meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.heroDescription }}{{ end }}">
+{{- /* The blurb chain lives in partials/blurb.html so the homepage cards and
+       the meta tag can't disagree. `heroDescription` is the site-wide last
+       resort only: reaching it means a page has no blurb anywhere, which is
+       correct for the homepage and for 404, and should not happen to a section
+       that hugo.toml already describes. */ -}}
+{{- $description := partial "blurb.html" . | default .Site.Params.heroDescription -}}
+<meta name="description" content="{{ $description }}">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="{{ "images/jst-logo.png" | relURL }}" type="image/png">
 <link rel="apple-touch-icon" href="{{ "images/jst-logo.png" | relURL }}">

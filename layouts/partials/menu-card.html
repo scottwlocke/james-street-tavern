@@ -1,8 +1,19 @@
 {{ $item := .item }}
 {{ $image := "" }}
 {{ $glob := .Site.Params.photoGlob | default "photo-*-hero.*" }}
-{{ with $item.Resources.GetMatch $glob }}
-  {{ $image = .RelPermalink }}
+{{- /* `showimage = false` skips the lookup, so the photo is never published
+       into this page's markup at all — not hidden with CSS, not src-less.
+
+       The result is indistinguishable from a dish that simply has no photo:
+       .card-media stays and .card-media-empty renders the wood fill and grain,
+       which §5 already calls a legitimate fallback rather than a failure. So
+       the grid keeps its 16:10 rhythm and every card in a row lines up whether
+       or not the dish opted out. The alternative — collapsing .card-media
+       entirely — would leave holes in the grid and resize the other cards. */ -}}
+{{ if partial "show-image.html" $item }}
+  {{ with $item.Resources.GetMatch $glob }}
+    {{ $image = .RelPermalink }}
+  {{ end }}
 {{ end }}
 
 <a class="card" href="{{ $item.RelPermalink }}">
