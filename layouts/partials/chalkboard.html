@@ -8,7 +8,12 @@
 
        Expects the special to carry kicker / price / priceUnit / lead /
        details. The title is an <h2> in both callers — the homepage h1 is the
-       hero, and /specials/ has the section title as its h1. */ -}}
+       hero, and /specials/ has the section title as its h1.
+
+       Optional `photo` front-matter field: filename matching
+       `photoGlob` (`photo-*-hero.*`). When present, renders a responsive
+       image: on wide screens the image sits right of the content; on narrow
+       screens it stacks below. */ -}}
 {{- $item := . -}}
 <span class="chalkboard-lights" aria-hidden="true"></span>
 
@@ -17,32 +22,43 @@
 {{ end }}
 <h2 class="chalk-title">{{ $item.Title }}</h2>
 
-<div class="chalk-body">
-  {{ with $item.Params.price }}
-    <div class="chalk-price-block">
-      <span class="chalk-price">{{ . }}</span>
-      <span class="chalk-price-flourish" aria-hidden="true"></span>
-      <span class="chalk-price-unit">{{ $item.Params.priceUnit | default "each" }}</span>
-    </div>
+{{ with $item.Params.photo }}
+  {{ $imgPath := printf "images/%s" . -}}
+  {{ $img := resources.GetMatch $imgPath -}}
+  {{ if $img }}
+    {{ $imgProcessed := $img.Process (printf "resize 480x webp q82") -}}
+    {{ $imgWebp := ($imgProcessed | fingerprint "sha256") -}}
+    {{ $imgJpegProcessed := $img.Process (printf "resize 480x jpg q82") -}}
+    {{ $imgJpeg := ($imgJpegProcessed | fingerprint "sha256") -}}
+    <picture>
+      <source type="image/webp" srcset="{{ $imgWebp.RelPermalink }} 480w">
+      <img class="chalk-image"
+           src="{{ $imgJpeg.RelPermalink }}"
+           width="{{ $img.Width }}" height="{{ $img.Height }}"
+           alt="{{ $item.Title }} special"
+           loading="lazy"
+           decoding="async"
+           style="width:100%; max-width:480px;">
+    </picture>
+  {{ end }}
+{{ end }}
+
+<div class="chalk-wrapper">
+  {{ with $item.Params.lead }}
+    <p class="chalk-lead">{{ . }}</p>
+  {{ end }}
+  {{ with $item.Params.details }}
+    <ul class="chalk-list">
+      {{ range . }}
+        <li>{{ . }}</li>
+      {{ end }}
+    </ul>
   {{ end }}
 
-  <div>
-    {{ with $item.Params.lead }}
-      <p class="chalk-lead">{{ . }}</p>
-    {{ end }}
-    {{ with $item.Params.details }}
-      <ul class="chalk-list">
-        {{ range . }}
-          <li>{{ . }}</li>
-        {{ end }}
-      </ul>
-    {{ end }}
-
-    <p class="chalk-actions">
-      <a class="btn btn-primary"
-         href="tel:{{ replaceRE "[^0-9+]" "" ($item.Site.Params.phone | default "412-824-8884") }}">
-        Call to Order
-      </a>
-    </p>
-  </div>
+  <p class="chalk-actions">
+    <a class="btn btn-primary"
+       href="tel:{{ replaceRE "[^0-9+]" "" ($item.Site.Params.phone | default "412-824-8884") }}">
+      Call to Order
+    </a>
+  </p>
 </div>

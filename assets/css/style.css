@@ -757,6 +757,44 @@ body.nav-open {
   background-image: var(--string-light-glow);
   pointer-events: none;
 }
+/* Responsive layout for special image: wide = image right/text left,
+   narrow = text above image */
+.chalkboard {
+  display: grid;
+  gap: var(--space-sm);
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+}
+@media (min-width: 1024px) {
+  .chalkboard {
+    grid-template-columns: minmax(0, 480px) 1fr;
+    grid-template-rows: auto;
+  }
+}
+.chalk-image {
+  max-width: 480px;
+  width: 100%;
+  order: 2;
+}
+@media (min-width: 1024px) {
+  .chalk-image {
+    order: 1;
+  }
+}
+.chalk-wrapper {
+  order: 1;
+}
+@media (min-width: 1024px) {
+  .chalk-wrapper {
+    order: 2;
+  }
+}
+/* Ensure the image fills its grid cell */
+.chalk-image picture,
+.chalk-image img {
+  width: 100%;
+  height: auto;
+}
 
 .chalk-kicker {
   display: block;
