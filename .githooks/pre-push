@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#
+# Scans exactly the commits this push is about to send, and refuses the
+# push if any of them look like they carry a credential.
+#
+# Git only reads this if core.hooksPath points here, which is not
+# something a clone inherits:
+#
+#     git config core.hooksPath .githooks
+#
+# Run that once after cloning, or the guard is inert and nothing will tell
+# you. scripts/check-secrets.sh is still runnable on its own either way.
+#
+# Bypassing it with --no-verify is possible, which is why it is a guard
+# and not a guarantee - see AGENTS.md.
+set -uo pipefail
+
+remote="${1:-remote}"
+url="${2:-url}"
+zero=0000000000000000000000000000000000000000
+here="$(cd "$(dirname "$0")" && pwd)"
+scan="$here/../scripts/check-secrets.sh"
+status=0
+
+while read -r lref lsha rref rsha; do
+	[ -n "${lsha:-}" ] || continue
+
+	# Deleting a remote branch sends its zero sha: nothing local to scan.
+	if [ "$lsha" = "$zero" ]; then
+		echo "pre-push: deleting $lref on $remote - nothing to scan"
+		continue
+	fi
+
+	# A zero remote sha means a new ref, so the whole history behind it
+	# is about to land. Otherwise only the delta is new. For a force push
+	# onto unrelated history rsha..lsha is still well defined: it is
+	# everything reachable from lsha that is not reachable from rsha.
+	if [ "$rsha" = "$zero" ]; then
+		range="$lsha"
+	else
+		range="$rsha..$lsha"
+	fi
+
+	echo "pre-push: scanning $range for $remote ($url)"
+	if ! "$scan" "$range"; then
+		echo "pre-push: $lref was not pushed to $remote" >&2
+		status=1
+	fi
+done
+
+exit "$status"

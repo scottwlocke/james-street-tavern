@@ -19,6 +19,7 @@ Hugo static site for "James Street Tavern". Load the Hugo skill (`.opencode/skil
 
 - Build: `hugo` (outputs to `public/`).
 - Validate: `python3 .tmp/validate-jsonld.py` — checks the page shell (template leakage, canonicals, `robots.txt`) and every JSON-LD block against the front matter. **Scratch and gitignored**, so it may be absent on a fresh clone; recreate it rather than trusting an eyeball pass.
+- Secrets: `scripts/check-secrets.sh [range]` fails on credential-shaped content and filenames, defaulting to everything reachable from `HEAD`. `.githooks/pre-push` runs it over exactly the commits a push would send, so a credential is caught locally and `origin` never sees it. Two caveats, both worth knowing: a clone has to run `git config core.hooksPath .githooks` once, because Git does not inherit that setting and says nothing when the path is missing — an unconfigured clone pushes with no guard at all — and `--no-verify` walks straight past it. It is a guard, not a guarantee. Every pattern is checked against this repository's full history before being added, so the first line the scanner ever prints is a real finding.
 - Serve with drafts: `hugo server -D` (required because the archetype defaults every new page to `draft = true`).
 
 ## Conventions & guardrails
