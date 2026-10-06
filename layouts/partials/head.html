@@ -17,6 +17,24 @@
        that hugo.toml already describes. */ -}}
 {{- $description := partial "blurb.html" . | default .Site.Params.heroDescription -}}
 <meta name="description" content="{{ $description }}">
+{{- /* One absolute self-canonical per page. This matters most for the
+       homepage, which has no other URL to sort itself against: every
+       /?utm_source=… variant is a separate crawlable URL for the same
+       document, and without this tag they compete with / as duplicates.
+
+       .Permalink rather than .RelPermalink, because a canonical must be
+       absolute - a root-relative one is not reliably interpreted across
+       crawlers. It is already free of query strings, which is why the tag
+       needs no cleanup pass to collapse tracking variants onto the clean
+       URL.
+
+       Skipped on the 404 alongside its noindex, for the same reason the
+       structured data is: a soft 404 should never be offered as a result,
+       and declaring a canonical identity for it is asking for the opposite
+       of what noindex does. */ -}}
+{{- if ne .Kind "404" }}
+<link rel="canonical" href="{{ .Permalink }}">
+{{- end -}}
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="{{ "images/jst-logo.png" | relURL }}" type="image/png">
 <link rel="apple-touch-icon" href="{{ "images/jst-logo.png" | relURL }}">

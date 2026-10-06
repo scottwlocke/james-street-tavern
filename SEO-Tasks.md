@@ -15,7 +15,7 @@ from the working environment, so treat performance items as measured-bytes-only.
 |---|---|---|---|
 | 1 | Fix `baseURL` placeholder | **Blocking** | todo |
 | 2 | Rename `locale` → `languageCode` | **Blocking** | todo |
-| 3 | Add canonical URLs | High | todo |
+| 3 | Add canonical URLs | High | **done** |
 | 4 | Add structured data (JSON-LD) | High | **done** |
 | 5 | Add Open Graph / Twitter cards | High | todo |
 | 6 | Resize / re-encode dish photography | Medium | todo |
@@ -68,17 +68,33 @@ key `languageCode` produces byte-identical output.
 
 ## 3. High — the biggest missed opportunity
 
-### 3. No canonical URLs on any page
+### 3. ~~No canonical URLs on any page~~ — done
 
-Zero of 60 pages carry `<link rel="canonical">`. `head.html` emits `viewport`,
-`description`, `theme-color`, icons and the fingerprinted stylesheet, and
-nothing else.
+All 59 indexable pages now carry exactly one `<link rel="canonical">`, emitted
+from `layouts/partials/head.html`.
 
-- Add one canonical per page in `layouts/partials/head.html`, built from
-  `.Permalink`.
-- Skip the 404 alongside its existing `noindex` branch.
-- This matters most for `/`, which has no self-canonical and would otherwise let
-  `/?utm_source=…` variants compete with `/`.
+- Built from `.Permalink`, not `.RelPermalink`. A canonical must be absolute; a
+  root-relative one is not reliably interpreted across crawlers.
+- `.Permalink` is already query-free, which is the point of the homepage case:
+  every `/?utm_source=…` variant collapses onto `/` with no cleanup pass, rather
+  than being indexed as a separate document competing with it.
+- Skipped on the 404, on the same reasoning as its `noindex` and its missing
+  JSON-LD — a soft 404 should not be offered as a result, and giving it a
+  canonical identity asks for the opposite of what `noindex` does.
+
+Verified by `.tmp/validate-jsonld.py`, which now checks the page shell as well
+as the JSON: one canonical per page, absolute, query-free, and equal to the path
+the built page actually serves at. Checking against the built file rather than
+against `.Permalink` is deliberate — it catches the tag drifting out of step with
+an alias or redirect, which is the exact failure the tag exists to prevent.
+
+That check was confirmed to have teeth by injecting five regressions into the
+built output — a missing tag, a `?utm_source=` query, a canonical on the 404,
+one pointing at `/pizza/` from `/burgers/`, and a root-relative one — and
+confirming each produced its own distinct error rather than passing silently.
+
+Like the structured data, these point at `https://example.org/` until `baseURL`
+is fixed in task 1. They are correct in shape but not production-valid yet.
 
 ### 4. ~~No structured data anywhere~~ — done
 

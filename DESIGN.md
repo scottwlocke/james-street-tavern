@@ -645,6 +645,23 @@ resolves *page resources*, and the homepage photo is no longer one.
 - Load Google Fonts: Oswald + Source Sans 3 + Permanent Marker (or system alternatives)
 - Dark mode is the default (true to the tavern atmosphere); light mode is secondary and should still feel warm
 
+### Canonical URLs
+
+`layouts/partials/head.html` emits one absolute
+`<link rel="canonical" href="{{ .Permalink }}">` per page, and none on the 404.
+
+`.Permalink` over `.RelPermalink` because a canonical must be absolute, and
+because `.Permalink` carries no query string — so `/?utm_source=…` and every
+other tracking variant collapse onto `/` without a cleanup pass. The homepage
+depends on this most: it has no other URL to sort itself against.
+
+The 404 is skipped on the same reasoning as its `noindex` and its missing
+structured data. A soft 404 is thin content that should never be offered as a
+result; declaring a canonical identity for it contradicts that.
+
+As with the structured data, these resolve against `baseURL` and so point at the
+`example.org` placeholder until that is set to the real host.
+
 ### Structured data mirrors what is on the page
 
 `layouts/partials/jsonld.html` emits one `application/ld+json` block per page —
