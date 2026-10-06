@@ -15,11 +15,21 @@
 
   /* ---- Supporting colors (§2) ---- */
   --honey-oak: #c4a484;        /* Light Wood — borders, dividers, hover */
-  --barn-red: #8b2e2e;         /* Muted Red — "JST" badge */
+  --barn-red: #8b2e2e;         /* Muted Red — RESERVED (§2): small accent
+                                  badges. The JST badge that owned it was
+                                  replaced by the crest (§4), so nothing reads
+                                  it. Kept because it is palette, not dead
+                                  code: deleting it would put this file out of
+                                  step with DESIGN.md's table. */
   --beer-foam: #f8f5f0;        /* Foam White — secondary text, light cards */
   --table-top: #2c1b10;        /* Dark Brown — footer, deep backgrounds */
 
-  /* ---- Semantic colors (§2) ---- */
+  /* ---- Semantic colors (§2) — RESERVED, no consumer yet ----
+     Success / warning / error / info are palette entries in DESIGN.md's
+     Semantic Colors table, which is why they are declared here with the rest
+     of the vocabulary even though no rule reads them. Same reasoning as
+     --barn-red above and --radius-none / --radius-badge in §14: the spec
+     defines the palette, the components decide when to spend it. */
   --success: #4a7c59;
   --warning: #c9a227;
   --error: #8b2e2e;
@@ -28,10 +38,23 @@
   /* ---- Derived surfaces ---- */
   --canvas: var(--chalkboard);
   --panel: var(--table-top);
-  --panel-raised: #3a2415;
+  --panel-raised: #3a2415;      /* one step lighter than --panel: the mid stop
+                                   of both wood gradients (§5), not a surface
+                                   anything paints directly */
   --border-wood: rgba(196, 164, 132, 0.3);
   --border-wood-strong: rgba(196, 164, 132, 0.55);
   --text-muted: #c2ab8d;       /* honey-oak tuned for dark bg contrast */
+
+  /* ---- Derived interaction states ----
+     The hover and active shades of the two brand colors. They used to sit as
+     literals inside .btn-primary:hover, .btn-primary:active and
+     .btn-gold:hover, which meant the three pairs that actually carry text at
+     their most-visited state were the only ones not checkable from this
+     block. Declared here, every button-state contrast is auditable without
+     opening the button rules. */
+  --tavern-navy-hover: #163a75;    /* §6 hover — navy lifted */
+  --tavern-navy-active: #0a1f42;   /* §6 active — navy pressed */
+  --chalk-gold-hover: #f0d469;     /* §6 hover — gold lifted */
 
   /* ---- Typography (§3) ---- */
   --font-display: "Oswald", Impact, "Arial Black", sans-serif;
@@ -78,7 +101,7 @@
 
   /* ---- Textures (§8, §13) ---- */
   --chalkboard-gradient: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
-  --wood-gradient: linear-gradient(160deg, #5c3a21 0%, #3a2415 55%, #2c1b10 100%);
+  --wood-gradient: linear-gradient(160deg, var(--barn-wood) 0%, var(--panel-raised) 55%, var(--panel) 100%);
   --string-light-glow: radial-gradient(
     circle at 50% 0%,
     rgba(232, 197, 71, 0.15) 0%,
@@ -153,6 +176,36 @@ h3 {
   outline: 3px solid var(--chalk-gold);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
+}
+
+/* Skip link (WCAG 2.4.1). Fixed rather than absolute, so it still lands on
+   screen when the first Tab happens at the bottom of a long page; pushed
+   fully above the viewport with a transform rather than `left: -9999px`,
+   because an off-viewport left edge is what drags some browsers into
+   horizontal scrolling. Revealed on :focus, not :focus-visible — anything
+   that focuses it, including a screen reader's virtual cursor, should see
+   it. */
+.skip-link {
+  position: fixed;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: 300;                 /* above .nav-bar (100) and .mobile-nav (99) */
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--chalkboard);
+  border: 2px solid var(--chalk-gold);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--chalk-gold);
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--space-sm)));
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 .container {
@@ -495,14 +548,14 @@ body.nav-open {
 }
 
 .btn-primary:hover {
-  background-color: #163a75;    /* lighten 8% */
-  border-color: #163a75;
+  background-color: var(--tavern-navy-hover);
+  border-color: var(--tavern-navy-hover);
   color: var(--beer-foam);
 }
 
 .btn-primary:active {
-  background-color: #0a1f42;    /* darker navy */
-  border-color: #0a1f42;
+  background-color: var(--tavern-navy-active);
+  border-color: var(--tavern-navy-active);
 }
 
 /* Secondary / Outline — gold border, gold text */
@@ -525,8 +578,8 @@ body.nav-open {
 }
 
 .btn-gold:hover {
-  background-color: #f0d469;
-  border-color: #f0d469;
+  background-color: var(--chalk-gold-hover);
+  border-color: var(--chalk-gold-hover);
   color: var(--chalkboard);
 }
 
@@ -544,6 +597,17 @@ body.nav-open {
   background-size: cover;
   background-position: center;
   isolation: isolate;
+}
+
+/* The <picture> wrapper is sized to the hero box, so the absolutely
+   positioned .hero-media below resolves its inset:0 against the section's
+   full rectangle instead of against an inline wrapper that has no box of its
+   own. Deliberately no z-index: leaving it `auto` keeps the wrapper out of
+   the stacking order entirely, so .hero-media's own -3 still places the image
+   against the hero, below the ::before wood overlay. */
+.hero picture {
+  position: absolute;
+  inset: 0;
 }
 
 .hero-media {
@@ -900,12 +964,19 @@ body.nav-open {
   height: 10px;
   border-radius: 50%;
   background-color: var(--honey-oak);
+  /* transform, not width. Width is a layout property, so animating it made
+     this the one transition on the site that reflowed its container on every
+     slide change — the exact thing the reduced-motion rule below exists to
+     avoid, and the reason that rule had to be blanket in the first place.
+     scaleX(2.6) paints the same 26×10 ellipse `width: 26px` produced (50%
+     border-radius on a stretched box is an ellipse either way) while the box
+     stays 10px, centred by the button's own justify-content. */
   transition: background-color var(--duration) var(--easing),
-              width var(--duration) var(--easing);
+              transform var(--duration) var(--easing);
 }
 
 .specials-dot.is-active .specials-dot-mark {
-  width: 26px;
+  transform: scaleX(2.6);
   background-color: var(--chalk-gold);
 }
 
@@ -1115,10 +1186,10 @@ a.card:hover .card-cta::after {
 }
 
 .menu-section-title {
-  font-size: 1.75rem;
+  font-size: 2rem;
   margin-bottom: var(--space-lg);
   padding-bottom: var(--space-sm);
-  border-bottom: 2px solid var(--border-wood);
+  border-bottom: 3px solid var(--border-wood);
 }
 
 /* Full-menu page — item total sits under the intro, and the section header
@@ -1441,7 +1512,7 @@ a.card:hover .card-cta::after {
       transparent 4px,
       transparent 20px
     ),
-    linear-gradient(180deg, #5c3a21 0%, #3a2415 100%);
+    linear-gradient(180deg, var(--barn-wood) 0%, var(--panel-raised) 100%);
   background-blend-mode: overlay, normal, normal;
   border-top: 2px solid var(--chalk-gold);
   border-bottom: 2px solid var(--chalk-gold);
