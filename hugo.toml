@@ -75,7 +75,7 @@ disableKinds = ["taxonomy", "term"]
   # ---- Hero (DESIGN.md §10 — friendly, direct, local) ----
   heroKicker = "Your Neighborhood Tavern"
   heroTitle = "Come Hungry. Leave Happy."
-  heroDescription = "Jumbo whole wings, cold beer, and a wood-fired kitchen that's been feeding Monroeville for years. No frills, no nonsense — just a good time."
+  heroDescription = "Jumbo whole wings, cold beer, and a kitchen that's been feeding Monroeville for years. No frills, no nonsense — just a good time."
 
   # ---- Sections that are NOT part of the menu (§4 Chalkboard Panel) ----
   # Read by layouts/partials/menu-sections.html, which is the single source
@@ -101,7 +101,7 @@ disableKinds = ["taxonomy", "term"]
   # the meta description, which is what keeps the two from quoting different
   # text for the same section.
   [params.sections]
-    pizza = "Wood-fired pies, 60 seconds in the oven."
+    pizza = "Pizza that you'll love straight from the oven."
     wings = "Jumbo whole wings, tossed in house sauce."
     appetizers = "Baskets, rings and sticks. Pass them around."
     burgers = "Half-pound Angus patties. Fries on the side."
