@@ -10,3 +10,10 @@ updates:
    directory: "/"
    schedule:
      interval: weekly
+ # Keeps the action versions in .github/workflows/hugo.yml current. Without
+ # this the pinned majors age out and GitHub starts warning about retired
+ # Node runtimes long before anyone notices a broken deploy.
+ - package-ecosystem: "github-actions"
+   directory: "/"
+   schedule:
+     interval: weekly

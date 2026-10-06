@@ -2,10 +2,11 @@
 
        static/ would work for the stanza but not for the Sitemap line: that
        must be an absolute URL, and a static file has no way to read
-       .Site.BaseURL — it would hardcode the domain, and this domain is still
-       the example.org placeholder until task 1 lands. Written as a template it
-       rewrites itself when baseURL is corrected, so nobody has to remember to
-       come back and edit a literal string in a text file.
+       .Site.BaseURL — it would hardcode the domain, which is a second place
+       to edit whenever baseURL changes (GitHub Pages project path, or a
+       custom domain later). Written as a template it rewrites itself from
+       hugo.toml, so nobody has to remember to come back and edit a literal
+       string in a text file.
 
        `Sitemap` sits outside the user-agent group on purpose. Google and Bing
        only read it there; putting it under `Allow:` makes it part of that

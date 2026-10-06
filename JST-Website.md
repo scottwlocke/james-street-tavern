@@ -7,10 +7,11 @@ Use this to pick up work quickly.
 
 ## 1. Project Status
 
-- **Stack:** Hugo (v0.165.0+extended), no theme — custom layouts live in root `layouts/`.
+- **Stack:** Hugo (v0.167.0+extended), no theme — custom layouts live in root `layouts/`.
 - **Build:** `hugo` → outputs to `public/`. Clean build, no warnings.
 - **Preview with drafts:** `hugo server -D` (archetype defaults new pages to `draft = true`).
-- **Not yet done:** `baseURL` in `hugo.toml` is still the `https://example.org/` placeholder — must be changed to the real domain before deploy.
+- **Deploy:** `.github/workflows/hugo.yml` — scans for credentials, builds, publishes to GitHub Pages on push to `main`.
+- **`baseURL`:** `https://scottwlocke.github.io/james-street-tavern/` in `hugo.toml` — the single source of truth for every absolute URL.
 
 ---
 

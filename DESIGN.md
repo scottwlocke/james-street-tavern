@@ -707,8 +707,8 @@ The 404 is skipped on the same reasoning as its `noindex` and its missing
 structured data. A soft 404 is thin content that should never be offered as a
 result; declaring a canonical identity for it contradicts that.
 
-As with the structured data, these resolve against `baseURL` and so point at the
-`example.org` placeholder until that is set to the real host.
+As with the structured data, these resolve against `baseURL` — the GitHub Pages
+project site URL since task 1 landed — so they are absolute and production-valid.
 
 ### Structured data mirrors what is on the page
 
@@ -737,9 +737,9 @@ shows.** Concretely, that means
   business identity on a "not found" page risks being read as describing the
   error page.
 
-Absolute URLs come from `.Permalink` / `absURL`, never a typed-in domain. Until
-`baseURL` is set to the real host these resolve to the `example.org` placeholder,
-so structured data is not production-valid until that is fixed.
+Absolute URLs come from `.Permalink` / `absURL`, never a typed-in domain — they
+inherit `baseURL` from `hugo.toml`, so changing the host there moves every
+canonical, sitemap entry, `robots.txt` line and JSON-LD `@id` at once.
 
 ### Two template traps worth remembering
 

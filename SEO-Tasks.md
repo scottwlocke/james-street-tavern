@@ -13,7 +13,7 @@ from the working environment, so treat performance items as measured-bytes-only.
 
 | # | Task | Severity | Status |
 |---|---|---|---|
-| 1 | Fix `baseURL` placeholder | **Blocking** | todo |
+| 1 | Fix `baseURL` placeholder | **Blocking** | **done** |
 | 2 | Rename `locale` → `languageCode` | **Blocking** | todo |
 | 3 | Add canonical URLs | High | **done** |
 | 4 | Add structured data (JSON-LD) | High | **done** |
@@ -27,22 +27,30 @@ from the working environment, so treat performance items as measured-bytes-only.
 
 ## 2. Blocking — must land before launch
 
-### 1. `baseURL` is still the `example.org` placeholder
+### 1. ~~`baseURL` is still the `example.org` placeholder~~ — done
 
-`hugo.toml` line 2 is `baseURL = 'https://example.org/'`. Every absolute URL
-Hugo generates inherits it, so **all 59 sitemap entries and every future
-canonical URL point at a domain that does not serve this site.**
+`hugo.toml` line 2 was `baseURL = 'https://example.org/'`. Every absolute URL
+Hugo generates inherits it, so **all 59 sitemap entries and every canonical
+URL pointed at a domain that does not serve this site.** Google will index
+whichever domain actually serves the files and treat the other as a duplicate,
+which also made the sitemap actively harmful: it advertised 59 URLs on a domain
+that returned nothing.
 
-Google will index whichever domain actually serves the files and treat the
-other as a duplicate site. This also makes the sitemap actively harmful: it
-advertises 59 URLs on a domain that returns nothing.
+Now `https://scottwlocke.github.io/james-street-tavern/`, the GitHub Pages
+project site for this repository, including scheme and a trailing slash.
+Hardcoding was unavoidable *here* — it is the one config value that must be
+absolute — and everything downstream reads `.Site.BaseURL`, so nothing else
+needed editing.
 
-- Set `baseURL` to the real production origin, including scheme and any
-  `www`/apex preference, with a trailing slash.
-- Hardcoding is unavoidable *here* — this is the one config value that must be
-  absolute. Everything downstream reads `.Site.BaseURL`, so nothing else needs
-  editing.
-- Re-verify after the change: `grep -c example.org public/sitemap.xml` → 0.
+`.github/workflows/hugo.yml` deliberately does **not** pass `--baseURL`. GitHub's
+own starter workflow overrides it from `configure-pages`, which self-heals if
+the repository is renamed but means production and a local build silently
+disagree the moment the two drift. The value comes from `hugo.toml` and nowhere
+else, so `hugo` locally and `hugo` in CI emit byte-identical absolute URLs.
+
+- Re-verified after the change: `grep -c example.org public/sitemap.xml` → 0.
+- Renaming the repository or moving to a custom domain is a one-line change to
+  `baseURL`; no template holds a domain.
 
 ### 2. `lang` is driven by a key Hugo does not document
 
@@ -93,8 +101,9 @@ built output — a missing tag, a `?utm_source=` query, a canonical on the 404,
 one pointing at `/pizza/` from `/burgers/`, and a root-relative one — and
 confirming each produced its own distinct error rather than passing silently.
 
-Like the structured data, these point at `https://example.org/` until `baseURL`
-is fixed in task 1. They are correct in shape but not production-valid yet.
+These resolve against `baseURL`, which is the GitHub Pages project site URL
+since task 1 landed. They were correct in shape before that and are now
+production-valid too.
 
 ### 4. ~~No structured data anywhere~~ — done
 
@@ -170,8 +179,6 @@ comment. Current result: **PASS** across 60 pages.
 
 Still open, both harmless and both worth knowing:
 
-- `baseURL` is still the `example.org` placeholder, so every absolute URL in the
-  markup points there. Fixing task 1 fixes these too — do not hardcode a domain.
 - Bar and Kitchen hours are identical because that is what was supplied. Not
   invented, not confirmed; worth checking against the real roster.
 
@@ -327,7 +334,7 @@ validator still passes with 60 HTML pages and 59 canonicals intact.
 User-agent: *
 Allow: /
 
-Sitemap: https://example.org/sitemap.xml
+Sitemap: https://scottwlocke.github.io/james-street-tavern/sitemap.xml
 ```
 
 **It is a template, not `static/robots.txt`.** The recommended static file
@@ -379,8 +386,8 @@ Four injected regressions — deleting the file, moving `Sitemap` into the group
 making it root-relative, and pointing it at `index.xml` — each produced its own
 error, and a `Disallow: /admin` produced a warning.
 
-Still inherits task 1: the line above reads `example.org`, so the sitemap it
-advertises is the placeholder one. It corrects itself the moment `baseURL` does.
+That example read `example.org` until task 1 landed; it now reads the GitHub
+Pages project URL, and the sitemap it advertises is the real one.
 
 ---
 

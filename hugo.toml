@@ -1,4 +1,11 @@
-baseURL = 'https://example.org/'
+# The GitHub Pages *project* site for scottwlocke/james-street-tavern. This
+# is the single source of truth for every absolute URL the site emits -
+# canonicals, sitemap.xml, the Sitemap line in robots.txt, and every JSON-LD
+# @id/url - and .github/workflows/hugo.yml deliberately does not override it
+# on the command line, so a local build and a CI build produce the same
+# bytes. Changing the repository name or moving to a custom domain means
+# changing this line and nothing else.
+baseURL = 'https://scottwlocke.github.io/james-street-tavern/'
 locale = 'en-us'
 title = 'James Street Tavern'
 

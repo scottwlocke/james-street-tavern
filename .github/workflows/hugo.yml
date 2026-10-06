@@ -1,0 +1,107 @@
+# Builds the Hugo site on every push to main and publishes it to GitHub
+# Pages.
+#
+# Order matters: the secret scan is a hard prerequisite of the build, and
+# the build is a hard prerequisite of the deploy. A credential reaching a
+# commit therefore stops the run before anything is published, which is the
+# layer .githooks/pre-push cannot provide - a local hook is skipped by
+# --no-verify and is never present at all on someone else's clone.
+#
+# Only GitHub-owned actions are used, deliberately: there is no third-party
+# code in this pipeline. Hugo itself is the one direct download, so it is
+# installed from the official release and checked against the SHA-256 in
+# that release's own checksums file before dpkg touches it.
+#
+# The binary must be the *extended* build. assets/css would be fine either
+# way, but the dish photos in page bundles are processed through Hugo Pipes
+# into WebP and JPEG derivatives, and image encoding is extended-only - the
+# plain binary fails the build at the first dish photo rather than degrading
+# quietly, which is the right way to fail but is worth knowing before
+# changing HUGO_VERSION.
+#
+# baseURL is not passed on the command line. It comes from hugo.toml and
+# nowhere else, so the output of CI and the output of a local `hugo` are
+# built from the same value and are byte-comparable. GitHub's own starter
+# workflow overrides it from configure-pages instead; that self-heals if the
+# repository is renamed, but it also means production and local silently
+# disagree whenever the two drift. One source of truth is worth more here -
+# renaming the repo is a one-line change to hugo.toml either way, because
+# every absolute URL on this site already reads .Site.BaseURL.
+name: Deploy Hugo site to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time, and in-progress ones are not cancelled: a
+# deployment that stops halfway leaves Pages serving a partial site, and
+# waiting for the current one to finish is cheaper than that.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      # The scanner looks at history, not just the tip, so a shallow clone
+      # would silently reduce it to a one-commit check.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan for credentials
+        run: scripts/check-secrets.sh
+
+  build:
+    needs: scan
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.167.0
+      # SHA-256 of hugo_extended_0.167.0_linux-amd64.deb, taken from
+      # hugo_0.167.0_checksums.txt on the v0.167.0 release page.
+      HUGO_SHA256: 2d012c4490248195e2db07e89ce7f76af8bead93233e930bdf3733c53acd3b23
+    steps:
+      - name: Install Hugo CLI (extended)
+        run: |
+          set -euo pipefail
+          deb="${RUNNER_TEMP}/hugo.deb"
+          curl -fsSL -o "$deb" \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          echo "${HUGO_SHA256}  ${deb}" | sha256sum --check
+          sudo dpkg -i "$deb"
+          hugo version
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Build with Hugo
+        env:
+          HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
+          HUGO_ENVIRONMENT: production
+        run: hugo --gc --minify
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
