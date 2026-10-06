@@ -14,7 +14,7 @@ from the working environment, so treat performance items as measured-bytes-only.
 | # | Task | Severity | Status |
 |---|---|---|---|
 | 1 | Fix `baseURL` placeholder | **Blocking** | **done** |
-| 2 | Rename `locale` → `languageCode` | **Blocking** | todo |
+| 2 | `locale` vs `languageCode` (key was never broken) | **Blocking** | **done** |
 | 3 | Add canonical URLs | High | **done** |
 | 4 | Add structured data (JSON-LD) | High | **done** |
 | 5 | Add Open Graph / Twitter cards | High | todo |
@@ -52,7 +52,18 @@ else, so `hugo` locally and `hugo` in CI emit byte-identical absolute URLs.
 - Renaming the repository or moving to a custom domain is a one-line change to
   `baseURL`; no template holds a domain.
 
-### 2. `lang` is driven by a key Hugo does not document
+### 2. ~~`lang` is driven by a key Hugo does not document~~ — moot: the premise was stale
+
+**Resolved without the rename.** The section below is the original analysis,
+written against an older Hugo where `languageCode` was the documented key and
+`locale` the unknown one. On Hugo **≥ 0.158.0 the direction flipped**: the
+deprecation warning now reads `languageCode was deprecated in Hugo v0.158.0 …
+Use locale instead`. So `locale = 'en-us'` in `hugo.toml` is already the
+correct, current key, and executing the rename as written reintroduces a build
+warning on the 0.167.0 toolchain this repo ships. Output was identical either
+way — `<html lang="en-us">` on all 60 pages — so nothing was lost by keeping
+`locale`. If the task is re-opened, re-check the deprecation direction against
+the actual Hugo version first.
 
 `hugo.toml` line 3 sets `locale = 'en-us'`, and `baseof.html` renders
 `<html lang="{{ .Site.Language.Locale | default "en" }}">`, producing
@@ -71,6 +82,10 @@ key `languageCode` produces byte-identical output.
 > **Do not** work around this by hardcoding `lang="en-us"` into `baseof.html`.
 > That hides an unrecognised config key rather than fixing it, and the key
 > would keep working until a Hugo release drops it.
+
+- Re-verified 2026-10-06 on Hugo 0.167.0: `locale` builds clean with no warning
+  and renders `lang="en-us"` on all 60 pages; `languageCode` triggers the
+  deprecation warning above. The original premise no longer holds.
 
 ---
 
