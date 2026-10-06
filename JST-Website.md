@@ -45,9 +45,11 @@ strategy, §17 component inventory, §18 do's and don'ts, §19 iteration guide.
 
 - Each menu section is a top-level folder under `content/` (e.g. `content/pizza/`).
 - Each section has a `_index.md` whose `title` becomes the homepage section heading; a `weight` controls section order.
-- Each menu item is one Markdown file:
-  - **With a picture:** a page bundle — `content/<section>/<item>/index.md` + `content/<section>/<item>/photo-<subject>-hero.jpg` (DESIGN.md §12 naming). The layout auto-detects the image via `.Resources.GetMatch` on the `photoGlob` site param.
-  - **Without a picture:** a plain file — `content/<section>/<item>.md`. The card renders without an `<img>`.
+- Every menu item is a page bundle — `content/<section>/<item>/index.md` plus its
+  image `content/<section>/<item>/photo-<slug>-hero.png` (DESIGN.md §12 naming). The
+  layout auto-detects the image via `.Resources.GetMatch` on the `photoGlob` site
+  param. Bundling is required: a flat `<item>.md` has no resources, so its `<img>`
+  is silently skipped.
 - Item front matter (TOML):
   ```toml
   +++
@@ -76,9 +78,8 @@ Section order on the homepage comes from the `weight` in each section's
 `_index.md`. The homepage iterates `.Site.Sections` and renders every section in
 that order.
 
-**Note:** this content set replaced an earlier 3-section / 14-item menu, which is
-archived in `content-old/`. `pizza` is now organised by size rather than by
-variety.
+**Note:** this content set replaced an earlier 3-section / 14-item menu.
+`pizza` is now organised by size rather than by variety.
 
 ---
 
@@ -96,7 +97,7 @@ layouts/
 │   │                   #   Permanent Marker), css/style.css
 │   ├── nav.html        # Logo + `Menu` dropdown (8 sections) + Contact +
 │   │                   # "Find Us" link, plus hamburger + mobile drawer
-│   ├── hero.html       # Hero: copy + image (home-bundle resource via photoGlob → fallback)
+│   ├── hero.html       # Hero: copy + image (assets/ photo via Hugo Pipes + fingerprint)
 │   ├── specials.html   # Monday Night Wings chalkboard special (DESIGN.md §4)
 │   ├── menu-section.html   # Section title + menu grid
 │   ├── menu-grid-items.html  # Grid container for a section's items
@@ -135,10 +136,13 @@ static/
    An initial draft used invalid CSS arithmetic (`var(--space-xxl) * 1.5`). These were replaced with concrete pixel values from the `--space-*` scale, matching `DESIGN.md` §6 spacing.
 
 5. **Image strategy — page bundles auto-detect images.**
-   Items with photos live in bundles so the image ships with its markdown. The card template looks for a `photo-*-hero.*` resource (via the `photoGlob` site param); flat `.md` files naturally skip the `<img>` — no front-matter flag needed.
+   Every item is a page bundle so its image ships with its own markdown. The card template looks for a `photo-*-hero.*` resource via the `photoGlob` site param, so a flat `.md` would skip the `<img>` entirely — no front-matter flag is involved.
 
 6. **Hero image resolution order:**
-   Home-page bundle resource (`content/photo-tavern-hero.jpg`, matched by `photoGlob`) → `heroImage` site param → no image. If the hero renders copy with no photo, the home bundle resource is missing **and** no `heroImage` param is set. This currently falls through to the last case: `DESIGN.md` §10 calls for copy + image, so restore the bundle photo or set `heroImage`.
+   `assets/images/photo-tavern-hero.jpg` via Hugo Pipes with a `sha256`
+   fingerprint. It deliberately does **not** use `photoGlob`: a bare file in
+   `content/` is published verbatim to the site root as an unversioned
+   `/photo-tavern-hero.jpg`, which a browser will reuse indefinitely.
 
 7. **Nav rollup (desktop) + hamburger drawer (mobile) per DESIGN.md.**
    On **desktop** the eight top-level sections roll up under a single `Menu`
@@ -208,7 +212,7 @@ Shown twice on the homepage — once under **Bar**, once under **Restaurant** �
 ## 9. Outstanding / Next Steps
 
 - [ ] Set the real domain in `hugo.toml` (`baseURL`) before deploy.
-- [ ] **Restore the hero image.** `content/photo-tavern-hero.jpg` was moved to `content-old/` during the content restructure, so `DESIGN.md` §10's hero currently renders copy with no photo. Either move it back to `content/` or set a `heroImage` param.
+- [x] **Restore the hero image.** Done: `assets/images/photo-tavern-hero.jpg` is read by `layouts/partials/hero.html` through Hugo Pipes with a `sha256` fingerprint.
 - [ ] Consider adding real menus/PDFs, catering info, or opening navigation links to actual URLs (many footer/nav links still point to `#` anchors).
 - [ ] The site has no per-item description body pages beyond the card (single.html renders the card + any `.Content`). Expand if needed.
 - [ ] Contact form was removed — if a working form is wanted later, wire a form endpoint or use a service instead of the removed `mailto:` form.
@@ -227,7 +231,6 @@ from them. They are kept only as history:
 | `.devcontainer/design-country.md.old` | Byte-identical copy of `Design2.md.old` | retired |
 | `pizza_shop_page.html.old` | Standalone 729-line HP Electric Blue mockup, titled "James Street Tavern — Fresh, Hot & Delicious Pizza". Orphan: never linked or published. | retired |
 | `pizzeria-bella-page.html.old` | Standalone "Pizzeria Bella" mockup in an unrelated palette. Orphan: never linked or published. | retired |
-| `content-old/` | Pre-restructure 3-section / 14-item menu | archive |
 | `conetnt-md` | Byte-identical duplicate of the published menu PDF | deleted |
 
 **`DESIGN.md` is the single source of truth.** If a spec conflicts with
