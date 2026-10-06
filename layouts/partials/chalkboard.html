@@ -11,9 +11,9 @@
        hero, and /specials/ has the section title as its h1.
 
        Optional `photo` front-matter field: filename matching
-       `photoGlob` (`photo-*-hero.*`). When present, renders a responsive
-       image: on wide screens the image sits right of the content; on narrow
-       screens it stacks below. */ -}}
+       `photoGlob` (`photo-*-hero.*`). When present, renders the image
+       from the page's own bundle. The image is displayed at its natural
+       size, constrained to max-width:480px. */ -}}
 {{- $item := . -}}
 <span class="chalkboard-lights" aria-hidden="true"></span>
 
@@ -23,17 +23,14 @@
 <h2 class="chalk-title">{{ $item.Title }}</h2>
 
 {{ with $item.Params.photo }}
-  {{ $img := resources.GetMatch . -}}
+  {{ $img := $item.Resources.GetMatch . -}}
   {{ if $img }}
-    {{ $r := $img.Process (printf "resize 480x webp q82") -}}
-    {{ $imgWebp := ($r | fingerprint "sha256") -}}
-    {{ $r2 := $img.Process (printf "resize 480x jpg q82") -}}
-    {{ $imgJpeg := ($r2 | fingerprint "sha256") -}}
     <picture>
-      <source type="image/webp" srcset="{{ $imgWebp.RelPermalink }} 480w">
+      {{ if ne $img.MediaType.SubType "svg" -}}
+        <source type="image/webp" srcset="{{ $img.Permalink }} 480w">
+      {{ end }}
       <img class="chalk-image"
-           src="{{ $imgJpeg.RelPermalink }}"
-           width="{{ $img.Width }}" height="{{ $img.Height }}"
+           src="{{ $img.RelPermalink }}"
            alt="{{ $item.Title }} special"
            loading="lazy"
            decoding="async"
