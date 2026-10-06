@@ -1,0 +1,82 @@
+{{- /* Responsive image derivatives for a dish photograph, as a dict for the
+       caller to place.
+
+       Why this exists: all 46 dish photos are 1600×1000 PNG at ~208 KB, and
+       they are page-bundle resources, so Hugo publishes every one of them
+       verbatim whether or not a template uses it. The largest slot they ever
+       fill is .detail-media at ~440px wide (§7 — 5fr of a 1200px container),
+       and a card fills ~357px. So the 1600px original was being served into a
+       440px box: about 3.6× oversized, and it accounted for 93% of the site's
+       10.1 MB.
+
+       Measuring the same photo through Hugo Pipes:
+
+         1600px PNG (published today)   206 KB
+         1080px WebP                     14 KB
+         768px  WebP                      9 KB
+         480px  WebP                      5 KB
+         1080px JPEG                     33 KB
+
+       So this returns a WebP srcset for the browsers that will take it, and a
+       single JPEG as the fallback. Widths stop at 1080 rather than reaching the
+       1600px source: nothing on the site has a slot wider than 440px, so 1080
+       already covers a 440px box at ~2.5× density, and carrying a fourth
+       variant up to the source size would re-add the bytes this exists to
+       remove.
+
+       Returned as a dict rather than printed markup, because the two call sites
+       need different `sizes` and different `loading`/`fetchpriority`: a card is
+       lazy-loaded and decorative, the detail image is the LCP element and
+       carries the dish name as its alt text.
+
+       This partial deliberately does not consult showimage — it answers "what
+       derivatives exist", not "should this page show a photo". Callers gate on
+       show-image.html first, exactly as they did for the single original.
+
+       Raster only, on purpose. The eight section bundles also carry artwork
+       matching the same `photoGlob`, but it is SVG at ~2 KB each — resolution
+       independent, so there is nothing to resize and rasterising it would make
+       it both larger and blurrier. Returning nothing for a vector leaves the
+       caller on its plain original, which is what section-card.html wants. The
+       guard is here so that "use dish-image for the section art too" is not a
+       tempting but wrong refactor.
+
+       Returns nothing when the page has no photo matching the glob, so callers
+       can wrap it in `with` as they did before. */ -}}
+{{- $src := "" -}}
+{{- with .page.Resources.GetMatch (.Site.Params.photoGlob | default "photo-*-hero.*") -}}
+  {{- if eq .MediaType.SubType "svg" -}}
+    {{- /* Vector: leave it alone. See above. */ -}}
+  {{- else -}}
+    {{- $src = . -}}
+  {{- end -}}
+{{- end -}}
+{{- with $src -}}
+  {{- $src := . -}}
+  {{- $webpSet := slice -}}
+  {{- $width := 0 -}}
+  {{- $height := 0 -}}
+  {{- $largest := "" -}}
+  {{- range slice 480 768 1080 -}}
+    {{- $r := $src.Process (printf "resize %dx webp q82" .) -}}
+    {{- /* `fingerprint` as a function, not `.Fingerprint` as a method: on
+           images.ImageResource in Hugo 0.167 the method form is not exposed
+           and `{{ .Fingerprint }}` fails to parse. Same output either way,
+           and the hash is the point — without it a re-encoded photo keeps its
+           URL and a cached copy never gets replaced, which is the same
+           staleness rule AGENTS.md states for the stylesheet. */ -}}
+    {{- $r = $r | fingerprint "sha256" -}}
+    {{- $webpSet = $webpSet | append (printf "%s %dw" $r.RelPermalink $r.Width) -}}
+    {{- $width = $r.Width -}}
+    {{- $height = $r.Height -}}
+    {{- $largest = $r -}}
+  {{- end -}}
+  {{- $fallback := $src.Process "resize 1080x jpg q82" -}}
+  {{- $fallback = $fallback | fingerprint "sha256" -}}
+  {{- return dict
+        "webp" (delimit $webpSet ", ")
+        "fallback" $fallback.RelPermalink
+        "width" $width
+        "height" $height
+        "permalink" $largest.Permalink -}}
+{{- end -}}

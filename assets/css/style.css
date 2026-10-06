@@ -1009,6 +1009,20 @@ a.card:hover {
   transition: transform var(--duration) var(--easing);
 }
 
+/* The responsive photos ship inside <picture> so a WebP <source> can be
+   offered with a JPEG fallback. picture is display:inline by default, which
+   gives the img an inline containing block — `height: 100%` then resolves
+   against nothing and the image collapses out of the fixed-ratio media box
+   instead of filling it. display:contents would also fix it, but it strips
+   the element from the box tree in older engines, so the wrapper is made a
+   plain block that fills the media box instead. */
+.card-media picture,
+.detail-media picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 a.card:hover .card-media img {
   transform: scale(1.04);
 }

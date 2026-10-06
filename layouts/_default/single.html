@@ -1,6 +1,5 @@
 {{ define "main" }}
   {{ $image := "" }}
-  {{ $glob := .Site.Params.photoGlob | default "photo-*-hero.*" }}
   {{- /* `showimage = false` skips the lookup entirely. Unlike menu-card.html
          there is no empty state to fall back to here: .detail-media is dropped
          from the markup rather than kept as a bare wood box, because a 5fr
@@ -13,8 +12,8 @@
          bundle and so never resolved a photo; the modifier fixes them too. */ -}}
   {{ $showImage := partial "show-image.html" . }}
   {{ if $showImage }}
-    {{ with .Resources.GetMatch $glob }}
-      {{ $image = .RelPermalink }}
+    {{ with partial "dish-image.html" (dict "page" .) }}
+      {{ $image = . }}
     {{ end }}
   {{ end }}
 
@@ -48,8 +47,23 @@
 
       <div class="detail-layout{{ if not $image }} is-full{{ end }}">
         {{ with $image }}
+          {{- /* `sizes` from §7: .detail-media is the 5fr track of a 1200px
+                 container with a 64px gap, so 5/12 of 1056 ≈ 440px on desktop.
+                 At 1024px and below the grid collapses to one column
+                 (§16), where the image is the full content width. */ -}}
           <div class="detail-media">
-            <img src="{{ . }}" alt="{{ $.Title }}">
+            {{- /* This is the LCP element on every dish page, so it is not
+                   lazy-loaded and is given fetchpriority="high" — a lazy image
+                   that happens to be the largest paint on the page delays the
+                   page's own Largest Contentful Paint, which is the metric
+                   Core Web Vitals actually scores. Width and height come from
+                   the largest derivative so the browser can reserve the box
+                   before the bytes land; CSS aspect-ratio (4/3) overrides the
+                   intrinsic 16/10 anyway. */ -}}
+            <picture>
+              <source type="image/webp" srcset="{{ .webp }}" sizes="(max-width: 1024px) calc(100vw - 48px), 440px">
+              <img src="{{ .fallback }}" width="{{ .width }}" height="{{ .height }}" alt="{{ $.Title }}" fetchpriority="high">
+            </picture>
           </div>
         {{ end }}
 

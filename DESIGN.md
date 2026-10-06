@@ -287,13 +287,61 @@ knowing before using it:
   `section-card.html`, which still wants a filled box when a *section* has no
   art — a section is always a card of something, so there the frame is
   meaningful.
-- **The file still ships.** Page resources are published whatever the templates
-  do with them, so `showimage = false` removes the `<img>` from the markup but
-  leaves the PNG in the build output. Hiding a photo is not a payload saving; if
-  that is the goal, move the file out of the page bundle.
+- **The original file still ships, though its derivatives never get made.** Page
+  resources are published whatever the templates do with them, so
+  `showimage = false` leaves the 1600×1000 PNG in the build output. What it does
+  prevent is the four derived variants being generated at all, which is where
+  the saving actually is. Hiding a photo is still not a payload saving in full:
+  if that is the goal, move the file out of the page bundle (see *Responsive
+  dish photography* below).
 
 **Never style this away.** The photo is not rendered at all, rather than hidden
 with CSS, so there is no `.is-hidden` variant to reach for.
+
+### Responsive dish photography
+
+Every dish photograph is a **1600×1000 PNG at ~208 KB**, and the largest box it
+ever fills is `.detail-media` at ~440px wide (§7 — 5fr of a 1200px container).
+A card fills ~357px. So the sources are roughly 3.6× larger than any slot needs,
+and at 46 of them they accounted for 93% of the site's 10.1 MB.
+
+`layouts/partials/dish-image.html` runs them through Hugo Pipes and returns
+three WebP widths (480 / 768 / 1080) plus one 1080px JPEG fallback, each
+sha256-fingerprinted. Both call sites render them inside `<picture>`:
+
+| Slot | Width | Sent | Was |
+|---|---|---|---|
+| Card, `.card-media` | ~357px | 5.1 KB (480w WebP) | 208 KB |
+| Detail, `.detail-media` | ~440px | 8.6 KB (768w WebP) | 208 KB |
+
+Widths stop at 1080 rather than reaching the 1600px source: nothing on the site
+has a slot wider than 440px, so 1080 already covers a 440px box at ~2.5× density.
+Carrying a fourth variant up to source size would re-add the bytes this exists to
+remove. `sizes` is written per call site from the §7 grid, not guessed — a wrong
+`sizes` does not break anything, it just makes the browser pick a needlessly
+large or small file.
+
+**`<picture>` needs explicit CSS.** `picture` is `display: inline` by default,
+which gives the `img` an inline containing block; `height: 100%` then resolves
+against nothing and the image collapses out of the fixed-ratio media box instead
+of filling it. `.card-media picture` / `.detail-media picture` are therefore set
+to `display: block` and made to fill their box. `display: contents` would also
+work, but it drops the element out of the box tree in older engines.
+
+**Vector art is exempt.** The eight section bundles carry `photo-<section>-hero.svg`
+matching the same `photoGlob`, at ~2 KB each. SVG is resolution independent, so
+`dish-image.html` refuses to touch it — rasterising would make it both larger and
+blurrier — and `section-card.html` keeps its plain `RelPermalink`. The guard is in
+the partial so "use `dish-image` for the section art too" is not a tempting but
+wrong refactor.
+
+The detail image is the LCP element on every dish page, so it carries
+`fetchpriority="high"` and is deliberately **not** lazy-loaded; cards are the
+opposite, `loading="lazy" decoding="async"`, since they are below the fold and
+decorative (`alt=""` + `aria-hidden`, with the dish name as adjacent text).
+
+The JSON-LD `image` points at the 1080px WebP derivative rather than the original
+— same picture, ~14 KB instead of ~208 KB, and still a real crawlable URL.
 
 ---
 

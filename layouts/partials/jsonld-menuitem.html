@@ -9,7 +9,6 @@
        mean either N script tags per page or string concatenation in the
        template, both of which are how JSON-LD ends up subtly malformed. */ -}}
 {{- $item := .item -}}
-{{- $glob := .Site.Params.photoGlob | default "photo-*-hero.*" -}}
 {{- $out := dict "@type" "MenuItem" "name" $item.Title -}}
 
 {{- with $item.Params.description -}}
@@ -21,10 +20,16 @@
 {{- /* Image is gated on showimage for the same reason the card's is: a dish that
        opted out is not pictured anywhere on the site, so claiming an image in
        the schema would describe something no visitor can see. Uses .Permalink
-       because schema.org wants absolute URLs. */ -}}
+       because schema.org wants absolute URLs.
+
+       The URL is the 1080px WebP derivative, not the 1600px PNG the card used
+       to point at. Same picture, ~14 KB instead of ~206 KB, and it is a real
+       crawlable URL — which is the only thing a crawler needs. Google reads
+       WebP fine, and the original stays published at its own address either
+       way, so nothing that wanted it loses access. */ -}}
 {{- if partial "show-image.html" $item -}}
-  {{- with $item.Resources.GetMatch $glob -}}
-    {{- $out = merge $out (dict "image" .Permalink) -}}
+  {{- with partial "dish-image.html" (dict "page" $item) -}}
+    {{- $out = merge $out (dict "image" .permalink) -}}
   {{- end -}}
 {{- end -}}
 

@@ -1,6 +1,5 @@
 {{ $item := .item }}
 {{ $image := "" }}
-{{ $glob := .Site.Params.photoGlob | default "photo-*-hero.*" }}
 {{- /* `showimage = false` skips the lookup, so the photo is never published
        into this page's markup at all — not hidden with CSS, not src-less.
 
@@ -21,8 +20,8 @@
        the .card-media-empty fallback that used to paper over this; it remains
        in the stylesheet for section-card.html, which still wants it. */ -}}
 {{ if partial "show-image.html" $item }}
-  {{ with $item.Resources.GetMatch $glob }}
-    {{ $image = .RelPermalink }}
+  {{- with partial "dish-image.html" (dict "page" $item) }}
+    {{ $image = . }}
   {{ end }}
 {{ end }}
 
@@ -34,7 +33,20 @@
 <a class="card{{ if not $image }} is-text{{ end }}" href="{{ $item.RelPermalink }}">
   {{- with $image }}
     <div class="card-media">
-      <img src="{{ . }}" alt="" loading="lazy" aria-hidden="true">
+      {{- /* `sizes` is the card's real width at each of the three grid states
+             in §7, not a guess: 3 columns inside a 1200px container with 40px
+             gutters and 24px gaps is 357px; 2 columns at 769–1024px with 24px
+             gutters is (100vw − 72px)/2; 1 column below 768px is 100vw − 48px.
+             Getting this wrong does not break anything, it just makes the
+             browser pick a needlessly large or small file.
+
+             The <picture> wrapper needs `.card-media picture` in the
+             stylesheet: picture is display:inline by default, which breaks the
+             img's height:100% against the 16:10 media box. */ -}}
+      <picture>
+        <source type="image/webp" srcset="{{ .webp }}" sizes="(max-width: 768px) calc(100vw - 48px), (max-width: 1024px) calc((100vw - 72px) / 2), 357px">
+        <img src="{{ .fallback }}" width="{{ .width }}" height="{{ .height }}" alt="" loading="lazy" decoding="async" aria-hidden="true">
+      </picture>
     </div>
   {{- end }}
   <div class="menu-header">

@@ -18,7 +18,7 @@ from the working environment, so treat performance items as measured-bytes-only.
 | 3 | Add canonical URLs | High | **done** |
 | 4 | Add structured data (JSON-LD) | High | **done** |
 | 5 | Add Open Graph / Twitter cards | High | todo |
-| 6 | Resize / re-encode dish photography | Medium | todo |
+| 6 | Resize / re-encode dish photography | Medium | **done** |
 | 7 | De-duplicate two salad descriptions | Medium | todo |
 | 8 | Deal with 10 unadvertised Atom feeds | Low | todo |
 | 9 | Add `robots.txt` | Low | todo |
@@ -193,24 +193,55 @@ URL with no preview card.
 
 ## 4. Medium
 
-### 6. Dish photography is served ~2.3× oversized
+### 6. ~~Dish photography is served ~2.3× oversized~~ — done
 
-All 46 dish photos are **1600×1000 PNG at ~228 KB**, but the detail page
-displays them at roughly 700px wide. That is the bulk of the site's **10.0 MB**
-total payload.
+`layouts/partials/dish-image.html` runs each photo through Hugo Pipes and
+`menu-card.html` / `single.html` render the result in `<picture>`: three WebP
+widths (480 / 768 / 1080) and a 1080px JPEG fallback, all sha256-fingerprinted.
 
-Page weight is a ranking factor, so this is worth fixing rather than deferring.
+| Slot | Width | Sent | Was |
+|---|---|---|---|
+| Card | ~357px | **5.1 KB** | 208 KB |
+| Detail (LCP) | ~440px | **8.6 KB** | 208 KB |
 
-- Route the detail-page image through Hugo Pipes (`Resize` to ~800px, `WebP`),
-  which is a template change in `single.html`, not a content change.
-- **This also closes the `showimage` caveat.** DESIGN.md §5 records that
-  `showimage = false` removes the `<img>` but leaves the PNG in the build,
-  because page resources are published regardless of what templates do with
-  them. Resizing at the template level at least stops shipping the full-size
-  original.
-- Cards use the same photos at ~340px wide, so a second smaller variant is
-  worth it if `srcset` is added.
-- The homepage hero is already correctly handled (253 KB, fingerprinted).
+Per-dish download drops from 206 KB to 5–13 KB depending on slot and density —
+a 15–24× reduction. A cold build encodes all 176 derivatives in ~4s.
+
+Two corrections to the original finding, both of which changed the plan:
+
+- **It was ~3.6× oversized, not 2.3×.** `.detail-media` is the *5fr* track of a
+  1200px container, so ~440px — not the ~700px assumed. A card is ~357px.
+- **The second bullet's prediction was wrong in a useful way.** Stopping the
+  full-size originals shipping is *not* achievable with a template change, because
+  Hugo publishes page-bundle resources unconditionally — `showimage = false` on
+  the pepperoni eggrolls still shipped its 206 KB PNG. `public/` is therefore
+  **12.99 MB, up from 10.10 MB**: the originals are all still there and the
+  derivatives add 3.03 MB on top. That is build-output and deploy weight, not
+  transfer — no `<img>` references an original any more, and the only thing that
+  was paying for them was the payload argument.
+
+So the `showimage` caveat is only *partly* closed: an opted-out dish now
+generates no derivatives at all, but its original PNG still ships. Removing that
+last 9.35 MB means moving the photos out of `content/` into `assets/`, which is a
+content-convention change — see the deferred note below.
+
+Also done, since they were the same class of bug:
+
+- Derivatives are fingerprinted, so a re-encoded photo can invalidate a cached
+  one. Dish images were the last unversioned URLs on the site.
+- The detail image is the LCP element and now carries `fetchpriority="high"` and
+  is not lazy-loaded.
+- JSON-LD `image` points at the 1080px WebP derivative, not the original.
+
+**Deferred, and the only remaining part:** the 46 originals in `public/`
+(9.35 MB). Moving them to `assets/images/` would drop `public/` to ~1 MB and
+retire the `showimage` caveat entirely, at the cost of changing how photos are
+resolved — `.Resources.GetMatch` in three templates, the `photoGlob` convention,
+and DESIGN.md §5. Worth doing for deploy size, not for page weight.
+
+Verified: every one of the 187 asset URLs referenced across the built site
+resolves to a file on disk, no `<img>` points at a PNG original, and the
+section SVGs are untouched.
 
 ### 7. Two salad pages share a meta description byte-for-byte
 
