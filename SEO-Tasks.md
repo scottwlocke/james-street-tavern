@@ -20,7 +20,7 @@ from the working environment, so treat performance items as measured-bytes-only.
 | 5 | Add Open Graph / Twitter cards | High | todo |
 | 6 | Resize / re-encode dish photography | Medium | **done** |
 | 7 | De-duplicate two salad descriptions | Medium | **done** |
-| 8 | Deal with 10 unadvertised Atom feeds | Low | todo |
+| 8 | Deal with 10 unadvertised Atom feeds | Low | **done** |
 | 9 | Add `robots.txt` | Low | **done** |
 
 ---
@@ -286,18 +286,38 @@ No template change was needed.
 
 ## 5. Low
 
-### 8. Ten Atom feeds are generated, none advertised
+### 8. ~~Ten Atom feeds are generated, none advertised~~ — done
 
-`public/index.xml` plus nine section feeds exist. No page emits
-`<link rel="alternate" type="application/atom+xml">`, so they are unreachable
-and unlisted — pure dead weight in the build.
+The 10 feeds — `index.xml` plus nine section feeds — are gone:
 
-- **Recommendation: disable.** A restaurant menu has nothing to syndicate that
-  its HTML does not already say, and a feed nobody links to invites the
-  questions it was meant to avoid.
-- Disable with `[outputs]` in `hugo.toml`, setting `home` and `section` to
-  `["HTML"]` only.
-- If kept instead, advertise them with `{{ with .OutputFormats.Get "rss" }}`.
+```toml
+[outputs]
+  home = ["HTML", "Robots"]
+  section = ["HTML"]
+```
+
+- **Nothing ever advertised them.** No page emitted `<link rel="alternate"
+  type="application/atom+xml">`, and grepping `layouts/` for
+  `.OutputFormats.Get "rss"` returns nothing (the only matches for `rss` are
+  the `openingHoursSpecification` schema key). They were reachable by guessing
+  `index.xml` and by no other route.
+- **Disable rather than advertise**, for the reason the original finding gave:
+  this is static menu data that already has a better home in the HTML, and a
+  feed nobody subscribes to is an artifact that has to be kept honest forever
+  while inviting exactly the questions syndication exists to avoid.
+- **`home` keeps `Robots`**, because task 9 hangs `robots.txt` off that same
+  list. The two tasks touch the same two lines: at the time task 9 was written
+  `RSS` was still listed precisely so that turning robots.txt on did not
+  disable the feeds as an accident — and task 8 then removed it on purpose.
+  Both comments in `hugo.toml` were updated to say so, since a stale "never
+  drop this" comment is how the next reader puts the feeds back.
+- **`section = ["HTML"]` removes only feeds.** Sections still render HTML, and
+  `sitemap.xml` is untouched — it is its own generator, not an output format on
+  `home`, and still lists 59 URLs.
+
+Verified: 10 `index.xml` → 0; `public/` went 307 → 297 files, exactly the ten
+feeds and nothing else; no `application/atom+xml` anywhere in the output; the
+validator still passes with 60 HTML pages and 59 canonicals intact.
 
 ### 9. ~~No `robots.txt`~~ — done
 
@@ -343,9 +363,9 @@ Two content decisions:
   unpublished page in `public/`, so a directive forbidding something would be
   asserting a fact about the site that is not true. `Allow: /` is the correct
   claim when there is nothing to forbid.
-- **The Atom feeds are not listed here.** Task 8's feeds are unadvertised;
-  `Disallow`-ing them would only draw a crawler's attention to them. The fix is
-  disabling their output, and until then they stay readable and irrelevant.
+- **The Atom feeds are not listed here.** They never needed to be: task 8
+  deleted them outright, and `Disallow`-ing a feed would have drawn a crawler's
+  attention to something worth removing rather than hiding.
 
 `Sitemap` sits after a blank line, outside the user-agent group. Both Google and
 Bing ignore it inside a group, and the failure is silent — the file looks right
