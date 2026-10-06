@@ -25,8 +25,9 @@
        This deliberately does not consult whether a photo exists — callers do
        that themselves with Resources.GetMatch. Hiding a photo and having no
        photo both end at the same place, but for different reasons, and each
-       caller picks its own empty state: menu-card keeps .card-media and falls
-       back to .card-media-empty (§5), single drops .detail-media entirely. */ -}}
+       caller picks its own empty state: both menu-card and single drop their
+       media block outright, so a photo-less dish shows text and nothing else
+       where the picture would have been. */ -}}
 {{- $show := true -}}
 {{- if isset .Params "showimage" -}}
   {{- $show = .Params.showimage -}}

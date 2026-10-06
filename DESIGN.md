@@ -248,7 +248,11 @@ from the system's own tokens, not a grey box. The convention:
 
 Where no art resolves at all, `.card-media-empty` renders the wood fill with the
 grain — a legitimate fallback, not a failure, but prefer a placeholder over
-leaving it bare.
+leaving it bare. That fallback is for **section** cards only: a section is
+always a card of something, so an empty frame there still means "pizza, art
+pending". A **dish** that sets `showimage = false` gets no frame at all
+(`.card.is-text`) — see below, where the two are deliberately not treated the
+same.
 
 ### `showimage` opts a dish out of its photo
 
@@ -259,16 +263,30 @@ shows its photo — a new item or a one-off page cannot accidentally lose its ar
 by omission. `layouts/partials/show-image.html` owns that decision and both call
 sites read it, so the card and the detail page can never disagree.
 
-Turning it off is a display decision, not a deletion. Two consequences worth
+Turning it off is a display decision, not a deletion. Three consequences worth
 knowing before using it:
 
-- **The two surfaces handle the blank differently, on purpose.** The card keeps
-  `.card-media` and falls back to `.card-media-empty` (§5), so the grid's 16:10
-  rhythm holds and cards in a row stay level. The detail page drops
-  `.detail-media` altogether and adds `.is-full` to `.detail-layout`, because a
-  5fr column holding nothing but a background reads as a rendering fault. That
+- **No space is reserved, on either surface.** The card omits `.card-media`
+  entirely and the detail page omits `.detail-media`, so a photo-less dish
+  renders as text with nothing where its picture would have been. Neither
+  surface falls back to a filled empty box: a reserved 16:10 slot is still a
+  placeholder, and a dish that chose to go photo-less should not be handed one.
+  The detail page additionally adds `.is-full` to `.detail-layout`, so the panel
+  takes the whole width instead of sitting in a 5fr column holding nothing. That
   modifier also governs any page with no photo to resolve — which is how the two
   specials pages render, and how they rendered before `.is-full` existed.
+- **Titles stop lining up across a row, and the card stops filling it.** Because
+  `.card-media` is a fixed-ratio block rather than a fixed height, a photo-less
+  card's `menu-name` and `menu-price` start higher than those of its art-bearing
+  neighbours. `.is-text` sets `align-self: start` so the card sizes to its own
+  content instead of being stretched to the row height — otherwise the grid pads
+  it out with roughly 190px of void below its last line, which reads as a card
+  that lost its picture. So the row ends ragged rather than aligned, and the
+  trade is deliberate: alignment across a row is worth less than not showing an
+  empty frame inside the card. `.card-media-empty` stays in the stylesheet for
+  `section-card.html`, which still wants a filled box when a *section* has no
+  art — a section is always a card of something, so there the frame is
+  meaningful.
 - **The file still ships.** Page resources are published whatever the templates
   do with them, so `showimage = false` removes the `<img>` from the markup but
   leaves the PNG in the build output. Hiding a photo is not a payload saving; if
@@ -773,6 +791,7 @@ are separate entries, never buried in prose.
 | `card` | `.card` | `{colors.panel}`, `{rounded.md}`, `{elev.rest}` |
 | `card-hover` | `a.card:hover` | `{elev.hover}` + 3px lift (§9) |
 | `card-media` | `.card-media`, `.card-media-empty` | 16:10, wood fill, warm grade |
+| `card-no-art` | `.card.is-text` | No media block, `align-self: start` — `showimage = false` dish |
 | `detail-panel` | `.detail-panel` | `{colors.panel}`, `{elev.rest}` |
 | `contact-card` | `.contact-card` | `{colors.panel}`, `{elev.rest}` |
 | `contact-map` | `.contact-map` | `{rounded.md}`, desaturated iframe |

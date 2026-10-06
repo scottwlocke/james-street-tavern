@@ -1013,6 +1013,21 @@ a.card:hover .card-media img {
   transform: scale(1.04);
 }
 
+/* A card with no photo: menu-card.html omits .card-media entirely when
+   `showimage = false`, and this keeps the card from being stretched to its
+   row-mate's height with a void under its last line. Without it the grid's
+   default align-items: stretch pads the text card out to ~340px to match an
+   art-bearing neighbour, which reads as a card that lost its picture rather
+   than as a card that never had one. Sizing to content trades ragged bottoms
+   within the row for no hole in the card.
+
+   Selected by class rather than by `.card:not(:has(.card-media))` so the rule
+   does not depend on :has() support; the template already knows which it is
+   emitting. */
+.card.is-text {
+  align-self: start;
+}
+
 .card-media-empty {
   display: block;
   width: 100%;

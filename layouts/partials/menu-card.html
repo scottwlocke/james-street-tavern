@@ -4,26 +4,39 @@
 {{- /* `showimage = false` skips the lookup, so the photo is never published
        into this page's markup at all — not hidden with CSS, not src-less.
 
-       The result is indistinguishable from a dish that simply has no photo:
-       .card-media stays and .card-media-empty renders the wood fill and grain,
-       which §5 already calls a legitimate fallback rather than a failure. So
-       the grid keeps its 16:10 rhythm and every card in a row lines up whether
-       or not the dish opted out. The alternative — collapsing .card-media
-       entirely — would leave holes in the grid and resize the other cards. */ -}}
+       With no image there is nothing to frame, so .card-media is omitted
+       rather than filled: an empty 16:10 wood box still reads as a reserved
+       photo slot, which is exactly the placeholder a dish that chose to go
+       photo-less should not be given. The card is text, so the card is text.
+
+       single.html already works this way — it drops .detail-media and hands
+       the width to the panel via .is-full — so this brings the card in line
+       with the page it links to instead of leaving the two disagreeing.
+
+       The cost is honest and visible: a photo-less card sits beside cards that
+       have art, and because .card-media is a fixed-ratio block rather than a
+       fixed height, the card's title starts higher than its neighbours'. Cards
+       in the same grid row still share one height (grid stretches them), but
+       their menu-name and menu-price will not line up across the row. §5 owns
+       the .card-media-empty fallback that used to paper over this; it remains
+       in the stylesheet for section-card.html, which still wants it. */ -}}
 {{ if partial "show-image.html" $item }}
   {{ with $item.Resources.GetMatch $glob }}
     {{ $image = .RelPermalink }}
   {{ end }}
 {{ end }}
 
-<a class="card" href="{{ $item.RelPermalink }}">
-  <div class="card-media">
-    {{ with $image }}
+{{- /* .is-text — see the rule in the stylesheet. Without it this card would be
+       stretched to its row-mate's height by the grid and carry a ~190px void
+       below its last line, which reads as a card that lost its picture rather
+       than as a card that never had one. Sizing to content trades ragged
+       bottoms in the row for no hole in the card. */ -}}
+<a class="card{{ if not $image }} is-text{{ end }}" href="{{ $item.RelPermalink }}">
+  {{- with $image }}
+    <div class="card-media">
       <img src="{{ . }}" alt="" loading="lazy" aria-hidden="true">
-    {{ else }}
-      <span class="card-media-empty" aria-hidden="true"></span>
-    {{ end }}
-  </div>
+    </div>
+  {{- end }}
   <div class="menu-header">
     <span class="menu-name">{{ $item.Title }}</span>
     {{ with $item.Params.price }}
