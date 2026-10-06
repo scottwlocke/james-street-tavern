@@ -19,7 +19,7 @@ from the working environment, so treat performance items as measured-bytes-only.
 | 4 | Add structured data (JSON-LD) | High | **done** |
 | 5 | Add Open Graph / Twitter cards | High | todo |
 | 6 | Resize / re-encode dish photography | Medium | **done** |
-| 7 | De-duplicate two salad descriptions | Medium | todo |
+| 7 | De-duplicate two salad descriptions | Medium | **done** |
 | 8 | Deal with 10 unadvertised Atom feeds | Low | todo |
 | 9 | Add `robots.txt` | Low | **done** |
 
@@ -243,21 +243,44 @@ Verified: every one of the 187 asset URLs referenced across the built site
 resolves to a file on disk, no `<img>` points at a PNG original, and the
 section SVGs are untouched.
 
-### 7. Two salad pages share a meta description byte-for-byte
+### 7. ~~Two salad pages share a meta description byte-for-byte~~ — done
 
 `content/salads/breaded-chicken-salad/index.md` and
-`content/salads/grilled-chicken-salad/index.md` have identical `description`
-front matter, so both render the same `<meta name="description">`.
+`content/salads/grilled-chicken-salad/index.md` carried the same `description`
+string, so both rendered the same `<meta name="description">`.
 
-Audit result: **58 distinct descriptions across 60 pages.** Both pairs are
-accounted for:
+**The duplication is in the source, not in the transcription.** The vendor menu
+(`misc/JST Vertical Menu July 2025 - Convenience Fee Note added.pdf`) prints
+identical copy for both salads:
 
-- `/` and `/404.html` → both fall back to `heroDescription`. Defensible, and
-  the 404 is `noindex` anyway.
-- The two salad pages → **this is a content bug**, not a code one.
+```
+Grilled Chicken Salad   Plain or Buffalo Style with Tomato, Onion, Egg, Mozzarella and Fries   $13.00
+Breaded Chicken Salad   Plain or Buffalo Style with Tomato, Onion, Egg, Mozzarella and Fries   $13.00
+```
 
-- Differentiate the two `description` lines in front matter. No template change
-  needed; `blurb.html` already reads them.
+So the site was faithfully reproducing what it was given. Re-extracting the text
+from the PDF (no `pdftotext` or PDF library in this environment — a small zlib
+pass over the content streams did it) confirmed that before any edit, which
+matters because the obvious reading of the audit finding was a copy-paste slip
+by whoever entered the content.
+
+- The fix states only what is already certain: the dish name, and the shared
+  ingredient list from the PDF. Each description now leads with its own chicken
+  — `Breaded chicken, plain or buffalo style, …` / `Grilled chicken, plain or
+  buffalo style, …` — and nothing else changed.
+- **No embellishment.** Tempting to add `crispy` to the breaded one or a
+  `lighter` claim to the grilled one, but neither is on the source menu, and a
+  description is a claim the venue has to be able to honour. One word of true
+  difference beats a sentence of invented one.
+- One front matter edit fixes three surfaces: `blurb.html` feeds the meta tag,
+  and the same `description` renders the visible card copy and the JSON-LD
+  `MenuItem.description`, so none of them can drift apart.
+
+After: **59 distinct descriptions across 60 pages**, no dish shares a
+description with any other dish, and the only remaining repeat is `/` and
+`/404.html` both falling back to `heroDescription` — which is defensible, since
+the 404 is `noindex` and there is nothing better to describe a soft 404 with.
+No template change was needed.
 
 ---
 
@@ -349,7 +372,8 @@ Verified during the audit, recorded so the next pass does not re-check them:
   truncation risk. The 404 is titled separately, not left as Hugo's
   "404 Page not found" default.
 - **`<h1>`** — exactly one per page, across all 60.
-- **Meta descriptions** — present on all 60, 58 distinct (see task 7).
+- **Meta descriptions** — present on all 60, 59 distinct (see task 7); the
+  one repeat is `/` and `/404.html`.
 - **`<nav>`** — one `<nav aria-label="Main">` landmark per page.
 - **Sitemap** — 59 URLs, correctly excluding the 404.
 - **404 handling** — `noindex, follow` on a thin-content page is the correct
