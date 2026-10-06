@@ -3,18 +3,40 @@
        means an unversioned /photo-tavern-hero.jpg a browser will happily reuse
        forever — the same trap baseof.html calls out for CSS and JS. Reading it
        through Hugo Pipes and fingerprinting it gives the URL a content hash, so
-       a changed photo can never be served from cache. */ -}}
-{{ $heroImage := "" }}
-{{ with resources.GetMatch "images/photo-*-hero.*" }}
-  {{ $heroImage = (. | fingerprint "sha256").RelPermalink }}
+       a changed photo can never be served from cache.
+
+       It is also the landing page's LCP element, so it goes through the same
+       derivative pipe as the dish photos (WebP srcset + JPEG fallback) rather
+       than shipping as one 260 KB file: 100vw is its real slot, and the ladder
+       reaches the full 1200px source because nothing else on the site needs to.
+       fetchpriority="high" is not a guess — this image is discovered from the
+       first viewport and nothing above it competes for bandwidth. */ -}}
+{{ $heroSrc := resources.GetMatch "images/photo-*-hero.*" }}
+{{ $derivs := dict }}
+{{ with $heroSrc }}
+  {{ $derivs = partial "dish-image.html" (dict
+        "src" .
+        "widths" (slice 480 768 1080 1200)
+        "fallbackWidth" 1200) }}
 {{ end }}
-{{ if and (not $heroImage) (.Site.Params.heroImage) }}
+{{ $heroImage := "" }}
+{{ if $derivs }}
+  {{ $heroImage = $derivs.fallback }}
+{{ else if .Site.Params.heroImage }}
   {{ $heroImage = .Site.Params.heroImage }}
 {{ end }}
 
 <section id="home" class="hero">
-  {{ with $heroImage }}
-    <img class="hero-media" src="{{ . }}" alt="" role="presentation" aria-hidden="true">
+  {{ if $derivs }}
+    <picture>
+      <source type="image/webp" srcset="{{ $derivs.webp }}" sizes="100vw">
+      <img class="hero-media" src="{{ $heroImage }}"
+           width="{{ $derivs.width }}" height="{{ $derivs.height }}"
+           alt="" role="presentation" aria-hidden="true"
+           fetchpriority="high" decoding="async">
+    </picture>
+  {{ else if $heroImage }}
+    <img class="hero-media" src="{{ $heroImage }}" alt="" role="presentation" aria-hidden="true">
   {{ end }}
   <div class="container">
     <div class="hero-copy">
@@ -31,7 +53,7 @@
         {{ with .Site.GetPage "/menu" }}
           <a href="{{ .RelPermalink }}" class="btn btn-gold">See the Board</a>
         {{ end }}
-        <a href="#contact" class="btn btn-outline">Book a Table</a>
+        <a href="#contact" class="btn btn-outline">Call Us</a>
       </div>
     </div>
   </div>
