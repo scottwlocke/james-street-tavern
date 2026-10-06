@@ -9,6 +9,19 @@ title = 'James Street Tavern'
 # those pages off. Add `tag = "tags"` under `[taxonomies]` if that changes.
 disableKinds = ["taxonomy", "term"]
 
+[outputs]
+  # `layouts/robots.txt` is only rendered for an output format that is
+  # actually enabled — and Hugo does not put `Robots` on the home page by
+  # default. Nothing warns about this: the template is parsed (a typo in it
+  # still breaks the build), it just never produces a file, so you get a clean
+  # build and no robots.txt. Hence this block.
+  #
+  # `RSS` is listed because it is already the default and dropping it here
+  # would silently disable the 10 feeds instead of only making them
+  # unadvertised (SEO-Tasks.md task 8). Disabling those deliberately is a
+  # separate change, not a side effect of turning robots.txt on.
+  home = ["HTML", "RSS", "Robots"]
+
 [params]
   location = "Monroeville, PA"
   address = "1224 James St, Monroeville, PA 15146"

@@ -11,11 +11,13 @@ Hugo static site for "James Street Tavern". Load the Hugo skill (`.opencode/skil
 - **Dish photos are page-bundle resources, and that is a trap.** The 46 sources are 1600×1000 PNG living in each bundle, so Hugo publishes every one of them verbatim whatever the templates do — including the two eggrolls that set `showimage = false`. `layouts/partials/dish-image.html` serves three WebP widths plus a JPEG fallback through `<picture>`, but the originals still land in `public/` (9.35 MB). Only moving them to `assets/` fixes that; see DESIGN.md §5 and task 6 in `SEO-Tasks.md`. Two consequences worth remembering: `.card-media picture` / `.detail-media picture` need `display: block` in the stylesheet or the images collapse out of the media boxes, and `.Fingerprint` as a *method* does not exist on image resources in Hugo 0.167 — use the `fingerprint` **function**.
 - **No taxonomies.** `hugo.toml` sets `disableKinds = ["taxonomy", "term"]`. This is load-bearing: an empty `[taxonomies]` table does *not* disable tags/categories, it just blanks the values and leaves Hugo rendering unstyled `/tags/` and `/categories/` pages plus a build warning.
 - **`hugo.toml`** carries real `[params]` (address, hours, hero and specials copy, `photoGlob`, section blurbs). `baseURL` is still the `https://example.org/` placeholder — it must be changed to the real domain before deploy.
+- **`robots.txt` is a template, and it is off until `[outputs]` says otherwise.** `layouts/robots.txt` renders the `Sitemap:` line from `.Site.BaseURL`, so fixing `baseURL` fixes it with no second edit — do **not** move it to `static/`, where the URL would have to be hardcoded. Hugo does not add the `Robots` output format to the home page by default, and the failure is silent: the template is parsed (a syntax error still fails the build), it just never emits a file. `[outputs] home = ["HTML", "RSS", "Robots"]` is what turns it on, and `RSS` must stay in that list because dropping it would disable the 10 Atom feeds as a side effect of this task.
 - **Only `content/` is published.** Source documents live outside it — see `misc/` (design explorations, the vendor menu PDF) and `.opencode/skills/hugo/` (skill references). Nothing in either belongs in `content/`.
 
 ## Build / verify
 
 - Build: `hugo` (outputs to `public/`).
+- Validate: `python3 .tmp/validate-jsonld.py` — checks the page shell (template leakage, canonicals, `robots.txt`) and every JSON-LD block against the front matter. **Scratch and gitignored**, so it may be absent on a fresh clone; recreate it rather than trusting an eyeball pass.
 - Serve with drafts: `hugo server -D` (required because the archetype defaults every new page to `draft = true`).
 
 ## Conventions & guardrails

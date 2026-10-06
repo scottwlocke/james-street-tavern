@@ -1,0 +1,30 @@
+{{- /* robots.txt as a template rather than a file in static/.
+
+       static/ would work for the stanza but not for the Sitemap line: that
+       must be an absolute URL, and a static file has no way to read
+       .Site.BaseURL — it would hardcode the domain, and this domain is still
+       the example.org placeholder until task 1 lands. Written as a template it
+       rewrites itself when baseURL is corrected, so nobody has to remember to
+       come back and edit a literal string in a text file.
+
+       `Sitemap` sits outside the user-agent group on purpose. Google and Bing
+       only read it there; putting it under `Allow:` makes it part of that
+       group's rules and it can be skipped. The file stays deliberately small:
+
+         - `Allow: /` and nothing else. There are no private or generated
+           paths worth ring-fencing — no admin, no drafts (hugo server never
+           publishes), no session URLs — so a more specific robots.txt would
+           be asserting facts about the site that are not true. This is the
+           form that forbids nothing, which is the correct claim when there is
+           nothing to forbid.
+         - The 10 Atom feeds (SEO-Tasks.md task 8) are NOT listed here. They
+           are unreferenced by any page and a `Disallow` would only draw
+           attention to them; the real fix is disabling their output.
+
+       The crawler wants sitemap.xml, which Hugo generates from the sitemap
+       kind and which is unrelated to those feeds. */ -}}
+{{- $home := .Site.Home.Permalink -}}
+User-agent: *
+Allow: /
+
+Sitemap: {{ $home }}sitemap.xml

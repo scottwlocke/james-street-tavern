@@ -21,7 +21,7 @@ from the working environment, so treat performance items as measured-bytes-only.
 | 6 | Resize / re-encode dish photography | Medium | **done** |
 | 7 | De-duplicate two salad descriptions | Medium | todo |
 | 8 | Deal with 10 unadvertised Atom feeds | Low | todo |
-| 9 | Add `robots.txt` | Low | todo |
+| 9 | Add `robots.txt` | Low | **done** |
 
 ---
 
@@ -276,13 +276,68 @@ and unlisted — pure dead weight in the build.
   `["HTML"]` only.
 - If kept instead, advertise them with `{{ with .OutputFormats.Get "rss" }}`.
 
-### 9. No `robots.txt`
+### 9. ~~No `robots.txt`~~ — done
 
-Hugo does not generate one, and there is none in `static/`.
+`layouts/robots.txt` now renders to `public/robots.txt`:
 
-- Add `static/robots.txt` with a `User-agent: * / Allow: /` stanza and a
-  `Sitemap:` line pointing at `.Site.BaseURL` — task 1 must land first, or the
-  sitemap line will advertise the placeholder domain.
+```
+User-agent: *
+Allow: /
+
+Sitemap: https://example.org/sitemap.xml
+```
+
+**It is a template, not `static/robots.txt`.** The recommended static file
+works for the stanza and fails on the one line that matters: `Sitemap:` must be
+an absolute URL, and a file in `static/` has no way to read `.Site.BaseURL`.
+Hardcoding it would fix the domain in place and make task 1's correction miss
+this file — a second place to edit that nobody would remember. As a template it
+rewrites itself when `baseURL` is corrected.
+
+**The subtle part was turning it on.** Hugo parses every file in `layouts/` at
+startup, so `layouts/robots.txt` broke the build immediately when its string
+literal was malformed — but once it parsed correctly it produced *nothing*, and
+the build stayed green. Hugo does not put the `Robots` output format on the home
+page by default, so nothing was rendered and nothing warned. It needs an
+explicit block in `hugo.toml`:
+
+```toml
+[outputs]
+  home = ["HTML", "Robots"]
+  section = ["HTML"]
+```
+
+`RSS` was in that list when this task was written — not for robots.txt's own
+sake, but because dropping it here would have disabled task 8's 10 feeds as an
+accident of turning robots.txt on. Task 8 has since removed it deliberately, so
+the list is now the two entries above. The block sits between `disableKinds`
+and `[params]` for the reason `hugo.toml` documents: a new table parked in the
+wrong place re-scopes whatever follows it.
+
+Two content decisions:
+
+- **No `Disallow:` at all.** There is no admin, no session state and no
+  unpublished page in `public/`, so a directive forbidding something would be
+  asserting a fact about the site that is not true. `Allow: /` is the correct
+  claim when there is nothing to forbid.
+- **The Atom feeds are not listed here.** Task 8's feeds are unadvertised;
+  `Disallow`-ing them would only draw a crawler's attention to them. The fix is
+  disabling their output, and until then they stay readable and irrelevant.
+
+`Sitemap` sits after a blank line, outside the user-agent group. Both Google and
+Bing ignore it inside a group, and the failure is silent — the file looks right
+and the sitemap simply never gets submitted.
+
+Verified by `.tmp/validate-jsonld.py`, which now checks robots.txt alongside the
+page shell: file exists, `User-agent: *` and `Allow: /` present, no
+path-blocking `Disallow`, `Sitemap` absolute and outside its group, and its URL
+equal to `baseURL` + `sitemap.xml` pointing at a file that is actually published.
+Four injected regressions — deleting the file, moving `Sitemap` into the group,
+making it root-relative, and pointing it at `index.xml` — each produced its own
+error, and a `Disallow: /admin` produced a warning.
+
+Still inherits task 1: the line above reads `example.org`, so the sitemap it
+advertises is the placeholder one. It corrects itself the moment `baseURL` does.
 
 ---
 
