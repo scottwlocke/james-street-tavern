@@ -645,6 +645,62 @@ resolves *page resources*, and the homepage photo is no longer one.
 - Load Google Fonts: Oswald + Source Sans 3 + Permanent Marker (or system alternatives)
 - Dark mode is the default (true to the tavern atmosphere); light mode is secondary and should still feel warm
 
+### Structured data mirrors what is on the page
+
+`layouts/partials/jsonld.html` emits one `application/ld+json` block per page —
+a single `@graph` array — included from `head.html`. `MenuItem` construction
+lives in `layouts/partials/jsonld-menuitem.html`.
+
+The rule that governs it: **the schema may only claim what the page already
+shows.** Concretely, that means
+
+- the photo gate is shared. `showimage = false` drops the schema image exactly
+  where it drops the card and detail images, so no dish is described with a
+  photograph no visitor can see.
+- a price is written once, in the item's front matter, and the schema reads it
+  rather than restating it. An item with no price (`wings/wing-flavors` is a
+  list of sauces, not an order) emits **no `offers` key at all** — a blank
+  `Offer` would read to Google as a free item.
+- the section list comes from `menu-sections.html`, the same partial behind the
+  homepage grid and `/menu/`, so `nonMenuSections` is honoured identically.
+  Specials are offers, not dishes, and never appear as menu items.
+- hours come from `params.hours` and `partials/contact.html` prints the same
+  table, so the hours a visitor reads and the hours a crawler parses are one
+  value. Only `openingHoursSpecification` is emitted — the area runs past
+  midnight, and there is no `closingHours` to justify an always-open claim.
+- the 404 carries no structured data at all. It is `noindex`, and a real
+  business identity on a "not found" page risks being read as describing the
+  error page.
+
+Absolute URLs come from `.Permalink` / `absURL`, never a typed-in domain. Until
+`baseURL` is set to the real host these resolve to the `example.org` placeholder,
+so structured data is not production-valid until that is fixed.
+
+### Two template traps worth remembering
+
+- **`hugo.toml` ordering is load-bearing.** TOML gives a bare key to whichever
+  table header most recently preceded it, so an `[[params.hours]]` array placed
+  mid-`[params]` swallows every following key into its last
+  `[[params.hours.groups]]` element. `nonMenuSections` and `photoGlob` quietly
+  stop resolving, and because the partials carry `| default` fallbacks the build
+  still succeeds — the site just quietly loses specials-exclusion and photo
+  resolution. Array-of-tables blocks go last, below every bare key and after all
+  `[params.*]` sub-tables.
+- **A `{{- /* … */ -}}` comment cannot contain `*/`.** Go terminates the comment
+  at the first one and prints everything after it as literal page text, on every
+  page, with a clean build and valid JSON. Strip tags before diffing rendered
+  output, or you will not see it.
+
+### Verify with `.tmp/validate-jsonld.py`
+
+Scratch tooling (gitignored). After `hugo`, it extracts every block and asserts
+strict `json.loads`, required fields, resolvable `@id` references, absolute
+URLs, and that raw template syntax never reaches page output. The part worth
+keeping is that it cross-checks every `MenuItem` name and price against the
+front matter it claims to describe, via `tomllib` — so a template bug surfaces
+as a mismatch instead of the markup quietly agreeing with itself. Internal
+consistency alone is not evidence that a page describes the right thing.
+
 ---
 
 ## 14. Border Radius Scale

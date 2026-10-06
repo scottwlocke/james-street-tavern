@@ -26,5 +26,9 @@
 {{- /* Served through Hugo's asset pipeline with a content fingerprint, so the
        URL changes whenever the CSS changes and a browser can never reuse a
        stale stylesheet. DESIGN.md is the only design spec. */ -}}
+{{- /* JSON-LD: Restaurant on every page, plus Menu and BreadcrumbList on the
+       pages where they are true. Emitted from head rather than an inline block
+       per template so all 60 pages stay in step from one file. */ -}}
+{{ partial "jsonld.html" . }}
 {{- $css := resources.Get "css/style.css" | fingerprint "sha256" -}}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">

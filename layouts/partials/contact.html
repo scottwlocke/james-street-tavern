@@ -31,18 +31,29 @@
         <div class="contact-card">
           <h3>Hours</h3>
           <div class="hours-grid">
-            <div class="hours-col">
-              <h4>Bar</h4>
-              {{ range default (slice "Monday - Friday: 3PM - 2AM" "Saturday: 12PM - 2AM" "Sunday: 12PM - 2AM") .Site.Params.barHours }}
-                <p>{{ . }}</p>
-              {{ end }}
-            </div>
-            <div class="hours-col">
-              <h4>Kitchen</h4>
-              {{ range default (slice "Monday - Friday: 3PM - 2AM" "Saturday: 12PM - 2AM" "Sunday: 12PM - 2AM") .Site.Params.restaurantHours }}
-                <p>{{ . }}</p>
-              {{ end }}
-            </div>
+            {{- /* Hours come from params.hours in hugo.toml, the same table the
+                   JSON-LD emits as openingHoursSpecification. This used to
+                   carry its own copy of the strings as a `default` fallback,
+                   which meant the same three lines were written in two files
+                   and neither could be checked against the other. One source
+                   now, rendered two ways.
+
+                   The `label` and the 12h times are printed from the structured
+                   fields rather than stored pre-formatted: "3PM" is 15:00 put
+                   through a 12h format, so there is no stored string for the
+                   schema to disagree with. time.AsTime needs a full date, so
+                   the year and month are a throwaway scaffold — only the time
+                   is ever read back out. */ -}}
+            {{- range .Site.Params.hours }}
+              <div class="hours-col">
+                <h4>{{ .area }}</h4>
+                {{- range .groups }}
+                  {{- $opens := (time.AsTime (printf "2024-01-01T%s:00" .opens)).Format "3PM" -}}
+                  {{- $closes := (time.AsTime (printf "2024-01-01T%s:00" .closes)).Format "3PM" -}}
+                  <p>{{ .label }}: {{ $opens }} - {{ $closes }}</p>
+                {{- end }}
+              </div>
+            {{- end }}
           </div>
         </div>
       </div>

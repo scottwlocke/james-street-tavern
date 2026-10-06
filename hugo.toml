@@ -14,8 +14,29 @@ disableKinds = ["taxonomy", "term"]
   address = "1224 James St, Monroeville, PA 15146"
   phone = "412-824-8884"
   email = "info@jst-tavern.com"
-  barHours = ["Monday - Friday: 3PM - 2AM", "Saturday: 12PM - 2AM", "Sunday: 12PM - 2AM"]
-  restaurantHours = ["Monday - Friday: 3PM - 2AM", "Saturday: 12PM - 2AM", "Sunday: 12PM - 2AM"]
+
+  # ---- Address, split for schema (partials/jsonld.html) ----
+  # `address` above stays the display string the footer and contact card print.
+  # schema.org PostalAddress wants the parts separate, and re-parsing that string
+  # in a template would mean guessing at every comma. These four must stay
+  # consistent with it — they are the same address, written twice, because the
+  # two consumers need different shapes.
+  streetAddress = "1224 James St"
+  addressLocality = "Monroeville"
+  addressRegion = "PA"
+  postalCode = "15146"
+  addressCountry = "US"
+
+  # ---- Coordinates ----
+  # Taken from the Google Maps embed in partials/contact.html. That URL embeds
+  # them as !2d<lon>!3d<lat>; if the embed is ever swapped, re-read them from
+  # the new one. Used only for LocalBusiness.geo, which is optional.
+  latitude = 40.419373
+  longitude = -79.808284
+
+  # Every price in content/ is written as "$12.00". Stated once here so the
+  # schema does not carry a hardcoded currency.
+  priceCurrency = "USD"
 
   # ---- Assets (DESIGN.md §12 — <type>-<subject>-<variant>.<ext>) ----
   # Page-bundle photography follows `photo-<subject>-hero.<ext>`; layouts
@@ -29,11 +50,11 @@ disableKinds = ["taxonomy", "term"]
 
   # ---- Sections that are NOT part of the menu (§4 Chalkboard Panel) ----
   # Read by layouts/partials/menu-sections.html, which is the single source
-  # of the section list behind the homepage card grid, the mobile drawer and
-  # the Full Menu page. Specials
-  # are offers rather than dishes, so they stay out of all five while still
-  # being ordinary content in content/specials/. Add a slug here to opt a
-  # section out; nothing else needs to change.
+  # of truth for the section list behind the homepage card grid, the mobile
+  # drawer and the Full Menu page. Specials are offers rather than dishes, so
+  # they stay out of all three while still being ordinary content in
+  # content/specials/. Add a slug here to opt a section out; nothing else
+  # needs to change.
   nonMenuSections = ["specials"]
 
   # ---- Menu section grid ----
@@ -59,3 +80,62 @@ disableKinds = ["taxonomy", "term"]
     eggrolls = "Homemade, deep fried. Buffalo or pepperoni."
     stromboli = "Rolled and baked. Mozz and provolone."
     salads = "Cold plates, crisp greens, house dressing."
+
+  # ---- Opening hours ----
+  # Written once, in the shape schema.org needs, then rendered twice:
+  # partials/contact.html prints these and partials/jsonld.html emits them as
+  # openingHoursSpecification. Previously these lived as display strings here
+  # *and* as literal fallbacks inside contact.html, so structured data would
+  # have had to guess at them — and could only ever have parsed "3PM - 2AM"
+  # back into numbers, which fails silently on the first reword.
+  #   times are 24h HH:MM, which openingHoursSpecification takes verbatim;
+  #     contact.html reformats to the 12h house style ("3PM", not "3:00PM").
+  #   `days` is the schema.org DayOfWeek enum and feeds the schema only, since
+  #     "Monday - Friday" is not something a parser can read back.
+  #   `label` is the day range exactly as printed.
+  # Bar and Kitchen currently carry identical times. Left as-is rather than
+  # inventing a difference — worth confirming against the real roster.
+  #
+  # PLACEMENT IS LOAD-BEARING. This must stay below every bare `[params]` key
+  # and after all `[params.*]` sub-tables. TOML assigns a bare key to whichever
+  # table header most recently preceded it, so an `[[params.hours]]` array
+  # parked mid-table silently absorbs every following key into its last
+  # `[[params.hours.groups]]` element — turning `nonMenuSections` and
+  # `photoGlob` into hours fields. Nothing errors; the keys simply vanish from
+  # `.Site.Params`, and because most partials carry `| default` fallbacks the
+  # site still builds and still looks plausible. That is exactly how specials
+  # leaked back into the menu. Keep this block last.
+  [[params.hours]]
+    area = "Bar"
+    [[params.hours.groups]]
+      label = "Monday - Friday"
+      days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      opens = "15:00"
+      closes = "02:00"
+    [[params.hours.groups]]
+      label = "Saturday"
+      days = ["Saturday"]
+      opens = "12:00"
+      closes = "02:00"
+    [[params.hours.groups]]
+      label = "Sunday"
+      days = ["Sunday"]
+      opens = "12:00"
+      closes = "02:00"
+  [[params.hours]]
+    area = "Kitchen"
+    [[params.hours.groups]]
+      label = "Monday - Friday"
+      days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      opens = "15:00"
+      closes = "02:00"
+    [[params.hours.groups]]
+      label = "Saturday"
+      days = ["Saturday"]
+      opens = "12:00"
+      closes = "02:00"
+    [[params.hours.groups]]
+      label = "Sunday"
+      days = ["Sunday"]
+      opens = "12:00"
+      closes = "02:00"

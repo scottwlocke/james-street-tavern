@@ -16,7 +16,7 @@ from the working environment, so treat performance items as measured-bytes-only.
 | 1 | Fix `baseURL` placeholder | **Blocking** | todo |
 | 2 | Rename `locale` → `languageCode` | **Blocking** | todo |
 | 3 | Add canonical URLs | High | todo |
-| 4 | Add structured data (JSON-LD) | High | todo |
+| 4 | Add structured data (JSON-LD) | High | **done** |
 | 5 | Add Open Graph / Twitter cards | High | todo |
 | 6 | Resize / re-encode dish photography | Medium | todo |
 | 7 | De-duplicate two salad descriptions | Medium | todo |
@@ -80,28 +80,84 @@ nothing else.
 - This matters most for `/`, which has no self-canonical and would otherwise let
   `/?utm_source=…` variants compete with `/`.
 
-### 4. No structured data anywhere
+### 4. ~~No structured data anywhere~~ — done
 
-Zero `application/ld+json` blocks across 60 pages.
+`application/ld+json` now ships on 59 of 60 pages, assembled by
+`layouts/partials/jsonld.html` (one `<script>` per page, an `@graph` array) with
+per-item construction in `layouts/partials/jsonld-menuitem.html`.
 
-This is the highest-value gap for a restaurant: a `LocalBusiness` / `Restaurant`
-block can earn rich results (opening hours, menu, price range) in Google, and the
-46 menu items map cleanly onto `Menu` / `MenuItem`.
-
-**The data is already maintained — it is just never expressed machine-readably:**
-
-| Needed for schema | Already in |
+| Node | Where |
 |---|---|
-| `name`, `telephone`, `streetAddress` | `hugo.toml` → `params` |
-| `openingHoursSpecification` | `params.barHours` / `restaurantHours` |
-| 46 × `MenuItem` name + price | `price` in each item's front matter |
-| Section grouping | `.Section` / `menu-sections.html` |
+| `Restaurant` | every non-404 page |
+| `Menu` / `MenuSection` / `MenuItem` | `/menu/` (8 sections, 46 items) and the 8 section pages |
+| `BreadcrumbList` | the 58 pages below the home page |
 
-- `hugo.toml` has no `geo` / latitude / longitude yet — needed only for
-  `LocalBusiness.geo`, which is optional. Worth adding if the real coordinates
-  are known.
-- Keep the JSON-LD in a partial rather than in `head.html` directly, so it can
-  be shared by the home, section and single templates.
+Design decisions worth keeping:
+
+- **The 404 gets nothing.** It is `noindex`, and hanging a real business
+  identity off a "not found" page risks the markup being read as describing the
+  error page.
+- **Hours carry `openingHoursSpecification` but no bare `openingHours`.** Both
+  areas run past midnight into the small hours, so there is no `closingHours` to
+  pair with an always-open claim. Omitting the shortcut is more honest than
+  asserting something the config does not support.
+- **`wings/wing-flavors` has an empty `price`** — it is a list of sauces, not
+  something you order — so it emits **no `offers` at all** rather than a blank
+  one. An empty `Offer` reads to Google as a free item.
+- **`pizza/toppings` is a range** (`$1.75 - $3.75`) and emits an `Offer`
+  wrapping a `PriceSpecification` with `minPrice`/`maxPrice`. A hyphenated
+  price string is what Google rejects.
+- **`showimage = false` suppresses the schema image too.** The image gate is
+  shared with the card and detail panel, so the schema never claims a photo no
+  visitor can see.
+- **The section list comes from `menu-sections.html`**, so the schema honours
+  `nonMenuSections` exactly like the visible menu — specials are offers, not
+  dishes, and stay out.
+- **Dish detail pages carry no `Menu`.** Every item is already described on the
+  page that lists it, with its URL; repeating one item per detail page adds
+  markup without adding a fact.
+
+The data is written once and expressed twice. `params.hours` replaces the old
+display strings and `contact.html` fallbacks, so the hours a visitor reads and
+the hours a crawler parses cannot drift:
+
+| Needed for schema | Single source |
+|---|---|
+| `name`, `telephone`, `email` | `hugo.toml` → `params` |
+| `streetAddress` … `addressCountry` | `params` (structured, replaces `params.address`) |
+| `geo` | `params.latitude` / `params.longitude` |
+| `openingHoursSpecification` | `params.hours` (24h `HH:MM`, `days` as the schema.org enum) |
+| 46 × `MenuItem` name + price | `price` in each item's front matter |
+| Section grouping | `menu-sections.html` |
+| `logo`, `image` | `assets/images/photo-*-hero.*` + `images/jst-logo.png` |
+
+Two hazards this work surfaced, both now guarded by comments in place:
+
+- **`hugo.toml` ordering is load-bearing.** A `[[params.hours]]` array parked in
+  the middle of `[params]` silently swallows every following bare key into its
+  last `[[params.hours.groups]]` element. `nonMenuSections` and `photoGlob`
+  stopped resolving, specials leaked back into the menu, and nothing errored —
+  the `| default` fallbacks in the partials kept the build green. The block must
+  stay below every bare key and after `[params.sections]`.
+- **`{{- /* … */ -}}` comments cannot contain `*/`.** Go closes the comment at
+  the first one and emits the remainder as literal text on every page. This
+  shipped commented-out prose into all 60 pages while the build stayed clean and
+  the JSON still parsed.
+
+Verification: `.tmp/validate-jsonld.py` (scratch, gitignored) extracts every
+block and asserts strict `json.loads`, required fields, resolvable `@id`
+references, absolute URLs, and — the useful part — cross-checks every
+`MenuItem` name and price against the front matter it claims to describe, using
+`tomllib` so the checked values come from the same parse Hugo uses. It also
+rejects raw template syntax in page output, which is what caught the leaked
+comment. Current result: **PASS** across 60 pages.
+
+Still open, both harmless and both worth knowing:
+
+- `baseURL` is still the `example.org` placeholder, so every absolute URL in the
+  markup points there. Fixing task 1 fixes these too — do not hardcode a domain.
+- Bar and Kitchen hours are identical because that is what was supplied. Not
+  invented, not confirmed; worth checking against the real roster.
 
 ### 5. No Open Graph or Twitter tags
 

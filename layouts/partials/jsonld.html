@@ -1,0 +1,235 @@
+{{- /* JSON-LD for the whole site, emitted as one <script> per page.
+
+       Everything is assembled as Go maps and handed to `jsonify` once at the
+       end. That is deliberate: this site's copy is full of apostrophes and
+       ampersands ("What's On Today", "Pepperoni & Cheese Eggrolls"), and
+       hand-writing JSON in a template is how that turns into invalid markup or
+       a stray `</script>` terminating the block early. `jsonify` also escapes
+       `&` to \u0026 in the output — that is Go's default HTML-escaping doing
+       its job, the JSON still parses back to a literal ampersand, and it is
+       what makes the block impossible to break with content.
+
+       Three node types, each earning its place on the pages where it is true:
+
+         Restaurant     every page except the 404. Name/address/phone/hours
+                        repeated identically on 59 pages is the point — it is
+                        what lets a local packer read the business's details
+                        from any page it lands on.
+         Menu           only /menu/ and the eight section pages, because those
+                        are the only pages that actually list dishes. The
+                        homepage shows eight section cards and no items, so
+                        claiming 46 MenuItems there would describe content the
+                        visitor cannot see.
+         BreadcrumbList section pages, dish pages and /menu/, matching the
+                        visible hierarchy the kicker link established.
+
+       The 404 is skipped entirely. It is `noindex`, and attaching a real
+       business identity to a page that exists to say "not found" risks the
+       markup being read as a description of the error page.
+
+       Hours are described with `openingHoursSpecification` only, never the
+       bare `openingHours` "Mo-Su 11:59-23:59" shortcut: both areas run past
+       midnight into the small hours, and there is no `closingHours` to sit
+       beside an always-open claim. Omitting it is the honest reading — a
+       visitor checking the kitchen hours should see them on the page and judge
+       for themselves, rather than have a validator tell them the kitchen never
+       closes. `nameSlogan` and `description` are the §10 tagline and blurb,
+       reused verbatim from params so the schema cannot describe the business
+       differently from the hero above the fold. */ -}}
+{{- $site := .Site -}}
+{{- $cfg := $site.Params -}}
+{{- $graph := slice -}}
+
+{{- if ne .Kind "404" -}}
+  {{- $base := $site.BaseURL -}}
+
+  {{- /* ---- Restaurant ---- */ -}}
+  {{- $openingHours := slice -}}
+  {{- $hasClosingHours := false -}}
+  {{- range $cfg.hours -}}
+    {{- range .groups -}}
+      {{- $openingHours = $openingHours | append (dict
+            "@type" "OpeningHoursSpecification"
+            "dayOfWeek" .days
+            "opens" .opens
+            "closes" .closes) -}}
+      {{- if not .closed -}}
+        {{- $hasClosingHours = true -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $restaurant := dict
+        "@type" "Restaurant"
+        "@id" (printf "%s#restaurant" $base)
+        "name" $site.Title
+        "url" $site.Home.Permalink
+        "telephone" $cfg.phone
+        "email" $cfg.email
+        "nameSlogan" $cfg.heroKicker
+        "description" (partial "blurb.html" $site.Home | default $cfg.heroDescription) -}}
+
+  {{- with $cfg.streetAddress -}}
+    {{- $restaurant = merge $restaurant (dict "address" (dict
+          "@type" "PostalAddress"
+          "streetAddress" $cfg.streetAddress
+          "addressLocality" $cfg.addressLocality
+          "addressRegion" $cfg.addressRegion
+          "postalCode" $cfg.postalCode
+          "addressCountry" $cfg.addressCountry)) -}}
+  {{- end -}}
+
+  {{- /* Guarded rather than emitted unconditionally: a zero coordinate is a real
+         number that would pin the business at Null Island, which is worse than
+         omitting the property. */ -}}
+  {{- if and $cfg.latitude $cfg.longitude -}}
+    {{- $restaurant = merge $restaurant (dict "geo" (dict
+          "@type" "GeoCoordinates"
+          "latitude" $cfg.latitude
+          "longitude" $cfg.longitude)) -}}
+  {{- end -}}
+
+  {{- with $openingHours -}}
+    {{- $restaurant = merge $restaurant (dict "openingHoursSpecification" .) -}}
+    {{- if not $hasClosingHours -}}
+      {{- $restaurant = merge $restaurant (dict "openingHours" "Mo-Su 00:00-23:59") -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- with $cfg.priceCurrency -}}
+    {{- $restaurant = merge $restaurant (dict "currenciesAccepted" .) -}}
+  {{- end -}}
+
+  {{- /* The hero is read through the same GetMatch + fingerprint hero.html uses,
+         so the URL in the schema is the fingerprinted one that is actually
+         served. schema.org wants absolute, so .Permalink rather than
+         .RelPermalink. */ -}}
+  {{- $images := slice -}}
+  {{- with resources.GetMatch "images/photo-*-hero.*" -}}
+    {{- $images = $images | append (. | fingerprint "sha256").Permalink -}}
+  {{- end -}}
+  {{- /* logo and image are different things. The hero photo is the business;
+         the crest is the mark. Using the first entry of the image list for
+         both meant `logo` pointed at the tavern photograph. Same literal the
+         nav, footer, head and 404 templates use. */ -}}
+  {{- $logo := "images/jst-logo.png" | absURL -}}
+  {{- $restaurant = merge $restaurant (dict "logo" $logo) -}}
+  {{- with $images -}}
+    {{- $restaurant = merge $restaurant (dict "image" .) -}}
+  {{- end -}}
+
+  {{- /* ---- Menu ----
+         Two page shapes produce one. On /menu/ (a regular page with
+         layout = "full-menu", not a section) every section is walked; on a
+         section page only its own. The section list comes from
+         menu-sections.html rather than .Site.Sections so the schema honours
+         nonMenuSections exactly like the visible menu does — specials are
+         offers, not dishes, and must stay out. */ -}}
+  {{- $menuPage := $site.GetPage "/menu" -}}
+  {{- $isMenuSection := and (eq .Kind "section") (not (in ($cfg.nonMenuSections | default slice) .Section)) -}}
+  {{- $menuSections := slice -}}
+
+  {{- if eq .Layout "full-menu" -}}
+    {{- range partial "menu-sections.html" . -}}
+      {{- /* Capture the section page before descending. `.` is rebound by both
+             the inner range and the with, and `$` is the *page* jsonld.html was
+             called with (/menu/, titled "Full Menu"), not this section — so
+             reading `$.Title` inside the loop labels all eight sections "Full
+             Menu". Bind it once, up front. */ -}}
+      {{- $section := . -}}
+      {{- $items := slice -}}
+      {{- range .RegularPages -}}
+        {{- $items = $items | append (partial "jsonld-menuitem.html" (dict "item" .)) -}}
+      {{- end -}}
+      {{- with $items -}}
+        {{- $menuSections = $menuSections | append (dict
+              "@type" "MenuSection"
+              "name" $section.Title
+              "description" (partial "blurb.html" $section)
+              "hasMenuItem" .) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else if $isMenuSection -}}
+    {{- $items := slice -}}
+    {{- range .RegularPages -}}
+      {{- $items = $items | append (partial "jsonld-menuitem.html" (dict "item" .)) -}}
+    {{- end -}}
+    {{- with $items -}}
+      {{- $menuSections = $menuSections | append (dict
+            "@type" "MenuSection"
+            "name" $.Title
+            "description" (partial "blurb.html" $)
+            "hasMenuItem" .) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* hasMenu always points somewhere useful. Where this page carries the
+         Menu node it references it by @id, so the two are joined; everywhere
+         else it points at the /menu/ URL, which is a valid hasMenu value and
+         keeps the statement true on a page that lists no dishes. */ -}}
+  {{- if $menuSections -}}
+    {{- $restaurant = merge $restaurant (dict "hasMenu" (dict "@id" (printf "%s#menu" $base))) -}}
+  {{- else if $menuPage -}}
+    {{- $restaurant = merge $restaurant (dict "hasMenu" $menuPage.Permalink) -}}
+  {{- end -}}
+
+  {{- $graph = $graph | append $restaurant -}}
+
+  {{- if $menuSections -}}
+    {{- $graph = $graph | append (dict
+          "@type" "Menu"
+          "@id" (printf "%s#menu" $base)
+          "name" (cond (eq .Layout "full-menu") .Title "Menu")
+          "inLanguage" ($site.Language.Locale | default "en")
+          "hasMenuSection" $menuSections) -}}
+  {{- end -}}
+
+  {{- /* ---- BreadcrumbList ----
+         Built as name/url pairs first, then numbered, so positions cannot drift
+         out of step with the list when a level is skipped. The homepage is
+         level 1 and is excluded from its own trail. */ -}}
+  {{- $trail := slice (slice "Home" $site.Home.Permalink) -}}
+  {{- $emitTrail := false -}}
+
+  {{- if eq .Kind "section" -}}
+    {{- $trail = $trail | append (slice .Title .Permalink) -}}
+    {{- $emitTrail = true -}}
+  {{- else if and (eq .Kind "page") (eq .Layout "full-menu") -}}
+    {{- $trail = $trail | append (slice .Title .Permalink) -}}
+    {{- $emitTrail = true -}}
+  {{- else if and (eq .Kind "page") .Parent -}}
+    {{- if ne .Parent.Kind "home" -}}
+      {{- $trail = $trail | append (slice .Parent.Title .Parent.Permalink) -}}
+    {{- end -}}
+    {{- $trail = $trail | append (slice .Title .Permalink) -}}
+    {{- $emitTrail = true -}}
+  {{- end -}}
+
+  {{- if and $emitTrail (gt (len $trail) 1) -}}
+    {{- $elements := slice -}}
+    {{- range $i, $crumb := $trail -}}
+      {{- $elements = $elements | append (dict
+            "@type" "ListItem"
+            "position" (add $i 1)
+            "name" (index $crumb 0)
+            "item" (index $crumb 1)) -}}
+    {{- end -}}
+    {{- $graph = $graph | append (dict
+          "@type" "BreadcrumbList"
+          "@id" (printf "%s#breadcrumb" $base)
+          "itemListElement" $elements) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* safeJS is required, not decorative. Go's html/template does not treat
+       `type="application/ld+json"` as JSON context, so it runs the value
+       through jsValEscaper and emits the whole block as a quoted JS string
+       literal — `"[{\"@id\":…}]"`. That is valid HTML, parses fine as JS, and
+       is useless as JSON-LD: every consumer reads it as a string, not a graph.
+
+       Disabling the escaper is safe here because jsonify already escapes `<`
+       to \u003c, so the serialised text can never contain a literal `<` and
+       therefore cannot close the <script> element early. */ -}}
+{{- with $graph -}}
+<script type="application/ld+json">{{ jsonify . | safeJS }}</script>
+{{- end -}}

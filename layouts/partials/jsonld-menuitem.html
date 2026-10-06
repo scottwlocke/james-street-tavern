@@ -1,0 +1,76 @@
+{{- /* One schema.org MenuItem, returned as a dict for jsonld.html to serialise.
+
+       Split out because the shape is fiddly enough — image presence and two
+       different offer shapes — that inlining it in the @graph loop would bury
+       the branch logic under map literals.
+
+       Returns a dict rather than printing JSON: the caller collects every item
+       into one array and serialises once at the end. Printing JSON here would
+       mean either N script tags per page or string concatenation in the
+       template, both of which are how JSON-LD ends up subtly malformed. */ -}}
+{{- $item := .item -}}
+{{- $glob := .Site.Params.photoGlob | default "photo-*-hero.*" -}}
+{{- $out := dict "@type" "MenuItem" "name" $item.Title -}}
+
+{{- with $item.Params.description -}}
+  {{- $out = merge $out (dict "description" .) -}}
+{{- end -}}
+
+{{- $out = merge $out (dict "url" $item.Permalink) -}}
+
+{{- /* Image is gated on showimage for the same reason the card's is: a dish that
+       opted out is not pictured anywhere on the site, so claiming an image in
+       the schema would describe something no visitor can see. Uses .Permalink
+       because schema.org wants absolute URLs. */ -}}
+{{- if partial "show-image.html" $item -}}
+  {{- with $item.Resources.GetMatch $glob -}}
+    {{- $out = merge $out (dict "image" .Permalink) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Prices are written by hand in front matter and come in three shapes:
+       "$10.00", "$12" with no decimals, and a range on pizza/toppings like
+       "$1.75 - $3.75". Extracting the numbers handles all three without a
+       special case per format, and it means the schema never repeats the
+       dollar sign — price is a bare amount plus priceCurrency, so "$10.00" in
+       the content becomes 10.00 USD here.
+
+       One item has an empty price: wings/wing-flavors is a list of sauces to
+       choose from, not something you order, so the `with` skips it entirely.
+       Emitting a blank Offer instead would be worse than absent — it would
+       read to Google as free wings. */ -}}
+{{- with $item.Params.price -}}
+  {{- $amounts := findRE "[0-9]+(?:\\.[0-9]+)?" . -}}
+  {{- $currency := $item.Site.Params.priceCurrency | default "USD" -}}
+  {{- if eq (len $amounts) 1 -}}
+    {{- $out = merge $out (dict "offers" (dict
+          "@type" "Offer"
+          "price" (index $amounts 0)
+          "priceCurrency" $currency)) -}}
+  {{- else if gt (len $amounts) 1 -}}
+    {{- /* A range is an Offer wrapping a PriceSpecification with min/max, not
+           an Offer with a hyphenated price string — the string form is what
+           Google rejects. Only two slots are read, so a hypothetical
+           "$1 - $2 - $3" would take the first two and drop the rest rather
+           than fail loudly; no such price exists today.
+
+           priceCurrency goes on both the Offer and the PriceSpecification.
+           The spec alone is enough for a consumer that walks the whole
+           subtree, but Offer.priceCurrency is the property Google reads
+           first and anything reading just that would otherwise see a range
+           with no currency at all. */ -}}
+    {{- $spec := dict "@type" "PriceSpecification" "priceCurrency" $currency -}}
+    {{- if index $amounts 0 -}}
+      {{- $spec = merge $spec (dict "minPrice" (index $amounts 0)) -}}
+    {{- end -}}
+    {{- if index $amounts 1 -}}
+      {{- $spec = merge $spec (dict "maxPrice" (index $amounts 1)) -}}
+    {{- end -}}
+    {{- $out = merge $out (dict "offers" (dict
+          "@type" "Offer"
+          "priceCurrency" $currency
+          "priceSpecification" $spec)) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $out -}}
