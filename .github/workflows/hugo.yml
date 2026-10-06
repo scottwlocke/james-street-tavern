@@ -57,7 +57,7 @@ jobs:
       # The scanner looks at history, not just the tip, so a shallow clone
       # would silently reduce it to a one-commit check.
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Scan for credentials
@@ -82,7 +82,7 @@ jobs:
           sudo dpkg -i "$deb"
           hugo version
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Build with Hugo
