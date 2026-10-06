@@ -20,7 +20,10 @@
     <div class="hero-copy">
       <span class="hero-kicker">{{ default "Your Neighborhood Tavern" .Site.Params.heroKicker }}</span>
       <h1>{{ default "Come Hungry. Leave Happy." .Site.Params.heroTitle }}</h1>
-      <p class="hero-description">{{ default "Jumbo whole wings, cold beer, and a wood-fired kitchen that's been feeding Monroeville for years. No frills, no nonsense — just a good time." .Site.Params.heroDescription }}</p>
+      {{- /* heroDescription is the single source for this sentence. No literal
+             fallback here: a stale copy in a template would outlive the config
+             edit that was meant to replace it. */ -}}
+      {{ with .Site.Params.heroDescription }}<p class="hero-description">{{ . }}</p>{{ end }}
       <div class="hero-actions">
         {{- /* Used to be href="#menu", which pointed at the itemised grid that
                used to live on the homepage. That grid is now the Full Menu
