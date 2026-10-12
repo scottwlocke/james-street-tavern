@@ -20,3 +20,6 @@ Thumbs.db
 # Scratch space for local verification harnesses and commit staging
 # artefacts — not part of the site
 /.tmp/
+
+# Design-review scratch written by the impeccable skill — not part of the site
+/.impeccable/
