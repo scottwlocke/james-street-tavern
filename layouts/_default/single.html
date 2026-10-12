@@ -19,31 +19,15 @@
 
   <section class="section">
     <div class="container">
-      {{- with .Parent }}
-        {{- /* The kicker is the "up one level" link, and the only route off a
-               dish page to its section. Everything else here is terminal: the
-               panel carries no outbound links, the top bar offers only Specials
-               / Full Menu / Contact (§6), and the full section list lives in
-               #mobile-nav, which is hidden above 1024px. As a plain <span> the
-               parent section was unreachable from a dish page without typing
-               the URL — a desktop dead end, since the drawer that does list the
-               sections is not visible there.
-
-               The kicker already read the section name directly above the dish
-               name, so the hierarchy was implied by the layout and only needed
-               the anchor. It is the minimal fix available: the alternative is a
-               breadcrumb nav or restoring section links to the top bar, and
-               §6 already rejected the latter on purpose.
-
-               section.html and specials/section.html render this same class as
-               a non-link <span>, so the anchor is distinguished by element
-               rather than given a second class.
-
-               .Parent is always set here — this template renders only pages
-               inside a section — so the old `{{ with .Parent }}` guard around
-               the title text, which could emit an empty span, goes with it. */ -}}
-        <a class="section-kicker" href="{{ .RelPermalink }}">{{ .Title }}</a>
-      {{- end }}
+      {{- /* The breadcrumb replaces the old single-link chalk kicker here. That
+             kicker existed for one reason: a dish page had no route back up to
+             its section, because the top bar offers only Specials / Full Menu /
+             Contact (§6) and the section list lives in the drawer that is
+             hidden above 1024px. The trail's middle crumb is that same link to
+             the parent, and it adds the Home level the kicker never carried, so
+             keeping the kicker as well would stack two identical section links
+             in the same column. See partials/breadcrumb.html. */ -}}
+      {{ partial "breadcrumb.html" . }}
 
       <div class="detail-layout{{ if not $image }} is-full{{ end }}">
         {{ with $image }}

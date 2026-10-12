@@ -1,0 +1,31 @@
+{{- /* The visible breadcrumb trail — the on-page half of the BreadcrumbList that
+       jsonld.html emits in structured data. The trail itself is built by
+       partials/breadcrumb-trail.html so the two cannot disagree (§13: structured
+       data mirrors what is on the page).
+
+       The homepage and the 404 emit nothing: the homepage is the trail's origin,
+       and the 404 is noindex with no place in the hierarchy. The current page is
+       a plain <span aria-current="page">, not a link — linking to the page you
+       are already on is a dead control. Section pages keep their chalk
+       .section-kicker eyebrow above this; dish pages used to carry a
+       single-link kicker up to their section and it is gone, because the
+       trail's middle crumb is that same link plus the Home level the kicker
+       never offered, and two identical section links in one column read as a
+       mistake. */ -}}
+{{- $trail := partial "breadcrumb-trail.html" . -}}
+{{- if gt (len $trail) 1 -}}
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    {{- range $i, $crumb := $trail -}}
+      {{- $last := eq (add $i 1) (len $trail) -}}
+      <li class="breadcrumb-item">
+        {{- if $last -}}
+          <span aria-current="page">{{ $crumb.name }}</span>
+        {{- else -}}
+          <a href="{{ $crumb.rel }}">{{ $crumb.name }}</a>
+        {{- end -}}
+      </li>
+    {{- end -}}
+  </ol>
+</nav>
+{{- end -}}

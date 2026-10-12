@@ -9,6 +9,7 @@
          same in both places. Ordered ByWeight, same as the homepage. */ -}}
   <section class="section">
     <div class="container">
+      {{ partial "breadcrumb.html" . }}
       <div class="section-header">
         {{- with .Params.kicker }}
           <span class="section-kicker">{{ . }}</span>

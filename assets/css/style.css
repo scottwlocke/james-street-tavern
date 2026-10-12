@@ -264,54 +264,60 @@ h3 {
   color: var(--chalk-gold);
 }
 
-/* On a dish page the kicker is the anchor up to the parent section — the only
-   route off that page, since the top bar offers just Specials / Full Menu /
-   Contact (§6) and the section list sits in the drawer that is hidden above
-   1024px. Scoped to the element: the non-link kickers in section.html and
-   specials/section.html keep the plain span styling above.
+/* The visible breadcrumb, and the on-page half of the BreadcrumbList that
+   jsonld.html emits in structured data — the trail, its names and its order
+   match that node (see partials/breadcrumb.html). It replaced the single-link
+   chalk kicker a dish page used to carry, which offered only the section level;
+   the trail's middle crumb is that same link and it adds Home above it.
 
-   §6 already gives the site's links a gold scaleX underline on hover, so that
-   is the affordance reused here rather than inventing a second one. The
-   geometry matches .nav-links a::after deliberately — same 44px box with the
-   label centred, so `bottom: 8px` sits just under the text in both.
+   Size is the §3 {type.caption} step, in the body sans face: a breadcrumb is
+   navigation, not a chalkboard eyebrow, and putting it in Permanent Marker
+   would read as a third display type role (§3 rations the chalk family to two).
+   Honey oak measures 7.45:1 on the --canvas band (the note above), so the
+   links clear AA; the current page steps up to beer foam to read as text, not a
+   dead link. */
+.breadcrumb {
+  margin-bottom: var(--space-md);
+}
 
-   Colour is unchanged. The 4.32:1 figure in the note above is measured against
-   barn wood; a dish page's kicker sits on the --canvas band, where honey oak
-   measures 7.45:1 and clears AA comfortably. That also keeps it clearly
-   distinct from body copy, which is off-white at 15.32:1 on the same band —
-   so no colour change is needed to make the link readable as a link. */
-a.section-kicker {
-  position: relative;
+.breadcrumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.breadcrumb-item {
   display: inline-flex;
-  align-items: center;
-  min-height: 44px;               /* §11 touch target */
-  color: inherit;
+  align-items: baseline;
 }
 
-a.section-kicker::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 8px;
-  width: 100%;
-  height: 2px;
-  background-color: var(--chalk-gold);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--duration) var(--easing);
+/* The separator is generated so the markup stays a clean <ol> of names. */
+.breadcrumb-item + .breadcrumb-item::before {
+  content: "/";
+  padding-inline: var(--space-sm);
+  color: var(--honey-oak);
+  opacity: 0.55;
 }
 
-/* Stated explicitly because `a:hover` (0,1,1) outranks `.section-kicker`
-   (0,1,0) and would otherwise flip the kicker to beer foam on hover by
-   accident rather than by choice. */
-a.section-kicker:hover,
-a.section-kicker:focus-visible {
+.breadcrumb a {
+  color: var(--honey-oak);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.breadcrumb a:focus-visible {
   color: var(--chalk-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-a.section-kicker:hover::after,
-a.section-kicker:focus-visible::after {
-  transform: scaleX(1);
+.breadcrumb [aria-current="page"] {
+  color: var(--beer-foam);
 }
 
 .section-title {

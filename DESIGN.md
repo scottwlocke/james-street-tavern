@@ -479,26 +479,28 @@ track, and invisible at a 5s interval.
   sections, this drawer is one of only three places they appear — with the
   homepage card grid and `/menu/` — so it is a primary navigation route, not a
   mobile-only convenience
-- **A dish page links up to its own section.** The kicker above the dish name is
-  an anchor to `.Parent`, not a label. This is the one route off a dish page to
-  a section page, and without it the route exists only in the drawer, which is
-  hidden above 1024px — so on desktop a visitor who arrived on a single dish
-  from a search engine had no way to reach `/pizza/` and could only type the
-  URL. The kicker already read the section name directly above the dish name, so
-  the hierarchy was implied by the layout and only needed the anchor.
-- The kicker anchor is **scoped to the element**, not a second class.
-  `section.html` and `specials/section.html` render the same `.section-kicker`
-  as a plain `<span>` — those are section pages with no parent section to go up
-  to — and that must not pick up link styling or the underline.
-- The link reuses §6's **gold scaleX underline** affordance rather than
-  introducing a second one, with the same geometry as `.nav-links a::after`:
-  same 44px box, label centred, rule at `bottom: 8px`. The kicker is also a
-  target, so it needs the §11 44px minimum.
-- The kicker colour is **unchanged**. Honey oak on a dish page's `--canvas` band
-  measures 7.45:1 and clears AA comfortably — the 4.32:1 figure elsewhere in
-  this document is measured against barn wood, a different band. It is also
-  plainly distinct from body copy (off-white, 15.32:1 on the same band), so no
-  colour change is needed for the link to read as a link.
+- **A breadcrumb trail replaces the dish-page kicker as the route up.** Section
+  pages, `/menu/` and every dish or special page render
+  `partials/breadcrumb.html` at the top of the content container: `Home »
+  Section » Dish`, with the current page as a `<span aria-current="page">` and
+  every level above it a link. It is the visible half of the `BreadcrumbList`
+  that `jsonld.html` emits — same names, same order — so the structured data
+  describes what is on the page (§13).
+- **A dish page used to carry a single-link chalk kicker** (`<a
+  class="section-kicker">`) up to its section, and that is where the trail now
+  comes from. The kicker existed only to give a dish page a route back to its
+  section, because the top bar offers just Specials / Full Menu / Contact and
+  the section list lives in the drawer hidden above 1024px. The trail's middle
+  crumb is that same link *plus* a Home level, so keeping both stacked two
+  identical section links in one column and read as a mistake. The kicker is
+  gone from dish pages; section pages keep theirs as a plain `<span>`.
+- **The trail is navigation, not an eyebrow**, so it is set in the body sans at
+  the small/caption size in honey oak — not in Permanent Marker. §3 rations the
+  chalk family to two roles (specials title, section kicker) and a breadcrumb is
+  a third thing. Honey oak measures 7.45:1 on the `--canvas` band and clears AA;
+  the current page steps up to beer foam so it reads as text rather than a dead
+  link. Links take a gold underline on hover/focus rather than the nav's scaleX
+  rule, because breadcrumbs are inline text, not bar controls.
 
 ### The menu section list is centralised
 
@@ -942,6 +944,7 @@ are separate entries, never buried in prose.
 | `nav-link` + active | `.nav-links a`, `.active` | `{type.nav}`, gold scaleX underline. `Specials`, `Full Menu` and `Contact` are all this one class; only `Specials` sets `aria-current` across a whole section (§6) |
 | `logo` | `.logo`, `.logo-img` | `--logo-clear` height; the anchor holds the §4 clear space and the 44px touch target |
 | `nav-chrome` | `--nav-h`, `--nav-clearance` | Bar height and anchor clearance, both derived from `--logo-clear` (§4) |
+| `breadcrumb` | `.breadcrumb`, `.breadcrumb-list`, `.breadcrumb-item` | `<nav aria-label="Breadcrumb">` + `<ol>`; `{type.caption}` size in the body sans, honey-oak links, `/` separators generated in CSS, current page a beer-foam `aria-current="page"` span. Section / `/menu/` / dish pages only; visible half of the `BreadcrumbList` in `jsonld.html` (§6) |
 | `section-header-cta` | `.section-header .btn` | Pairs the section heading with its Full Menu button |
 | `not-found` | `.error-page`, `.error-code`, `.error-logo` | Centred single column; the crest runs larger than `--logo-clear` and is **never** filtered (§4), since a shadow on a transparent PNG would require `filter` |
 | `mobile-drawer` | `.mobile-nav.open` | Full-canvas chalkboard, 56px rows, `Menu` heading above the list |

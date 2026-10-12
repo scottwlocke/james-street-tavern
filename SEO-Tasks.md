@@ -458,7 +458,8 @@ Verified during the audit, recorded so the next pass does not re-check them:
   `params.homeDescription`) all 60 distinct; the previous `/` and `/404.html`
   collision from task 7 is gone.
 - **`<nav>`** — one `<nav aria-label="Main">` landmark per page.
-- **Sitemap** — 59 URLs, correctly excluding the 404.
+- **Sitemap** — 59 URLs, correctly excluding the 404, each with a `<lastmod>`
+  derived from git (§9).
 - **404 handling** — `noindex, follow` on a thin-content page is the correct
   call, not a bug.
 - **Head essentials** — `viewport`, `theme-color`, favicon and apple-touch-icon
@@ -532,3 +533,17 @@ current state rather than a snapshot of 2026-10-06:
   only, ahead of the lazy `contact.html` iframe. `dns-prefetch`, not
   `preconnect`: the iframe is `loading="lazy"`, so a connection opened at load
   would idle to its ~10s timeout before the map scrolls into view.
+- **`<lastmod>` in `sitemap.xml`.** `enableGitInfo = true` in `hugo.toml` dates
+  each page from the commit that last touched its file; no content file carries
+  a `date`, so before this the 59 URLs shipped with no `lastmod` at all. This
+  depends on full history: the build job in `.github/workflows/hugo.yml` now
+  also checks out with `fetch-depth: 0` (the `scan` job already did), because a
+  shallow clone would stamp every URL with the deploy commit. Fixing that was
+  part of the change, not an afterthought — a wrong `lastmod` is worse than none.
+- **Visible breadcrumb trail.** `partials/breadcrumb.html` renders `Home »
+  Section » Dish` on section pages, `/menu/` and every dish/special page, with
+  the current page an `aria-current="page"` span. It is the on-page half of the
+  `BreadcrumbList` already in `jsonld.html` (same names, same order), which
+  previously had no visible counterpart — structured data describing a trail the
+  page never showed. It replaces the dish-page chalk kicker, whose only job was
+  that same up-link, so the two do not stack.

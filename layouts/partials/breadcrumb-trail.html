@@ -1,0 +1,35 @@
+{{- /* The breadcrumb trail as data, so the visible trail (partials/breadcrumb.html)
+       and the BreadcrumbList jsonld.html emits cannot drift apart. Same reason
+       menu-sections.html is the one source for the section list and blurb.html
+       for page descriptions.
+
+       Returns a slice of dicts, each {name, abs, rel} — name is the label, abs
+       the absolute Permalink (what schema.org requires) and rel the
+       RelPermalink (what the <a href> should use, so no template hardcodes the
+       domain). Level 1 is always Home; a page with no place in the hierarchy
+       (the homepage itself, and the noindex 404) gets a one-item slice, which
+       both callers treat as "render nothing" via len > 1.
+
+       Shape, matching the site's hierarchy:
+         [Home]                          homepage, 404 — no trail
+         [Home, Section]                 a section page
+         [Home, Full Menu]               /menu/
+         [Home, Section, Dish]           a dish or special page
+       (.Parent is always set on a dish/special page, so the middle crumb is
+       never skipped; the ne "home" guard keeps a top-level page from listing
+       Home twice if one is ever added.) */ -}}
+{{- $home := .Site.Home -}}
+{{- $trail := slice (dict "name" "Home" "abs" $home.Permalink "rel" $home.RelPermalink) -}}
+
+{{- if eq .Kind "section" -}}
+  {{- $trail = $trail | append (dict "name" .Title "abs" .Permalink "rel" .RelPermalink) -}}
+{{- else if and (eq .Kind "page") (eq .Layout "full-menu") -}}
+  {{- $trail = $trail | append (dict "name" .Title "abs" .Permalink "rel" .RelPermalink) -}}
+{{- else if and (eq .Kind "page") .Parent -}}
+  {{- if ne .Parent.Kind "home" -}}
+    {{- $trail = $trail | append (dict "name" .Parent.Title "abs" .Parent.Permalink "rel" .Parent.RelPermalink) -}}
+  {{- end -}}
+  {{- $trail = $trail | append (dict "name" .Title "abs" .Permalink "rel" .RelPermalink) -}}
+{{- end -}}
+
+{{- return $trail -}}

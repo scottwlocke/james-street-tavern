@@ -1,6 +1,7 @@
 {{ define "main" }}
   <section class="section">
     <div class="container">
+      {{ partial "breadcrumb.html" . }}
       <div class="section-header">
         {{- /* Defaults to "Menu", which is right for the eight menu sections. The
        specials section opts out of that framing with its own kicker, so its

@@ -21,7 +21,9 @@
                         claiming 46 MenuItems there would describe content the
                         visitor cannot see.
          BreadcrumbList section pages, dish pages and /menu/, matching the
-                        visible hierarchy the kicker link established.
+                        visible trail partials/breadcrumb.html renders — same
+                        names, same order, so the markup describes a hierarchy
+                        the page actually shows.
 
        The 404 is skipped entirely. It is `noindex`, and attaching a real
        business identity to a page that exists to say "not found" risks the
@@ -225,34 +227,21 @@
   {{- end -}}
 
   {{- /* ---- BreadcrumbList ----
-         Built as name/url pairs first, then numbered, so positions cannot drift
-         out of step with the list when a level is skipped. The homepage is
-         level 1 and is excluded from its own trail. */ -}}
-  {{- $trail := slice (slice "Home" $site.Home.Permalink) -}}
-  {{- $emitTrail := false -}}
-
-  {{- if eq .Kind "section" -}}
-    {{- $trail = $trail | append (slice .Title .Permalink) -}}
-    {{- $emitTrail = true -}}
-  {{- else if and (eq .Kind "page") (eq .Layout "full-menu") -}}
-    {{- $trail = $trail | append (slice .Title .Permalink) -}}
-    {{- $emitTrail = true -}}
-  {{- else if and (eq .Kind "page") .Parent -}}
-    {{- if ne .Parent.Kind "home" -}}
-      {{- $trail = $trail | append (slice .Parent.Title .Parent.Permalink) -}}
-    {{- end -}}
-    {{- $trail = $trail | append (slice .Title .Permalink) -}}
-    {{- $emitTrail = true -}}
-  {{- end -}}
-
-  {{- if and $emitTrail (gt (len $trail) 1) -}}
+         The trail comes from partials/breadcrumb-trail.html, the same source
+         the visible breadcrumb renders from, so the markup here always
+         describes the hierarchy on the page and the two cannot drift. Positions
+         are numbered from the slice rather than carried in it, so they cannot
+         fall out of step with the list. A one-item trail (homepage, 404) means
+         no breadcrumb, matching the visible output. */ -}}
+  {{- $trail := partial "breadcrumb-trail.html" . -}}
+  {{- if gt (len $trail) 1 -}}
     {{- $elements := slice -}}
     {{- range $i, $crumb := $trail -}}
       {{- $elements = $elements | append (dict
             "@type" "ListItem"
             "position" (add $i 1)
-            "name" (index $crumb 0)
-            "item" (index $crumb 1)) -}}
+            "name" $crumb.name
+            "item" $crumb.abs) -}}
     {{- end -}}
     {{- $graph = $graph | append (dict
           "@type" "BreadcrumbList"
