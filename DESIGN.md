@@ -443,6 +443,22 @@ right; the wrap from last back to first is the one case where the incoming board
 enters from the left. Cheaper than cloning the first slide to fake an endless
 track, and invisible at a 5s interval.
 
+**What may stop the timer — and only this.** The timer stops for exactly three
+things: the pause control, `document.hidden` (a background tab), and keyboard
+focus **inside a board's own content** (its "Call to Order" link). The
+`focusin`/`focusout` listener is scoped to `.chalkboards`, never to
+`[data-specials]`. Two tempting shortcuts are bugs, and both shipped once:
+
+- **No hover-pause.** The board is large enough to fill most of a desktop
+  viewport, so any reader who scrolls it into view parks the pointer on it and
+  the rotation would never advance.
+- **No pause on the rotator's own controls.** A clicked dot and the Play button
+  both keep focus, so treating their focus as a hold freezes the timer after a
+  dot click and leaves Play unable to restart it.
+
+If you widen the focus listener back to the wrapper or re-add a `mouseenter`,
+the rotator stops advancing for real readers and looks broken — see §11.
+
 **A single special gets no rotator** — no controls, no timer, just the panel.
 
 ### Specials Controls
@@ -1019,6 +1035,11 @@ these exist):
   it (§11). If it moves on its own for more than five seconds it needs a control.
 - Don't hide content behind JS. The rotator ships every board and only
   `.specials-rotator`, added by JS, ever hides one (§6).
+- Don't pause the specials rotation on hover, or on focus of its own dots or
+  pause button. Only a board's own content (its link) and a background tab stop
+  the timer, with the focus listener scoped to `.chalkboards` (§6). Hovering the
+  large board freezes it for any reader who scrolled it into view, and a clicked
+  dot's retained focus freezes it and stops Play from restarting it.
 
 ---
 
