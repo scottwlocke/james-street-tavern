@@ -117,6 +117,18 @@
     {{- $restaurant = merge $restaurant (dict "currenciesAccepted" .) -}}
   {{- end -}}
 
+  {{- /* Google's local-business guidance names these two alongside address,
+         phone and hours. Guarded with `with` for the same reason as the rest:
+         an empty string or list is omitted rather than published as an empty
+         claim. Values live in hugo.toml so the business facts have one home. */ -}}
+  {{- with $cfg.priceRange -}}
+    {{- $restaurant = merge $restaurant (dict "priceRange" .) -}}
+  {{- end -}}
+
+  {{- with $cfg.servesCuisine -}}
+    {{- $restaurant = merge $restaurant (dict "servesCuisine" .) -}}
+  {{- end -}}
+
   {{- /* The hero photo, through the same derivative pipe hero.html renders
          with: the URL in the schema then names a file the build actually
          publishes and that is fingerprinted, so a re-encoded photo never keeps

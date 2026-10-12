@@ -12,12 +12,12 @@ from the working environment, so treat performance items as measured-bytes-only.
 ## 1. Status
 
 | # | Task | Severity | Status |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | Fix `baseURL` placeholder | **Blocking** | **done** |
 | 2 | `locale` vs `languageCode` (key was never broken) | **Blocking** | **done** |
 | 3 | Add canonical URLs | High | **done** |
 | 4 | Add structured data (JSON-LD) | High | **done** |
-| 5 | Add Open Graph / Twitter cards | High | todo |
+| 5 | Add Open Graph / Twitter cards | High | **done** |
 | 6 | Resize / re-encode dish photography | Medium | **done** |
 | 7 | De-duplicate two salad descriptions | Medium | **done** |
 | 8 | Deal with 10 unadvertised Atom feeds | Low | **done** |
@@ -127,7 +127,7 @@ production-valid too.
 per-item construction in `layouts/partials/jsonld-menuitem.html`.
 
 | Node | Where |
-|---|---|
+| --- | --- |
 | `Restaurant` | every non-404 page |
 | `Menu` / `MenuSection` / `MenuItem` | `/menu/` (8 sections, 46 items) and the 8 section pages |
 | `BreadcrumbList` | the 58 pages below the home page |
@@ -162,10 +162,11 @@ display strings and `contact.html` fallbacks, so the hours a visitor reads and
 the hours a crawler parses cannot drift:
 
 | Needed for schema | Single source |
-|---|---|
+| --- | --- |
 | `name`, `telephone`, `email` | `hugo.toml` → `params` |
 | `streetAddress` … `addressCountry` | `params` (structured, replaces `params.address`) |
 | `geo` | `params.latitude` / `params.longitude` |
+| `priceRange`, `servesCuisine` | `params.priceRange` / `params.servesCuisine` |
 | `openingHoursSpecification` | `params.hours` (24h `HH:MM`, `days` as the schema.org enum) |
 | 46 × `MenuItem` name + price | `price` in each item's front matter |
 | Section grouping | `menu-sections.html` |
@@ -197,19 +198,40 @@ Still open, both harmless and both worth knowing:
 - Bar and Kitchen hours are identical because that is what was supplied. Not
   invented, not confirmed; worth checking against the real roster.
 
-### 5. No Open Graph or Twitter tags
+### 5. ~~No Open Graph or Twitter tags~~ — done
 
-Zero `og:title`, `og:description`, `og:image`, `og:type`, `og:url` and
-`twitter:card` tags across all 60 pages. Every shared link renders as a bare
-URL with no preview card.
+All 59 indexable pages now carry `og:site_name`, `og:locale`, `og:type`,
+`og:url`, `og:title`, `og:description`, `og:image` (plus `:width`, `:height`,
+`:alt`) and the matching `twitter:card` / `twitter:title` /
+`twitter:description` / `twitter:image` / `twitter:image:alt`, emitted from
+`layouts/partials/head.html`.
 
-- The pieces are in place: `layouts/partials/blurb.html` already resolves a
-  per-page description, and the hero image is **1200×800**, which clears the
-  `og:image` guidance of ≥1200×630.
-- `og:image` needs an absolute URL (`.Permalink` / `.AbsURL`), unlike the
-  relative `src` used in markup.
-- Decide on `og:type` per kind: `restaurant.menu_section` on section pages,
-  `restaurant.menu_item` on dish pages, `website` on the home page.
+- **The 404 is handled like its canonical and structured data: skipped.** The
+  whole block is gated on `ne .Kind "404"`, so a soft 404 is not offered as a
+  shareable card — and Hugo's default `.Title` ("404 Page not found") cannot
+  leak into a preview card, which it did before the guard while the `<title>`
+  above it already read "Page not found".
+- **`og:image` is the page's real image.** A dish or special page resolves its
+  own photo through the same `dish-image.html` pipe the card uses; every other
+  page falls back to the homepage hero. Width/height are read off the
+  derivative, so they stay honest when a photo is swapped; the JPEG fallback
+  (not the largest WebP) is the share image, because scrapers lag browsers on
+  WebP. The URL is absolute.
+- **`og:type` is `website` on every page.** The original note guessed at the
+  `restaurant.menu_section` / `restaurant.menu_item` verticals; those are
+  Facebook-vertical object types that cannot be verified here, and the first
+  implementation instead shipped `article` on all 49 subpages — which is worse,
+  since Open Graph reserves `article` for posts and pairs it with
+  `article:published_time` / `article:author`. A menu section or a dish listing
+  is not an article; the correct generic type is `website`.
+- `og:image:alt` / `twitter:image:alt` carry the page title.
+
+> **Still open.** The share image is under the recommended size. The hero is
+> **1080×1080** (the "1200×800" in the original finding was never the hero — it
+> is square) and the dish photos are 1080×675, while Open Graph wants ≥1200×630
+> and `summary_large_image` wants ~1.91:1. A dedicated 1200×630 JPEG crop would
+> clear the minimum and stop feeds from letterboxing a square; it is not done
+> here because it changes the image pipeline rather than the tags.
 
 ---
 
@@ -222,7 +244,7 @@ URL with no preview card.
 widths (480 / 768 / 1080) and a 1080px JPEG fallback, all sha256-fingerprinted.
 
 | Slot | Width | Sent | Was |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Card | ~357px | **5.1 KB** | 208 KB |
 | Detail (LCP) | ~440px | **8.6 KB** | 208 KB |
 
@@ -467,5 +489,27 @@ Stated plainly so the list is not mistaken for more than it is:
   how they render on a real connection is not.
 - **No rendering.** Chromium and Playwright are not installed, so nothing was
   checked in a browser. Layout claims are derived from the CSS.
-- **No visual confirmation of social previews.** The `og:image` recommendation
-  rests on the hero's measured 1200×800, not on an observed card.
+- **No visual confirmation of social previews.** The `og:image` dimensions are
+  read from the built derivatives (hero 1080×1080, dishes 1080×675), not from an
+  observed card on any platform.
+
+---
+
+## 9. Added after this audit
+
+Two changes that were not on the original list, recorded so the file stays the
+current state rather than a snapshot of 2026-10-06:
+
+- **Google Search Console verification hook.** `params.googleSiteVerification`
+  in `hugo.toml` feeds a `<meta name="google-site-verification">` tag in
+  `head.html`; it is empty by default, so nothing is emitted until a real code
+  is pasted in — an empty tag would look configured while proving nothing.
+  Search Console is also the only place to submit `sitemap.xml` and read the
+  index/crawl data §8 says this audit could not see. This is a GitHub Pages
+  *project* site, so the meta-tag method is the one that travels with the build.
+- **`priceRange` and `servesCuisine` on the `Restaurant` node.** Google's
+  local-business guidance names both; the values live in `hugo.toml`
+  (`params.priceRange = "$$"`, `params.servesCuisine = [...]`) and are merged
+  into the one Restaurant node `jsonld.html` builds, so there is still a single
+  source for the business facts. Both are `with`-guarded, so an empty value is
+  omitted rather than published as an empty claim.

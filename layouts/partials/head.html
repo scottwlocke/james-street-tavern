@@ -17,6 +17,83 @@
        that hugo.toml already describes. */ -}}
 {{- $description := partial "blurb.html" . | default .Site.Params.heroDescription -}}
 <meta name="description" content="{{ $description }}">
+{{- /* Open Graph and Twitter Card metadata.
+
+       The image ladder mirrors the page's real share image: a menu item uses
+       its own dish photo, the homepage and any other page fall back to the
+       homepage hero, and only if neither resource exists does it drop to the
+       logo. Width/height are read off the derivative the partial returns
+       rather than hardcoded — the hero is square (1080×1080) while every dish
+       photo is 8:5, so a fixed pair would be wrong on one of the two, and both
+       would silently lie the day a photo is replaced. The 1200-wide hero step
+       is requested to match hero.html, and dish-image.html caps it at the
+       source, so the reported dimensions stay honest either way.
+
+       The JPEG fallback, not the largest WebP, is used as the share image:
+       scrapers are slower to support WebP than browsers, and og:image is the
+       one place a JPEG is still the safe default.
+
+       `og:type` is `website` throughout. It used to be `article` on every
+       subpage, which is what Open Graph reserves for news/blog posts (and
+       which scrapers pair with article:published_time / article:author). A
+       menu section or a dish listing is not an article, so the honest type is
+       the generic `website`.
+
+       The whole block is skipped on the 404, alongside its noindex, canonical
+       and structured data: a soft 404 should never be offered as a shareable
+       result, and .Title there is Hugo's own "404 Page not found" default,
+       which is exactly the string the <title> handling above keeps out of the
+       page. */ -}}
+{{- if ne .Kind "404" }}
+<meta property="og:site_name" content="{{ .Site.Title }}">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}">
+<meta property="og:description" content="{{ $description }}">
+{{- $ogImage := "" -}}
+{{- $ogWidth := 0 -}}
+{{- $ogHeight := 0 -}}
+{{- $ogAlt := .Title | default .Site.Title -}}
+{{- if .IsPage -}}
+  {{- $glob := .Site.Params.photoGlob | default "photo-*-hero.*" -}}
+  {{- with .Resources.GetMatch $glob -}}
+    {{- if ne .MediaType.SubType "svg" -}}
+      {{- with partial "dish-image.html" (dict "src" .) -}}
+        {{- $ogImage = .fallback -}}
+        {{- $ogWidth = .width -}}
+        {{- $ogHeight = .height -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $ogImage -}}
+  {{- with resources.GetMatch "images/photo-*-hero.*" -}}
+    {{- with partial "dish-image.html" (dict "src" . "widths" (slice 480 768 1080 1200) "fallbackWidth" 1200) -}}
+      {{- $ogImage = .fallback -}}
+      {{- $ogWidth = .width -}}
+      {{- $ogHeight = .height -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $ogImage -}}
+  {{- $ogImage = ("images/jst-logo.png" | absURL) -}}
+{{- end -}}
+<meta property="og:image" content="{{ if not (urls.Parse $ogImage).IsAbs }}{{ $ogImage | absURL }}{{ else }}{{ $ogImage }}{{ end }}">
+{{- with $ogWidth }}
+<meta property="og:image:width" content="{{ . }}">
+{{- end }}
+{{- with $ogHeight }}
+<meta property="og:image:height" content="{{ . }}">
+{{- end }}
+<meta property="og:image:alt" content="{{ $ogAlt }}">
+{{- /* Twitter Card */ -}}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}">
+<meta name="twitter:description" content="{{ $description }}">
+<meta name="twitter:image" content="{{ if not (urls.Parse $ogImage).IsAbs }}{{ $ogImage | absURL }}{{ else }}{{ $ogImage }}{{ end }}">
+<meta name="twitter:image:alt" content="{{ $ogAlt }}">
+{{- end }}
 {{- /* One absolute self-canonical per page. This matters most for the
        homepage, which has no other URL to sort itself against: every
        /?utm_source=… variant is a separate crawlable URL for the same
@@ -38,6 +115,12 @@
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="{{ "images/jst-logo.png" | relURL }}" type="image/png">
 <link rel="apple-touch-icon" href="{{ "images/jst-logo.png" | relURL }}">
+{{- /* Google Search Console ownership check. The value comes from Search
+       Console's "HTML tag" verification method and is set in hugo.toml. Left
+       empty it emits nothing, so the tag can never be half-configured. */ -}}
+{{- with .Site.Params.googleSiteVerification }}
+<meta name="google-site-verification" content="{{ . }}">
+{{- end }}
 {{- /* Fonts are self-hosted — see partials/fonts.html for why, and for the
        variable-weight trick that turned six files into three. The Google
        preconnect pair and the remote stylesheet that used to live here went

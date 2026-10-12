@@ -67,6 +67,25 @@ disableKinds = ["taxonomy", "term"]
   # schema does not carry a hardcoded currency.
   priceCurrency = "USD"
 
+  # ---- Local-business signals (partials/jsonld.html) ----
+  # priceRange and servesCuisine are the two Restaurant fields Google's
+  # local-business guidance recommends that this site can state honestly.
+  # priceRange is the $-band Google expects ("$", "$$", "$$$"); "$$" is the
+  # $10-13 tavern average. servesCuisine is what the board actually serves,
+  # not a wish list: the published menu is American bar fare plus pizza,
+  # wings, burgers and sandwiches. Change either here and every page's schema
+  # follows, since jsonld.html builds one Restaurant node from these params.
+  priceRange = "$$"
+  servesCuisine = ["American", "Pizza", "Wings", "Burgers", "Sandwiches"]
+
+  # ---- Google Search Console verification ----
+  # Paste the content="" value from Search Console's "HTML tag" method here.
+  # Empty by default, and head.html wraps the meta tag in `with`, so nothing
+  # is emitted until a real code lands — an empty tag would just look
+  # configured. This is a project site, so DNS verification is not an option;
+  # the meta tag is the one method that travels with the build.
+  googleSiteVerification = ""
+
   # ---- Assets (DESIGN.md §12 — <type>-<subject>-<variant>.<ext>) ----
   # Dish photography lives in each item's page bundle, beside its index.md
   # (content/pizza/small/photo-small-hero.png); section artwork is an SVG in
