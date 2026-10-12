@@ -4,13 +4,13 @@
 {{ $w := 0 }}{{ $h := 0 }}
 {{ with $page.Resources.GetMatch $glob }}
   {{ $image = .RelPermalink }}
-  {{ $w = .Width }}{{ $h = .Height }}
+  {{ if eq .MediaType.SubType "svg" }}{{ $w = 1600 }}{{ $h = 1000 }}{{ else }}{{ $w = .Width }}{{ $h = .Height }}{{ end }}
 {{ end }}
 {{ if not $image }}
   {{ range $page.Pages.ByWeight }}
     {{ with .Resources.GetMatch $glob }}
       {{ $image = .RelPermalink }}
-      {{ $w = .Width }}{{ $h = .Height }}
+      {{ if eq .MediaType.SubType "svg" }}{{ $w = 1600 }}{{ $h = 1000 }}{{ else }}{{ $w = .Width }}{{ $h = .Height }}{{ end }}
     {{ end }}
   {{ end }}
 {{ end }}
