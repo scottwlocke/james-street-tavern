@@ -399,7 +399,7 @@ by §14 and depth by §15.
 - Optional hanging chain or string-light accent at top
 
 ### Specials Rotator
-One chalkboard is visible at a time; the next special slides in every **20
+One chalkboard is visible at a time; the next special slides in every **5
 seconds**. The slide is 3rem of horizontal travel with a fade, on the standard
 `--duration` (250ms) / `--easing` pair — grounded, no overshoot (§9).
 
@@ -441,7 +441,7 @@ Rotation advances forward and wraps. Positions compare without wrapping, so the
 outgoing board always leaves leftward and the incoming one enters from the
 right; the wrap from last back to first is the one case where the incoming board
 enters from the left. Cheaper than cloning the first slide to fake an endless
-track, and invisible at a 20s interval.
+track, and invisible at a 5s interval.
 
 **A single special gets no rotator** — no controls, no timer, just the panel.
 
@@ -646,7 +646,7 @@ Avoid pure flat digital surfaces. Always introduce at least a light texture or w
   yields to hover and to keyboard focus, so a visitor mid-read does not have a
   board swapped out from under them, and it does not run in a background tab.
 - **An auto-rotating region is not a live region.** No `aria-live` on the track —
-  announcing every 20s is hostile. The carousel semantics are added by JS, not by
+  announcing every 5s is hostile. The carousel semantics are added by JS, not by
   the template: the wrapper becomes `role="region"` +
   `aria-roledescription="carousel"`, each board becomes `role="group"` +
   `aria-roledescription="slide"` labelled `"n of m: <title>"`, and only the
@@ -904,7 +904,7 @@ well as hover transitions. Do not add motion that opts out of this block.
 
 The specials rotator (§6) is covered by this block for free: its slide is a
 transition, so reduced-motion visitors get an instant swap rather than travel.
-The 20s rotation itself still runs — the request was to rotate, and an instant
+The 5s rotation itself still runs — the request was to rotate, and an instant
 swap is not motion — and the pause control (§11) is always there. If auto-advance
 is ever dropped wholesale under reduced motion, that is a deliberate change to
 §6, not a side effect.
@@ -924,7 +924,7 @@ are separate entries, never buried in prose.
 | `button-outline` | `.btn-outline` | `{colors.chalk-gold}` border + label |
 | `button-gold` | `.btn-gold` | `{colors.chalk-gold}` fill, chalkboard label |
 | `chalkboard-panel` | `.chalkboard` | `{elev.recessed}`, wood frame, corner flourishes |
-| `specials-rotator` | `.specials-rotator`, `.chalkboards` | JS-added, homepage only; stacks boards into one grid cell and slides one at a time every 20s (§6) |
+| `specials-rotator` | `.specials-rotator`, `.chalkboards` | JS-added, homepage only; stacks boards into one grid cell and slides one at a time every 5s (§6) |
 | `chalkboards` | `.chalkboards`, `.chalkboard` | Stack of boards; plain grid with a gap when not rotating. `/specials/` renders the same panels, all at once (§6) |
 | `specials-slide` | `.chalkboard.is-active`, `.is-before`, `.is-after` | `visibility` + `opacity` + `translateX`; `--duration`/`--easing` |
 | `specials-dot` | `.specials-dot`, `.specials-dot-mark` | 44×44 target, 10px mark; honey oak → gold lozenge when active |
