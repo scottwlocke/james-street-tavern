@@ -1,13 +1,16 @@
 {{- /* Responsive image derivatives for a dish photograph, as a dict for the
        caller to place.
 
-       Why this exists: all 46 dish photos are 1600×1000 PNG at ~208 KB, and
-       they are page-bundle resources, so Hugo publishes every one of them
-       verbatim whether or not a template uses it. The largest slot they ever
+       Why this exists: all 46 dish photos were 1600×1000 PNG at ~208 KB. They
+       were page-bundle resources, which means Hugo published every one of them
+       verbatim whether or not a template used it — 9.3 MB of unreferenced
+       originals, 68% of the deployed artifact. They now live in
+       assets/images/dishes/, mirroring the content tree they came from, so
+       nothing publishes them by accident and only the derivatives below reach
+       the wire. The largest slot they ever
        fill is .detail-media at ~440px wide (§7 — 5fr of a 1200px container),
        and a card fills ~357px. So the 1600px original was being served into a
-       440px box: about 3.6× oversized, and it accounted for 93% of the site's
-       10.1 MB.
+       440px box: about 3.6× oversized.
 
        Measuring the same photo through Hugo Pipes:
 
@@ -27,7 +30,8 @@
        Returned as a dict rather than printed markup, because the two call sites
        need different `sizes` and different `loading`/`fetchpriority`: a card is
        lazy-loaded and decorative, the detail image is the LCP element and
-       carries the dish name as its alt text.
+       carries the dish name as its alt text. The homepage hero calls the same
+       pipe with wider `widths` (see `.widths`/`.fallbackWidth` below).
 
        This partial deliberately does not consult showimage — it answers "what
        derivatives exist", not "should this page show a photo". Callers gate on
@@ -41,14 +45,42 @@
        guard is here so that "use dish-image for the section art too" is not a
        tempting but wrong refactor.
 
-       Returns nothing when the page has no photo matching the glob, so callers
-       can wrap it in `with` as they did before. */ -}}
-{{- $src := "" -}}
-{{- with .page.Resources.GetMatch (.Site.Params.photoGlob | default "photo-*-hero.*") -}}
-  {{- if eq .MediaType.SubType "svg" -}}
-    {{- /* Vector: leave it alone. See above. */ -}}
-  {{- else -}}
+       Returns nothing when neither the assets tree nor the page bundle holds a
+       photo matching the glob, so callers can wrap it in `with`. */ -}}
+{{- /* `.src` lets a caller that already holds the resource — the homepage
+       hero, which matches images/photo-*-hero.* rather than the dish tree —
+       skip the resolution below and still share the one processing path.
+       `.widths`/`.fallbackWidth` widen the ladder for a slot that spans the
+       full viewport instead of a 357px card.
+
+       Read before `with $src` rebinds `.` to the resource: inside that block
+       `.widths` would be a lookup on an image resource, which has no such
+       field. */ -}}
+{{- $src := default "" .src -}}
+{{- $widths := .widths | default (slice 480 768 1080) -}}
+{{- $fallbackWidth := .fallbackWidth | default 1080 -}}
+{{- if not $src -}}
+  {{- $page := .page -}}
+  {{- $glob := $page.Site.Params.photoGlob | default "photo-*-hero.*" -}}
+  {{- /* assets/ first: that is where the dish sources live now. The page-bundle
+         lookup below stays as the fallback for anything still living beside its
+         index.md (the section artwork does), and for a raster re-added to a
+         bundle by hand. */ -}}
+  {{- /* The assets path mirrors the content path the photo used to sit in
+         (content/pizza/small/index.md → assets/images/dishes/pizza/small/),
+         so `photoGlob` still decides what the photo is called and the page
+         still decides which one it is. A flat assets/images/dishes/ holding
+         every photo would make this a single global GetMatch, which returns
+         the same first match for all 46 dishes. */ -}}
+  {{- with resources.GetMatch (printf "images/dishes/%s%s" $page.File.Dir $glob) -}}
     {{- $src = . -}}
+  {{- end -}}
+  {{- if not $src -}}
+    {{- with $page.Resources.GetMatch $glob -}}
+      {{- if ne .MediaType.SubType "svg" -}}
+        {{- $src = . -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- with $src -}}
@@ -57,7 +89,7 @@
   {{- $width := 0 -}}
   {{- $height := 0 -}}
   {{- $largest := "" -}}
-  {{- range slice 480 768 1080 -}}
+  {{- range $widths -}}
     {{- $r := $src.Process (printf "resize %dx webp q82" .) -}}
     {{- /* `fingerprint` as a function, not `.Fingerprint` as a method: on
            images.ImageResource in Hugo 0.167 the method form is not exposed
@@ -71,7 +103,7 @@
     {{- $height = $r.Height -}}
     {{- $largest = $r -}}
   {{- end -}}
-  {{- $fallback := $src.Process "resize 1080x jpg q82" -}}
+  {{- $fallback := $src.Process (printf "resize %dx jpg q82" $fallbackWidth) -}}
   {{- $fallback = $fallback | fingerprint "sha256" -}}
   {{- return dict
         "webp" (delimit $webpSet ", ")

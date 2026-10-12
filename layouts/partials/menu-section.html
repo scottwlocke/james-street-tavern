@@ -3,8 +3,13 @@
 {{- /* The id gives each section a deep-link target on the full-menu page
        (/menu/#pizza). `html { scroll-padding-top }` keeps the heading clear
        of the sticky nav when the fragment is followed. */ -}}
+{{- /* h2, not h3: this partial is only ever rendered directly under the
+       /menu/ page's h1, so an h3 here skipped a level and left the site's
+       primary menu page with "Full Menu" → "Pizza" and no h2 between them.
+       The eight section headings are the second level of that document.
+       Styled entirely through the class, so the tag change is invisible. */ -}}
 <div class="menu-section" id="{{ $section.Section }}">
-  <h3 class="menu-section-title">{{ $section.Title }}</h3>
+  <h2 class="menu-section-title">{{ $section.Title }}</h2>
   {{ with $section.Content }}
     <div class="section-intro">{{ . }}</div>
   {{ end }}

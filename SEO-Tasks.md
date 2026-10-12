@@ -242,10 +242,9 @@ Two corrections to the original finding, both of which changed the plan:
   transfer — no `<img>` references an original any more, and the only thing that
   was paying for them was the payload argument.
 
-So the `showimage` caveat is only *partly* closed: an opted-out dish now
-generates no derivatives at all, but its original PNG still ships. Removing that
-last 9.35 MB means moving the photos out of `content/` into `assets/`, which is a
-content-convention change — see the deferred note below.
+So the `showimage` caveat is now fully closed: an opted-out dish generates no
+derivatives *and* ships no original, because the sources stopped being page
+resources — see the note below.
 
 Also done, since they were the same class of bug:
 
@@ -255,15 +254,22 @@ Also done, since they were the same class of bug:
   is not lazy-loaded.
 - JSON-LD `image` points at the 1080px WebP derivative, not the original.
 
-**Deferred, and the only remaining part:** the 46 originals in `public/`
-(9.35 MB). Moving them to `assets/images/` would drop `public/` to ~1 MB and
-retire the `showimage` caveat entirely, at the cost of changing how photos are
-resolved — `.Resources.GetMatch` in three templates, the `photoGlob` convention,
-and DESIGN.md §5. Worth doing for deploy size, not for page weight.
+**Closed — the originals are out of `content/` entirely.** The 46 PNGs moved
+to `assets/images/dishes/<section>/<slug>/`, mirroring the content tree they
+came from, so Hugo publishes them only when a template references them. The
+cost the deferred note predicted was real: `dish-image.html` now scopes
+`photoGlob` with the page's own directory instead of taking one global match —
+a flat `assets/images/dishes/` resolves every dish to the same first file — and
+DESIGN.md §5 / §12 and AGENTS.md were rewritten to say so. `public/` is
+**4.29 MB** against the 14 MB this note describes, and everything left in it is
+a derivative or an asset something renders. The homepage hero, which this task
+never touched, now goes through the same pipe (480 / 768 / 1080 / 1200 WebP plus
+a JPEG fallback, `fetchpriority="high"`), and JSON-LD for the home page points
+at the hero's largest WebP rather than at a 260 KB original no `<img>` asked for.
 
-Verified: every one of the 187 asset URLs referenced across the built site
-resolves to a file on disk, no `<img>` points at a PNG original, and the
-section SVGs are untouched.
+Verified on the current build: all 1593 same-origin asset URLs referenced in
+`public/**/*.html` resolve to a file on disk, the only `.png` any `<img>` points
+at is the crest (`images/jst-logo.png`), and the section SVGs are untouched.
 
 ### 7. ~~Two salad pages share a meta description byte-for-byte~~ — done
 

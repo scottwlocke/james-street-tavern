@@ -4,21 +4,29 @@
   {{ partial "head.html" . }}
 </head>
 <body>
+  {{- /* First focusable element on every page, so 2.4.1 Bypass Blocks has
+         something to land on before the logo and nav cluster. The target has to
+         be the real <main id="main">, not a heading, because heading IDs are
+         content and can be renamed by an editor without breaking this. */ -}}
+  <a class="skip-link" href="#main">Skip to content</a>
   {{ partial "nav.html" . }}
 
-  <main>
+  <main id="main">
     {{ block "main" . }}{{ end }}
   </main>
 
   {{ partial "help-band.html" . }}
   {{ partial "footer.html" . }}
 
-  {{- /* Also served through the asset pipeline with a content fingerprint.
-         This matters more for the JS than the CSS: an unversioned /js/main.js
-         lets a browser keep running a cached copy, and the specials rotator
-         then silently never initialises while its CSS has already shipped. The
+  {{- /* Also served through the asset pipeline with a content fingerprint —
+         and minified first, for the same reason head.html minifies the CSS:
+         `hugo --minify` does not touch a piped resource, so leaving this to
+         the build flag ships 6.7 KB of comments and indentation. This matters
+         more for the JS than the CSS: an unversioned /js/main.js lets a
+         browser keep running a cached copy, and the specials rotator then
+         silently never initialises while its CSS has already shipped. The
          symptom is every special visible at once. */ -}}
-  {{- $js := resources.Get "js/main.js" | fingerprint "sha256" -}}
+  {{- $js := resources.Get "js/main.js" | minify | fingerprint "sha256" -}}
   <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 </body>
 </html>

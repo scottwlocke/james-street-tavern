@@ -287,13 +287,14 @@ knowing before using it:
   `section-card.html`, which still wants a filled box when a *section* has no
   art — a section is always a card of something, so there the frame is
   meaningful.
-- **The original file still ships, though its derivatives never get made.** Page
-  resources are published whatever the templates do with them, so
-  `showimage = false` leaves the 1600×1000 PNG in the build output. What it does
-  prevent is the four derived variants being generated at all, which is where
-  the saving actually is. Hiding a photo is still not a payload saving in full:
-  if that is the goal, move the file out of the page bundle (see *Responsive
-  dish photography* below).
+- **The originals no longer ship at all.** Page resources are published
+  whatever the templates do with them, so `showimage = false` used to leave the
+  1600×1000 PNG in the build output — 9.35 MB of files no `<img>` referenced,
+  on top of the derivatives. The 46 sources now live in `assets/images/dishes/`
+  instead of the page bundles, so nothing publishes them verbatim and an
+  opted-out dish contributes nothing to `public/`. `showimage = false` still
+  suppresses the four derived variants, which is where the transfer saving
+  always was.
 
 **Never style this away.** The photo is not rendered at all, rather than hidden
 with CSS, so there is no `.is-hidden` variant to reach for.
@@ -304,6 +305,14 @@ Every dish photograph is a **1600×1000 PNG at ~208 KB**, and the largest box it
 ever fills is `.detail-media` at ~440px wide (§7 — 5fr of a 1200px container).
 A card fills ~357px. So the sources are roughly 3.6× larger than any slot needs,
 and at 46 of them they accounted for 93% of the site's 10.1 MB.
+
+**The sources live in `assets/images/dishes/<section>/<slug>/photo-<slug>-hero.png`
+— the tree the pages sit in, minus `content/`.** The mirror is load-bearing, not
+tidiness: `dish-image.html` scopes `photoGlob` with the page's own directory, so
+one flat folder of 46 photos would resolve every page to the same first match.
+Beside the payload saving, this is also what keeps the originals out of
+`public/` — assets are published only when a template references them, unlike
+page resources.
 
 `layouts/partials/dish-image.html` runs them through Hugo Pipes and returns
 three WebP widths (480 / 768 / 1080) plus one 1080px JPEG fallback, each
@@ -339,6 +348,12 @@ The detail image is the LCP element on every dish page, so it carries
 `fetchpriority="high"` and is deliberately **not** lazy-loaded; cards are the
 opposite, `loading="lazy" decoding="async"`, since they are below the fold and
 decorative (`alt=""` + `aria-hidden`, with the dish name as adjacent text).
+
+The homepage photograph goes through the same partial with a wider ladder —
+480 / 768 / 1080 / 1200 against its 1200px source, `sizes="100vw"` because it
+covers the full hero box, plus `fetchpriority="high"` and `decoding="async"`.
+It used to be one 260 KB JPEG with no priority hint, which was 57% of the
+landing page's first-load bytes.
 
 The JSON-LD `image` points at the 1080px WebP derivative rather than the original
 — same picture, ~14 KB instead of ~208 KB, and still a real crawlable URL.
@@ -662,8 +677,11 @@ logo-jst-primary.png               NOT SUPPLIED — colour variant of the crest
 logo-jst-white.png                 NOT SUPPLIED — white variant, for dark surfaces
 logo-jst-monogram.svg              simplified tab monogram — present, unused (§4)
 photo-<section>-hero.svg           section placeholder art, in the section bundle
-photo-<subject>-hero.<ext>         real photography, in a page bundle
+assets/images/dishes/<section>/<slug>/photo-<slug>-hero.<ext>
+                                   dish photography — the content tree, minus
+                                   content/; the mirror is load-bearing (§5)
 assets/images/photo-tavern-hero.jpg  homepage photograph — assets/, not a bundle
+assets/fonts/<family>.woff2        one variable face per family (§13)
 specials/<slug>.md                 a special; front matter per §7
 texture-wood-dark.jpg
 texture-chalkboard.png
@@ -674,15 +692,17 @@ icon-beer.svg
 Photography and placeholder art are both resolved through the `photoGlob` site
 param (`photo-*-hero.*`), never a hardcoded filename. Placeholders are named
 exactly like photography on purpose, so swapping one for the other needs no
-template change.
+template change. They are reached differently, though: `dish-image.html` tries
+`assets/images/dishes/<page dir>/` first and falls back to the page's own
+resources, which is what leaves the SVG path in §5 working unchanged.
 
 **The homepage photograph is the one exception, and it must stay that way.** A
 bare file in `content/` is published verbatim to the site root as an unversioned
 `/photo-tavern-hero.jpg`, which a browser will reuse indefinitely — the same trap
 §11 records for CSS and JS. It therefore lives in `assets/images/` and is read by
 `layouts/partials/hero.html` through Hugo Pipes with a `fingerprint "sha256"`, so
-its URL changes whenever the image does. `photoGlob` is not used for it: that glob
-resolves *page resources*, and the homepage photo is no longer one.
+its URL changes whenever the image does. `photoGlob` is not used for it:
+`hero.html` matches `images/photo-*-hero.*` in `assets/` directly.
 
 ---
 
@@ -690,7 +710,7 @@ resolves *page resources*, and the homepage photo is no longer one.
 
 - Prefer CSS custom properties for the entire color and spacing system
 - Use `background-blend-mode` and subtle noise overlays for authentic chalkboard and wood feels
-- Load Google Fonts: Oswald + Source Sans 3 + Permanent Marker (or system alternatives)
+- Fonts are **self-hosted**: Oswald, Source Sans 3 and Permanent Marker as one variable woff2 each in `assets/fonts/`, `@font-face` inlined and preloaded by `layouts/partials/fonts.html`. No request leaves this origin for type; adding a weight means widening the declared `font-weight` range, not fetching a second file
 - Dark mode is the default (true to the tavern atmosphere); light mode is secondary and should still feel warm
 
 ### Canonical URLs

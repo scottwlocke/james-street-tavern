@@ -38,9 +38,12 @@
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="{{ "images/jst-logo.png" | relURL }}" type="image/png">
 <link rel="apple-touch-icon" href="{{ "images/jst-logo.png" | relURL }}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Permanent+Marker&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+{{- /* Fonts are self-hosted — see partials/fonts.html for why, and for the
+       variable-weight trick that turned six files into three. The Google
+       preconnect pair and the remote stylesheet that used to live here went
+       with them: nothing on this page reaches a third-party origin now, so
+       there is no font-hosting stall left to hold first paint. */ -}}
+{{ partial "fonts.html" . }}
 {{- /* Served through Hugo's asset pipeline with a content fingerprint, so the
        URL changes whenever the CSS changes and a browser can never reuse a
        stale stylesheet. DESIGN.md is the only design spec. */ -}}
@@ -48,5 +51,16 @@
        pages where they are true. Emitted from head rather than an inline block
        per template so all 60 pages stay in step from one file. */ -}}
 {{ partial "jsonld.html" . }}
-{{- $css := resources.Get "css/style.css" | fingerprint "sha256" -}}
+{{- /* Minified before fingerprinting, not after: `hugo --minify` leaves a
+       piped resource byte-identical — it only rewrites output formats — so
+       without this the stylesheet shipped its comments and blank lines to
+       every visitor while CI's --minify bought nothing here. The reasoning
+       stays in assets/css/style.css where it can be read; only the served copy
+       loses it. Integrity is computed after minify and after fingerprint, in
+       that order, which is why this is one chain. The URL still changes
+       whenever the CSS does, so a stale cached copy is impossible — the
+       versioning rule AGENTS.md states for the stylesheet is unchanged.
+
+       DESIGN.md is the only design spec. */ -}}
+{{- $css := resources.Get "css/style.css" | minify | fingerprint "sha256" -}}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">

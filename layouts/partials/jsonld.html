@@ -46,13 +46,30 @@
   {{- /* ---- Restaurant ---- */ -}}
   {{- $openingHours := slice -}}
   {{- $hasClosingHours := false -}}
+  {{- /* ---- Restaurant ----
+         The two [[params.hours]] areas (Bar, Kitchen) are rendered side by side
+         and labelled in contact.html, but schema.org's spec list has no place
+         for that label, so both areas' groups land in the same flat sequence.
+         They are currently identical, and emitting them twice published six
+         specs where three exist — each day's window stated twice with nothing
+         to distinguish the two claims. Deduplicated on the actual times, not on
+         the area: if Bar and Kitchen ever diverge, the two different windows
+         that result are genuinely two windows and both belong in the schema,
+         while a pair that still agrees stays one claim. Scratch-pad membership
+         rather than `uniq`, because whether Hugo's set operations treat two
+         maps as equal is not a thing this line should have to depend on. */ -}}
+  {{- $seen := newScratch -}}
   {{- range $cfg.hours -}}
     {{- range .groups -}}
-      {{- $openingHours = $openingHours | append (dict
-            "@type" "OpeningHoursSpecification"
-            "dayOfWeek" .days
-            "opens" .opens
-            "closes" .closes) -}}
+      {{- $key := printf "%s|%s|%s" (delimit .days ",") .opens .closes -}}
+      {{- if not ($seen.Get $key) -}}
+        {{- $seen.Set $key true -}}
+        {{- $openingHours = $openingHours | append (dict
+              "@type" "OpeningHoursSpecification"
+              "dayOfWeek" .days
+              "opens" .opens
+              "closes" .closes) -}}
+      {{- end -}}
       {{- if not .closed -}}
         {{- $hasClosingHours = true -}}
       {{- end -}}
@@ -100,13 +117,22 @@
     {{- $restaurant = merge $restaurant (dict "currenciesAccepted" .) -}}
   {{- end -}}
 
-  {{- /* The hero is read through the same GetMatch + fingerprint hero.html uses,
-         so the URL in the schema is the fingerprinted one that is actually
-         served. schema.org wants absolute, so .Permalink rather than
-         .RelPermalink. */ -}}
+  {{- /* The hero photo, through the same derivative pipe hero.html renders
+         with: the URL in the schema then names a file the build actually
+         publishes and that is fingerprinted, so a re-encoded photo never keeps
+         a stale URL. `.permalink` is the largest WebP's absolute URL — the
+         same choice §5 records for the dish images. Reading the original
+         resource here instead would drag a 260 KB JPEG into public/ that no
+         <img> ever asks for. schema.org wants absolute, hence Permalink. */ -}}
   {{- $images := slice -}}
   {{- with resources.GetMatch "images/photo-*-hero.*" -}}
-    {{- $images = $images | append (. | fingerprint "sha256").Permalink -}}
+    {{- $heroDerivs := partial "dish-image.html" (dict
+          "src" .
+          "widths" (slice 480 768 1080 1200)
+          "fallbackWidth" 1200) -}}
+    {{- with $heroDerivs -}}
+      {{- $images = $images | append .permalink -}}
+    {{- end -}}
   {{- end -}}
   {{- /* logo and image are different things. The hero photo is the business;
          the crest is the mark. Using the first entry of the image list for

@@ -68,8 +68,12 @@ disableKinds = ["taxonomy", "term"]
   priceCurrency = "USD"
 
   # ---- Assets (DESIGN.md §12 — <type>-<subject>-<variant>.<ext>) ----
-  # Page-bundle photography follows `photo-<subject>-hero.<ext>`; layouts
-  # resolve images through this glob rather than a hardcoded filename.
+  # Dish photography lives in assets/images/dishes/, mirroring the content path
+  # it used to occupy (content/pizza/small/index.md →
+  # assets/images/dishes/pizza/small/); section artwork is still an SVG beside
+  # its page bundle. Both are matched by this glob rather than a hardcoded
+  # filename — dish-image.html scopes it with the page's own directory so each
+  # dish gets its own photo, section-card.html applies it to the bundle.
   photoGlob = "photo-*-hero.*"
 
   # ---- Hero (DESIGN.md §10 — friendly, direct, local) ----
@@ -112,11 +116,14 @@ disableKinds = ["taxonomy", "term"]
 
   # ---- Opening hours ----
   # Written once, in the shape schema.org needs, then rendered twice:
-  # partials/contact.html prints these and partials/jsonld.html emits them as
-  # openingHoursSpecification. Previously these lived as display strings here
-  # *and* as literal fallbacks inside contact.html, so structured data would
-  # have had to guess at them — and could only ever have parsed "3PM - 2AM"
-  # back into numbers, which fails silently on the first reword.
+  # partials/contact.html prints these as labelled Bar/Kitchen columns, and
+  # partials/jsonld.html emits them as openingHoursSpecification after
+  # collapsing groups whose days and times are identical — the label exists
+  # only on the printed side, so two areas claiming the same window must not
+  # become two claims in the schema. Previously these lived as display strings
+  # here *and* as literal fallbacks inside contact.html, so structured data
+  # would have had to guess at them — and could only ever have parsed
+  # "3PM - 2AM" back into numbers, which fails silently on the first reword.
   #   times are 24h HH:MM, which openingHoursSpecification takes verbatim;
   #     contact.html reformats to the 12h house style ("3PM", not "3:00PM").
   #   `days` is the schema.org DayOfWeek enum and feeds the schema only, since

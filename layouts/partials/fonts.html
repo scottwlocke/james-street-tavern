@@ -1,0 +1,42 @@
+{{- /* Self-hosted @font-face rules, emitted inline.
+
+       These three files replace the render-blocking Google Fonts stylesheet
+       that used to sit at head.html:12. The trade it was making was real but
+       not worth it — preconnect and display=swap bound the damage, yet first
+       paint still waited on a third-party host that this site does not
+       control, and every visitor paid a DNS + TLS round trip for typefaces
+       that never change.
+
+       Each family is one variable file, not one file per weight. Google's
+       css2 endpoint answered Oswald 500, 600 and 700 with three byte-identical
+       woff2 files on three different URLs, so a browser fetched 64 KB to get
+       what is a single 21 KB file. Declaring the axis range once
+       (`font-weight: 200 700`) gets all three weights from one download.
+
+       Only the `latin` subset is kept. The site is en-us ASCII end to end;
+       the Cyrillic, Greek, Vietnamese and latin-ext ranges Google ships were
+       never requested by a single character on any of the 60 pages.
+
+       Fingerprinted like every other asset, so a swapped typeface cannot be
+       served out of cache. Inline rather than a second stylesheet because the
+       rules are ~600 bytes and a separate link would be one more render
+       blocking request on the page whose whole point is to paint fast — the
+       font files themselves are still separate, cached, and preloaded. */ -}}
+{{- $faces := slice
+      (dict "family" "Oswald" "weight" "200 700" "file" "fonts/oswald.woff2" "preload" true)
+      (dict "family" "Source Sans 3" "weight" "200 900" "file" "fonts/source-sans-3.woff2" "preload" true)
+      (dict "family" "Permanent Marker" "weight" "400" "file" "fonts/permanent-marker.woff2" "preload" true) -}}
+{{- $rules := slice -}}
+{{- range $faces -}}
+  {{- $face := . -}}
+  {{- with resources.Get $face.file -}}
+    {{- $r := . | fingerprint "sha256" -}}
+    {{- if $face.preload -}}
+<link rel="preload" href="{{ $r.RelPermalink }}" as="font" type="font/woff2" crossorigin>
+    {{- end -}}
+    {{- $rules = $rules | append (printf
+          "@font-face{font-family:'%s';font-style:normal;font-weight:%s;font-display:swap;src:url(%s) format('woff2')}"
+          $face.family $face.weight $r.RelPermalink) -}}
+  {{- end -}}
+{{- end -}}
+<style>{{ delimit $rules "" | safeCSS }}</style>

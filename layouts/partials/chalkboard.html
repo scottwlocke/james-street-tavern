@@ -27,14 +27,17 @@
   {{ if $img }}
     <picture>
       {{ if ne $img.MediaType.SubType "svg" -}}
-        <source type="image/webp" srcset="{{ $img.Permalink }} 480w">
+        <source type="image/webp" srcset="{{ $img.Permalink }} 480w, {{ $img.Permalink }} 768w, {{ $img.Permalink }} 1080w">
       {{ end }}
       <img class="chalk-image"
-           src="{{ $img.RelPermalink }}"
+           src="{{ $img.Permalink }}"
            alt="{{ $item.Title }} special"
            loading="lazy"
            decoding="async"
-           style="width:100%; max-width:480px;">
+           width="{{ $img.Width }}"
+           height="{{ $img.Height }}"
+           style="width:100%; max-width:480px;"
+           sizes="100vw">
     </picture>
   {{ end }}
 {{ end }}

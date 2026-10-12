@@ -5,7 +5,23 @@
   const toggle = document.querySelector('.nav-toggle');
   const drawer = document.getElementById('mobile-nav');
 
-  function setOpen(open) {
+  // Everything that can hold focus while the drawer is open: the header bar
+  // (crest, the three desktop links, the toggle) plus the drawer's own list.
+  // The desktop links resolve to no boxes at drawer widths, so they are
+  // filtered out rather than left as dead stops in the wrap.
+  function focusables() {
+    return Array.prototype.slice
+      .call(document.querySelectorAll('header a[href], header button, #mobile-nav a[href]'))
+      .filter(function (el) {
+        return el.getClientRects().length > 0;
+      });
+  }
+
+  function isOpen() {
+    return !!drawer && drawer.classList.contains('open');
+  }
+
+  function setOpen(open, restoreFocus) {
     if (!toggle || !drawer) {
       return;
     }
@@ -13,28 +29,74 @@
     drawer.setAttribute('aria-hidden', String(!open));
     toggle.setAttribute('aria-expanded', String(open));
     document.body.classList.toggle('nav-open', open);
+
+    if (open) {
+      // Focus has to enter the drawer, otherwise the first Tab starts from
+      // the toggle and runs straight into the content the open panel covers.
+      const first = drawer.querySelector('a[href]');
+      if (first) {
+        first.focus();
+      }
+    } else if (restoreFocus) {
+      // Only on an explicit close (Escape, or the toggle itself). On link
+      // activation the browser is about to move focus to the target — or, for
+      // the in-page #contact link, already has — and yanking it back to the
+      // top of the page would undo the jump the visitor just asked for.
+      toggle.focus();
+    }
   }
 
   if (toggle && drawer) {
     toggle.addEventListener('click', function () {
-      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true', false);
     });
 
     drawer.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', function () {
-        setOpen(false);
+        setOpen(false, false);
       });
     });
 
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') {
-        setOpen(false);
+        if (isOpen()) {
+          setOpen(false, true);
+        }
+        return;
+      }
+
+      // 2.4.3 Focus Order: while the panel is open, Tab must cycle through the
+      // bar and the drawer instead of continuing into <main>, which sits
+      // behind an opaque full-viewport panel. Without this the focus ring is
+      // painted where nobody can see it.
+      if (event.key !== 'Tab' || !isOpen()) {
+        return;
+      }
+
+      const items = focusables();
+      if (items.length === 0) {
+        return;
+      }
+
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      const inside = items.indexOf(active) !== -1;
+
+      if (event.shiftKey) {
+        if (!inside || active === first) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (!inside || active === last) {
+        event.preventDefault();
+        first.focus();
       }
     });
 
     window.addEventListener('resize', function () {
       if (window.innerWidth > 1024) {
-        setOpen(false);
+        setOpen(false, false);
       }
     });
   }

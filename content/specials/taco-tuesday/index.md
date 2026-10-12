@@ -10,5 +10,6 @@ details = [
   "Fresh tortilla chips and salsa",
   "Every Tuesday",
 ]
+showimage = true
 weight = 20
 +++
