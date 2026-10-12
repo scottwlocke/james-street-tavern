@@ -1,13 +1,16 @@
 {{ $page := .page }}
 {{ $glob := .Site.Params.photoGlob | default "photo-*-hero.*" }}
 {{ $image := "" }}
+{{ $w := 0 }}{{ $h := 0 }}
 {{ with $page.Resources.GetMatch $glob }}
   {{ $image = .RelPermalink }}
+  {{ $w = .Width }}{{ $h = .Height }}
 {{ end }}
 {{ if not $image }}
   {{ range $page.Pages.ByWeight }}
     {{ with .Resources.GetMatch $glob }}
       {{ $image = .RelPermalink }}
+      {{ $w = .Width }}{{ $h = .Height }}
     {{ end }}
   {{ end }}
 {{ end }}
@@ -22,7 +25,7 @@
 <a class="card" href="{{ $page.RelPermalink }}">
   <div class="card-media">
     {{ with $image }}
-      <img src="{{ . }}" alt="" loading="lazy" aria-hidden="true">
+      <img src="{{ . }}" width="{{ $w }}" height="{{ $h }}" alt="" loading="lazy" aria-hidden="true">
     {{ else }}
       <span class="card-media-empty" aria-hidden="true"></span>
     {{ end }}
@@ -32,6 +35,6 @@
     {{ with $blurb }}
       <p class="card-meta">{{ . }}</p>
     {{ end }}
-    <span class="card-cta">See the {{ $page.Title }}</span>
+    <span class="card-cta">See {{ $page.Title }}</span>
   </div>
 </a>
