@@ -644,9 +644,14 @@ Avoid pure flat digital surfaces. Always introduce at least a light texture or w
 - Provide alt text that describes the rustic atmosphere and food
 - **Auto-rotating content needs a stop control.** WCAG 2.2.2 applies to the
   specials rotator (§6): it changes by itself and runs for longer than five
-  seconds, so the pause button is mandatory, not decorative. The rotator also
-  yields to hover and to keyboard focus, so a visitor mid-read does not have a
-  board swapped out from under them, and it does not run in a background tab.
+  seconds, so the pause button is mandatory, not decorative. The rotator yields
+  while a board's own content holds keyboard focus (its "Call to Order" link),
+  so a visitor mid-read does not have a board swapped out from under them, and
+  it does not run in a background tab. It does **not** yield to hover, nor to
+  focus on its own dots and pause button: the board fills most of a viewport, so
+  hover-pause stopped it whenever a reader scrolled it into view under a
+  stationary pointer, and treating the controls' retained focus as a pause froze
+  it after a dot click and left the Play button unable to start it.
 - **An auto-rotating region is not a live region.** No `aria-live` on the track —
   announcing every 5s is hostile. The carousel semantics are added by JS, not by
   the template: the wrapper becomes `role="region"` +

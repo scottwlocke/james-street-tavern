@@ -115,9 +115,18 @@
   //
   // WCAG 2.2.2 (Pause, Stop, Hide): this content moves by itself for longer
   // than five seconds, so the pause control is a requirement rather than a
-  // nicety. Rotation also yields on hover and on keyboard focus, because a
-  // visitor who has started reading a board should not have it swapped out
-  // from under them, and it stops entirely in a background tab.
+  // nicety. Rotation yields while a board's own content holds keyboard focus
+  // (the "Call to Order" link), because a visitor who has tabbed into a board
+  // should not have it swapped out from under them, and it stops entirely in a
+  // background tab.
+  //
+  // It deliberately does NOT yield to hover, nor to focus on its own dots and
+  // pause button. The board fills most of a desktop viewport, so hover-pause
+  // meant a reader who scrolled it into view — sliding it under a stationary
+  // pointer — saw it never advance; and because a clicked dot or the Play
+  // button keeps focus, treating those as "focused" left the rotation frozen
+  // after a dot click and made Play unable to start it. The controls carry
+  // their own state; only the board's content pauses the timer.
   //
   // The carousel ARIA is added here rather than in the template, because
   // without JS these are just a stack of specials and "slide 1 of 2" would
@@ -140,8 +149,7 @@
     let index = 0;
     let timer = null;
     let paused = false;   // pressed the pause button
-    let hovered = false;  // pointer is over the rotator
-    let focused = false;  // a control inside it has focus
+    let focused = false;  // a board's own content (its link) has focus
 
     const controls = document.createElement('div');
     controls.className = 'specials-controls';
@@ -224,7 +232,7 @@
     function schedule() {
       window.clearTimeout(timer);
       timer = null;
-      if (paused || hovered || focused || document.hidden) {
+      if (paused || focused || document.hidden) {
         return;
       }
       timer = window.setTimeout(function () {
@@ -234,25 +242,23 @@
       }, SPECIALS_INTERVAL);
     }
 
-    root.addEventListener('mouseenter', function () {
-      hovered = true;
-      schedule();
-    });
+    // Focus-yield is scoped to the boards, not the whole rotator. The dots and
+    // the pause button are controls with their own state: letting their retained
+    // focus pause the timer froze the rotation after a dot click and left Play
+    // unable to start it. A board's "Call to Order" link is the one focusable
+    // thing that should hold the rotation.
+    const track = root.querySelector('.chalkboards');
+    if (track) {
+      track.addEventListener('focusin', function () {
+        focused = true;
+        schedule();
+      });
 
-    root.addEventListener('mouseleave', function () {
-      hovered = false;
-      schedule();
-    });
-
-    root.addEventListener('focusin', function () {
-      focused = true;
-      schedule();
-    });
-
-    root.addEventListener('focusout', function () {
-      focused = false;
-      schedule();
-    });
+      track.addEventListener('focusout', function () {
+        focused = false;
+        schedule();
+      });
+    }
 
     // A tab in the background should not work through the specials either.
     document.addEventListener('visibilitychange', schedule);
