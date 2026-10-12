@@ -1507,6 +1507,26 @@ a.card:hover .card-cta::after {
   filter: grayscale(0.35) sepia(0.25) contrast(0.95);
 }
 
+/* The map is the visual answer to "where is it", so the one-tap directions
+   action sits on it — a phone visitor deciding mid-evening should not have to
+   read the address and retype it (PRODUCT.md names this a core job). A
+   full-width caption bar inside the map frame; it borrows the base link colours
+   (gold, beer foam on hover) and carries the §11 44px target. */
+.contact-map-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: var(--space-sm) var(--space-lg);
+  border-top: 1px solid var(--border-wood);
+  background-color: var(--panel);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 .hours-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1643,8 +1663,18 @@ a.card:hover .card-cta::after {
   width: auto;
 }
 
+/* §11 — now a directions link, so it carries the same 44px target as the phone
+   and email beside it. Colour matches those links (beer foam, gold on hover)
+   rather than the base gold, so the footer keeps one link treatment. */
 .footer-address {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--beer-foam);
+}
+
+.footer-address:hover {
+  color: var(--chalk-gold);
 }
 
 .footer-contact-links {
@@ -1655,7 +1685,8 @@ a.card:hover .card-cta::after {
 }
 
 /* §11 — 44px touch target, the same floor .footer-col a used to carry. The
-   address beside them is not interactive, so it gets no target of its own. */
+   address beside them is a directions link too now, and carries its own target
+   in .footer-address. */
 .footer-contact-links a {
   display: flex;
   align-items: center;

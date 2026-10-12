@@ -59,10 +59,16 @@
                    Core Web Vitals actually scores. Width and height come from
                    the largest derivative so the browser can reserve the box
                    before the bytes land; CSS aspect-ratio (4/3) overrides the
-                   intrinsic 16/10 anyway. */ -}}
+                   intrinsic 16/10 anyway.
+
+                   The alt is empty on purpose. The `<h1 class="menu-name">`
+                   directly below already names the dish, so a title alt makes
+                   a screen reader announce it twice in a row. Every other photo
+                   on the site is decorative (`alt=""`, §5); this one matches
+                   them rather than being the noisy exception. */ -}}
             <picture>
               <source type="image/webp" srcset="{{ .webp }}" sizes="(max-width: 1024px) calc(100vw - 48px), 440px">
-              <img src="{{ .fallback }}" width="{{ .width }}" height="{{ .height }}" alt="{{ $.Title }}" fetchpriority="high">
+              <img src="{{ .fallback }}" width="{{ .width }}" height="{{ .height }}" alt="" fetchpriority="high">
             </picture>
           </div>
         {{ end }}

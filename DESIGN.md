@@ -711,7 +711,7 @@ its URL changes whenever the image does. `photoGlob` is not used for it:
 
 - Prefer CSS custom properties for the entire color and spacing system
 - Use `background-blend-mode` and subtle noise overlays for authentic chalkboard and wood feels
-- Fonts are **self-hosted**: Oswald, Source Sans 3 and Permanent Marker as one variable woff2 each in `assets/fonts/`, `@font-face` inlined and preloaded by `layouts/partials/fonts.html`. No request leaves this origin for type; adding a weight means widening the declared `font-weight` range, not fetching a second file
+- Fonts are **self-hosted**: Oswald, Source Sans 3 and Permanent Marker as one variable woff2 each in `assets/fonts/`, `@font-face` inlined and preloaded by `layouts/partials/fonts.html`. No request leaves this origin for type; adding a weight means widening the declared `font-weight` range, not fetching a second file. The Google Maps `<iframe>` in `layouts/partials/contact.html` is the **one** exception that does leave the origin — it is the map itself, not an asset the site could host — and every other request (CSS, JS, fonts, images) ships from here
 - Dark mode is the default (true to the tavern atmosphere); light mode is secondary and should still feel warm
 
 ### Canonical URLs
@@ -937,6 +937,7 @@ are separate entries, never buried in prose.
 | `detail-panel` | `.detail-panel` | `{colors.panel}`, `{elev.rest}` |
 | `contact-card` | `.contact-card` | `{colors.panel}`, `{elev.rest}` |
 | `contact-map` | `.contact-map` | `{rounded.md}`, desaturated iframe |
+| `contact-map-cta` | `.contact-map-cta` | Full-width directions bar under the map; `{type.button}` label, base link colours, 44px target |
 | `nav-bar` | `.nav-bar` | Sticky chalkboard, 2px gold underline |
 | `nav-link` + active | `.nav-links a`, `.active` | `{type.nav}`, gold scaleX underline. `Specials`, `Full Menu` and `Contact` are all this one class; only `Specials` sets `aria-current` across a whole section (§6) |
 | `logo` | `.logo`, `.logo-img` | `--logo-clear` height; the anchor holds the §4 clear space and the 44px touch target |
@@ -946,7 +947,7 @@ are separate entries, never buried in prose.
 | `mobile-drawer` | `.mobile-nav.open` | Full-canvas chalkboard, 56px rows, `Menu` heading above the list |
 | `section-band-wood` | `.section-wood` | Wood gradient + grain |
 | `help-band` | `.help-band` | Wood gradient, double gold rule |
-| `footer` | `.site-footer`, `.footer-bottom`, `.footer-contact`, `.footer-brand`, `.footer-logo` | `{colors.table-top}`. Crest (`--logo-clear`, §4, unfiltered, decorative `alt=""`) then the address, vertically centred as a pair, with phone and email hard right. No grid — the link columns were removed |
+| `footer` | `.site-footer`, `.footer-bottom`, `.footer-contact`, `.footer-brand`, `.footer-logo`, `.footer-address` | `{colors.table-top}`. Crest (`--logo-clear`, §4, unfiltered, decorative `alt=""`) then the address, vertically centred as a pair, with phone and email hard right. The address (`.footer-address`) is a directions link, not plain text; it shares the phone/email colours and 44px target. No grid — the link columns were removed |
 | `hero` | `.hero`, `.hero-media` | Warm grade, wood overlay, `{elev.vignette}` |
 | `hours-grid` | `.hours-grid`, `.hours-col` | Two-up hours, hairline rules |
 

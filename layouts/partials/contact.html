@@ -1,8 +1,15 @@
+{{- /* The one directions URL, built from the canonical `address` param rather
+       than typed in, so it cannot drift from the address the page prints or
+       from the address JSON-LD publishes. It feeds the tappable address line,
+       the map caption and (via the same param) the footer — a phone visitor
+       deciding mid-evening can now leave with turn-by-turn in hand, which
+       PRODUCT.md names as a core job ("where is it"). */ -}}
+{{- $directions := printf "https://www.google.com/maps/dir/?api=1&destination=%s" (.Site.Params.address | urlquery) -}}
 <section id="contact" class="section">
   <div class="container">
     <div class="section-header">
       <span class="section-kicker">Find Us</span>
-      <h2 class="section-title">Your Neighborhood Tavern</h2>
+      <h2 class="section-title">Come See Us</h2>
       <p class="section-intro">We're on James Street in Monroeville, two blocks past the courthouse. Look for the neon.</p>
     </div>
 
@@ -12,7 +19,8 @@
           <h3>Stop By</h3>
           <div class="contact-line">
             <span class="contact-line-label">Address</span>
-            <span>{{ default "1224 James St, Monroeville, PA 15146" .Site.Params.address }}</span>
+            <a href="{{ $directions }}" target="_blank" rel="noopener"
+               aria-label="Get directions to {{ .Site.Title }} on Google Maps">{{ default "1224 James St, Monroeville, PA 15146" .Site.Params.address }}</a>
           </div>
           <div class="contact-line">
             <span class="contact-line-label">Phone</span>
@@ -66,6 +74,7 @@
           referrerpolicy="strict-origin-when-cross-origin"
           allowfullscreen
         ></iframe>
+        <a class="contact-map-cta" href="{{ $directions }}" target="_blank" rel="noopener">Get Directions</a>
       </div>
     </div>
   </div>

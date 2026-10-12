@@ -21,10 +21,13 @@
          `with` guard degrades to nothing if a param is dropped where a literal
          default would have quietly kept the old number rendering.
 
-         The address is plain text, not a link: the only map URL this site holds
-         is the embed iframe in contact.html, which is not a shareable
-         directions link, and inventing one is not this template's job. #contact
-         keeps its referrers in nav.html (x2), help-band.html and hero.html.
+         The address is now a directions link, built from the same `address`
+         param contact.html prints, so the footer and the contact card send a
+         visitor to the same place. It used to be plain text on the reasoning
+         that the only map URL the site held was the contact iframe; deriving a
+         shareable maps URL from the canonical address is not inventing one, and
+         "where is it" is a core job (PRODUCT.md). #contact keeps its referrers
+         in nav.html (x2), help-band.html and hero.html.
 
          The homepage #specials anchor has no internal referrer now that the
          footer no longer lists specials; specials.html keeps the id as a
@@ -53,7 +56,8 @@
         <img class="footer-logo" src="{{ "images/jst-logo.png" | relURL }}"
              width="287" height="265" alt="" aria-hidden="true" decoding="async">
         {{- with .Site.Params.address }}
-          <p class="footer-address">{{ . }}</p>
+          <a class="footer-address" href="{{ printf "https://www.google.com/maps/dir/?api=1&destination=%s" (. | urlquery) }}"
+             target="_blank" rel="noopener" aria-label="Get directions to {{ $.Site.Title }} on Google Maps">{{ . }}</a>
         {{- end }}
       </div>
       <div class="footer-contact-links">
