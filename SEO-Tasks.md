@@ -466,11 +466,16 @@ Verified during the audit, recorded so the next pass does not re-check them:
   present; stylesheet served through the asset pipeline with a sha256
   fingerprint and SRI integrity.
 
-> **Caveat on headings.** Task list item: heading *skips* were reported on 57
-> pages in an earlier audit, but the re-check for this document sampled one page
-> per template rather than all 60. `h1` → `h2` with no skip on the dish page
-> checked. **Re-verify across all pages before treating heading order as
-> clean.**
+- **Heading order** — clean across all 60 pages, not a sample. Every
+  `public/**/*.html` was parsed and its headings read in document order: exactly
+  one `<h1>` per page, that `<h1>` is the first heading, and no level is skipped
+  going down (an `h3` may follow an `h2`, never an `h4`). The homepage is the
+  only page that nests past `h2` — `h1 h2 h2 h2 h3×8 h2 h3 h3 h4 h4 h2` — and it
+  skips nothing. This retires the earlier "skips on 57 pages" figure: whatever
+  that audit measured, the built outline does not skip. `.tmp/validate-jsonld.py`
+  now checks the outline on every page, so the claim is re-tested on each build
+  rather than remembered; it was confirmed to report `h1 -> h5` when a skip is
+  injected into a built file.
 
 ---
 
