@@ -290,11 +290,11 @@ knowing before using it:
 - **The originals no longer ship at all.** Page resources are published
   whatever the templates do with them, so `showimage = false` used to leave the
   1600×1000 PNG in the build output — 9.35 MB of files no `<img>` referenced,
-  on top of the derivatives. The 46 sources now live in `assets/images/dishes/`
-  instead of the page bundles, so nothing publishes them verbatim and an
-  opted-out dish contributes nothing to `public/`. `showimage = false` still
-  suppresses the four derived variants, which is where the transfer saving
-  always was.
+  on top of the derivatives. The 46 sources live beside their `index.md`, but
+  every menu section's `_index.md` sets `[cascade.build] publishResources =
+  false`, so nothing publishes them verbatim and an opted-out dish contributes
+  nothing to `public/`. `showimage = false` still suppresses the four derived
+  variants, which is where the transfer saving always was.
 
 **Never style this away.** The photo is not rendered at all, rather than hidden
 with CSS, so there is no `.is-hidden` variant to reach for.
@@ -306,13 +306,13 @@ ever fills is `.detail-media` at ~440px wide (§7 — 5fr of a 1200px container)
 A card fills ~357px. So the sources are roughly 3.6× larger than any slot needs,
 and at 46 of them they accounted for 93% of the site's 10.1 MB.
 
-**The sources live in `assets/images/dishes/<section>/<slug>/photo-<slug>-hero.png`
-— the tree the pages sit in, minus `content/`.** The mirror is load-bearing, not
-tidiness: `dish-image.html` scopes `photoGlob` with the page's own directory, so
-one flat folder of 46 photos would resolve every page to the same first match.
-Beside the payload saving, this is also what keeps the originals out of
-`public/` — assets are published only when a template references them, unlike
-page resources.
+**The sources live in each item's own page bundle —
+`content/<section>/<slug>/photo-<slug>-hero.png`.** `dish-image.html` resolves
+them with `$page.Resources.GetMatch photoGlob`, so a page can only ever find its
+own file. A bundle resource is published verbatim whether or not a template
+uses it, so each menu section's `_index.md` sets `[cascade.build]
+publishResources = false`: that is what keeps the untouched originals out of
+`public/` while the fingerprinted derivatives still ship.
 
 `layouts/partials/dish-image.html` runs them through Hugo Pipes and returns
 three WebP widths (480 / 768 / 1080) plus one 1080px JPEG fallback, each
@@ -677,9 +677,9 @@ logo-jst-primary.png               NOT SUPPLIED — colour variant of the crest
 logo-jst-white.png                 NOT SUPPLIED — white variant, for dark surfaces
 logo-jst-monogram.svg              simplified tab monogram — present, unused (§4)
 photo-<section>-hero.svg           section placeholder art, in the section bundle
-assets/images/dishes/<section>/<slug>/photo-<slug>-hero.<ext>
-                                   dish photography — the content tree, minus
-                                   content/; the mirror is load-bearing (§5)
+content/<section>/<slug>/photo-<slug>-hero.<ext>
+                                   dish photography — beside the item's
+                                   index.md, in its page bundle (§5)
 assets/images/photo-tavern-hero.jpg  homepage photograph — assets/, not a bundle
 assets/fonts/<family>.woff2        one variable face per family (§13)
 specials/<slug>.md                 a special; front matter per §7
@@ -692,9 +692,10 @@ icon-beer.svg
 Photography and placeholder art are both resolved through the `photoGlob` site
 param (`photo-*-hero.*`), never a hardcoded filename. Placeholders are named
 exactly like photography on purpose, so swapping one for the other needs no
-template change. They are reached differently, though: `dish-image.html` tries
-`assets/images/dishes/<page dir>/` first and falls back to the page's own
-resources, which is what leaves the SVG path in §5 working unchanged.
+template change. Both live in the page's own bundle, so `dish-image.html`
+consults only `$page.Resources.GetMatch`; it returns nothing for the section
+artwork because that matches the same glob but is SVG, which is what leaves the
+SVG path in §5 working unchanged.
 
 **The homepage photograph is the one exception, and it must stay that way.** A
 bare file in `content/` is published verbatim to the site root as an unversioned

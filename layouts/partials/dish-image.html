@@ -1,20 +1,14 @@
 {{- /* Responsive image derivatives for a dish photograph, as a dict for the
        caller to place.
 
-       Why this exists: all 46 dish photos were 1600×1000 PNG at ~208 KB. They
-       were page-bundle resources, which means Hugo published every one of them
-       verbatim whether or not a template used it — 9.3 MB of unreferenced
-       originals, 68% of the deployed artifact. They now live in
-       assets/images/dishes/, mirroring the content tree they came from, so
-       nothing publishes them by accident and only the derivatives below reach
-       the wire. The largest slot they ever
-       fill is .detail-media at ~440px wide (§7 — 5fr of a 1200px container),
-       and a card fills ~357px. So the 1600px original was being served into a
-       440px box: about 3.6× oversized.
+       Why this exists: the 46 dish photos are 1600×1000 PNG at ~208 KB, but the
+       largest slot they ever fill is .detail-media at ~440px wide (§7 — 5fr of
+       a 1200px container), and a card fills ~357px. So the 1600px original was
+       being served into a 440px box: about 3.6× oversized.
 
        Measuring the same photo through Hugo Pipes:
 
-         1600px PNG (published today)   206 KB
+         1600px PNG (the source)        206 KB
          1080px WebP                     14 KB
          768px  WebP                      9 KB
          480px  WebP                      5 KB
@@ -26,6 +20,14 @@
        already covers a 440px box at ~2.5× density, and carrying a fourth
        variant up to the source size would re-add the bytes this exists to
        remove.
+
+       The photo lives in its own page bundle, beside the index.md it belongs
+       to, so a page can only ever resolve its own file through
+       $page.Resources.GetMatch. Bundle resources publish verbatim whether or
+       not a template uses them, so every menu section's _index.md carries a
+       `build.publishResources = false` cascade: the untouched 1600px PNG stays
+       out of public/ and only the fingerprinted derivatives below reach the
+       wire. (The specials section sets the same cascade for the same reason.)
 
        Returned as a dict rather than printed markup, because the two call sites
        need different `sizes` and different `loading`/`fetchpriority`: a card is
@@ -45,10 +47,10 @@
        guard is here so that "use dish-image for the section art too" is not a
        tempting but wrong refactor.
 
-       Returns nothing when neither the assets tree nor the page bundle holds a
-       photo matching the glob, so callers can wrap it in `with`. */ -}}
+       Returns nothing when the page bundle holds no raster photo matching the
+       glob, so callers can wrap it in `with`. */ -}}
 {{- /* `.src` lets a caller that already holds the resource — the homepage
-       hero, which matches images/photo-*-hero.* rather than the dish tree —
+       hero, which matches images/photo-*-hero.* rather than a page bundle —
        skip the resolution below and still share the one processing path.
        `.widths`/`.fallbackWidth` widen the ladder for a slot that spans the
        full viewport instead of a 357px card.
@@ -62,34 +64,37 @@
 {{- if not $src -}}
   {{- $page := .page -}}
   {{- $glob := $page.Site.Params.photoGlob | default "photo-*-hero.*" -}}
-  {{- /* assets/ first: that is where the dish sources live now. The page-bundle
-         lookup below stays as the fallback for anything still living beside its
-         index.md (the section artwork does), and for a raster re-added to a
-         bundle by hand. */ -}}
-  {{- /* The assets path mirrors the content path the photo used to sit in
-         (content/pizza/small/index.md → assets/images/dishes/pizza/small/),
-         so `photoGlob` still decides what the photo is called and the page
-         still decides which one it is. A flat assets/images/dishes/ holding
-         every photo would make this a single global GetMatch, which returns
-         the same first match for all 46 dishes. */ -}}
-  {{- with resources.GetMatch (printf "images/dishes/%s%s" $page.File.Dir $glob) -}}
-    {{- $src = . -}}
-  {{- end -}}
-  {{- if not $src -}}
-    {{- with $page.Resources.GetMatch $glob -}}
-      {{- if ne .MediaType.SubType "svg" -}}
-        {{- $src = . -}}
-      {{- end -}}
+  {{- /* Only the page's own bundle is consulted, so a page can resolve nothing
+         but its own file — there is no global glob that could hand all 46
+         dishes the same first match. The eight section bundles carry artwork
+         under the same photoGlob but it is SVG, and this partial is raster-only
+         (see above), so the vector is skipped here rather than rasterised. */ -}}
+  {{- with $page.Resources.GetMatch $glob -}}
+    {{- if ne .MediaType.SubType "svg" -}}
+      {{- $src = . -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- with $src -}}
   {{- $src := . -}}
+  {{- /* Never resize past the source. Hugo's resize upscales, which adds only
+         blur and bytes, and both the <img> width/height and the JSON-LD image
+         are read off the largest step, so an over-wide step would also misstate
+         the real dimensions. Capping here means a caller can keep one generous
+         ladder — the 100vw hero asks for up to 1200 — and a 1080px source
+         silently drops just the 1200 step, no matter which template calls in.
+         If every step exceeds the source, fall back to the source width so the
+         set is never empty. */ -}}
+  {{- $ladder := slice -}}
+  {{- range $widths -}}
+    {{- if le . $src.Width -}}{{- $ladder = $ladder | append . -}}{{- end -}}
+  {{- end -}}
+  {{- if not $ladder -}}{{- $ladder = slice $src.Width -}}{{- end -}}
   {{- $webpSet := slice -}}
   {{- $width := 0 -}}
   {{- $height := 0 -}}
   {{- $largest := "" -}}
-  {{- range $widths -}}
+  {{- range $ladder -}}
     {{- $r := $src.Process (printf "resize %dx webp q82" .) -}}
     {{- /* `fingerprint` as a function, not `.Fingerprint` as a method: on
            images.ImageResource in Hugo 0.167 the method form is not exposed
@@ -103,7 +108,7 @@
     {{- $height = $r.Height -}}
     {{- $largest = $r -}}
   {{- end -}}
-  {{- $fallback := $src.Process (printf "resize %dx jpg q82" $fallbackWidth) -}}
+  {{- $fallback := $src.Process (printf "resize %dx jpg q82" (int (math.Min $fallbackWidth $src.Width))) -}}
   {{- $fallback = $fallback | fingerprint "sha256" -}}
   {{- return dict
         "webp" (delimit $webpSet ", ")

@@ -7,10 +7,14 @@
 
        It is also the landing page's LCP element, so it goes through the same
        derivative pipe as the dish photos (WebP srcset + JPEG fallback) rather
-       than shipping as one 260 KB file: 100vw is its real slot, and the ladder
-       reaches the full 1200px source because nothing else on the site needs to.
-       fetchpriority="high" is not a guess — this image is discovered from the
-       first viewport and nothing above it competes for bandwidth. */ -}}
+       than shipping as one large file: 100vw is its real slot, so the ladder
+       asks for one step past the dish default (480/768/1080/1200, against
+       480/768/1080). dish-image.html caps whatever ladder it is handed at the
+       source width, so a smaller replacement photo drops the over-wide step on
+       its own and the width/height the <img> reports stay honest. The homepage
+       JSON-LD asks for the same ladder, so the two stay in step. The high
+       fetchpriority is not a guess — this image is discovered from the first
+       viewport and nothing above it competes for bandwidth. */ -}}
 {{ $heroSrc := resources.GetMatch "images/photo-*-hero.*" }}
 {{ $derivs := dict }}
 {{ with $heroSrc }}

@@ -68,12 +68,13 @@ disableKinds = ["taxonomy", "term"]
   priceCurrency = "USD"
 
   # ---- Assets (DESIGN.md §12 — <type>-<subject>-<variant>.<ext>) ----
-  # Dish photography lives in assets/images/dishes/, mirroring the content path
-  # it used to occupy (content/pizza/small/index.md →
-  # assets/images/dishes/pizza/small/); section artwork is still an SVG beside
-  # its page bundle. Both are matched by this glob rather than a hardcoded
-  # filename — dish-image.html scopes it with the page's own directory so each
-  # dish gets its own photo, section-card.html applies it to the bundle.
+  # Dish photography lives in each item's page bundle, beside its index.md
+  # (content/pizza/small/photo-small-hero.png); section artwork is an SVG in
+  # the section's own bundle. Both are matched by this glob rather than a
+  # hardcoded filename — dish-image.html applies it to the page's own resources
+  # so each dish gets its own photo, section-card.html applies it to the
+  # section. Each menu section's _index.md sets build.publishResources = false
+  # so the untouched originals never reach public/; see dish-image.html.
   photoGlob = "photo-*-hero.*"
 
   # ---- Hero (DESIGN.md §10 — friendly, direct, local) ----

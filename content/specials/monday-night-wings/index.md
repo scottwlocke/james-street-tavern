@@ -3,7 +3,7 @@ title = "Monday Night Wings"
 kicker = "Monday Night"
 price = "$1.50"
 priceUnit = "each"
-photo = "PXL_20261004_014454845.png"
+photo = "PXL_20261004_014454845.jpg"
 lead = "Minimum of 3 of the same flavor. Dine-in only. "
 details = [
   "Jumbo whole wings",

@@ -93,8 +93,8 @@ The Hugo static site for James Street Tavern is well-structured and consistent w
 | Elevation | Warm shadows `0 8px 24px rgba(44,27,16,0.35)` on cards/panels |
 | Breakpoints | Mobile (<768px), Tablet (768–1023px), Desktop (≥1024px) — correct collapsing |
 | Accessibility | 44px minimum touch targets, gold contrast checked, reduced-motion friendly |
-| Imagery | Photos in `assets/`, fingerprinted, derivatives via Hugo Pipes |
-| File naming | Per §12 conventions (photo-<section>-hero.svg in bundles, assets/images/dishes/ mirror) |
+| Imagery | Photos in the page bundles, fingerprinted, derivatives via Hugo Pipes |
+| File naming | Per §12 conventions (photo-<section>-hero.svg and photo-<slug>-hero.png in the page bundles) |
 
 ## No Critical Issues
 The layouts are largely **correct and well-implemented** per DESIGN.md. The site:

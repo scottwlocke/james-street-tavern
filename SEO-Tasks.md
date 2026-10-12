@@ -267,6 +267,13 @@ never touched, now goes through the same pipe (480 / 768 / 1080 / 1200 WebP plus
 a JPEG fallback, `fetchpriority="high"`), and JSON-LD for the home page points
 at the hero's largest WebP rather than at a 260 KB original no `<img>` asked for.
 
+> **Superseded.** The sources were later moved back beside their `index.md`,
+> and `build.publishResources = false` cascaded from each menu section (and
+> from `content/specials/`) now keeps the originals out of `public/`. The
+> resolver in `dish-image.html` is bundle-only again. The outcome this task
+> cared about — the originals not shipping — still holds; only the mechanism
+> changed.
+
 Verified on the current build: all 1593 same-origin asset URLs referenced in
 `public/**/*.html` resolve to a file on disk, the only `.png` any `<img>` points
 at is the crest (`images/jst-logo.png`), and the section SVGs are untouched.

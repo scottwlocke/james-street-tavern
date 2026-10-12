@@ -108,7 +108,7 @@
 
   // ---- Specials rotator ----
   // The specials board shows one chalkboard at a time and slides to the next
-  // every 20s. Every board ships in the markup and the track is a plain block,
+  // every 5s. Every board ships in the markup and the track is a plain block,
   // so without JS the specials simply stack — the rotation is additive, never
   // load-bearing. That matters here: the specials are the loudest thing on the
   // page, so they must survive intact for anyone who cannot run this.
@@ -122,7 +122,7 @@
   // The carousel ARIA is added here rather than in the template, because
   // without JS these are just a stack of specials and "slide 1 of 2" would
   // be a lie.
-  const SPECIALS_INTERVAL = 20000;
+  const SPECIALS_INTERVAL = 5000;
 
   function initSpecials(root) {
     const boards = Array.prototype.slice.call(
@@ -202,7 +202,7 @@
     // outgoing board left and brings the incoming one in from the right. The
     // one concession is the wrap from the last board to the first: that board
     // is already marked is-before, so it enters from the left. Acceptable at
-    // a 20s interval, and cheaper than cloning the first slide to fake an
+    // a 5s interval, and cheaper than cloning the first slide to fake an
     // endless track.
     function paint() {
       boards.forEach(function (board, i) {
