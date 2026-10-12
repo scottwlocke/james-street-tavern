@@ -1,0 +1,21 @@
+{{- /* A 1200x630 (1.91:1) JPEG for og:image / twitter:image, returned as a dict
+       of absolute URL plus width and height.
+
+       Why this is separate from dish-image.html: that partial keeps each
+       photo's own aspect ratio — the hero is square, dish photos are 8:5 — but
+       a scraped share card is framed at 1.91:1, and Open Graph only guarantees
+       a large card at ≥1200×630. Handing it a square or 8:5 image is how a
+       preview ends up letterboxed or cropped off-centre. `Fill` crops to the
+       frame itself.
+
+       JPEG on purpose: `og:image` is the one place scrapers still lag browsers
+       on WebP, so the share image stays JPEG and head.html points at it.
+       Fingerprinted like every other derivative so a replaced photo cannot
+       leave a stale card cached.
+
+       `q82` matches dish-image.html. A source narrower than 1200 is upscaled
+       (the hero is 1080 square, so ~11%); that is invisible at card size and
+       still buys the 1200px minimum the platforms ask for. */ -}}
+{{- $og := .src.Fill "1200x630 Center jpg q82" -}}
+{{- $og = $og | fingerprint "sha256" -}}
+{{- return dict "url" $og.Permalink "width" $og.Width "height" $og.Height -}}

@@ -101,6 +101,19 @@ disableKinds = ["taxonomy", "term"]
   heroTitle = "Come Hungry. Leave Happy."
   heroDescription = "Jumbo whole wings, cold beer, and a kitchen that's been feeding Monroeville for years. No frills, no nonsense — just a good time."
 
+  # ---- Homepage <title> / meta description (search copy, not page copy) ----
+  # A section can borrow its blurb for the search snippet; the homepage cannot,
+  # so its snippet is stated here. The brand alone names neither the town nor
+  # the food, and the homepage is the page a "tavern in Monroeville" search
+  # lands on — so the title names both and the description names the fare. Read
+  # by head.html when .IsHome, and reused as the Restaurant node's description
+  # in jsonld.html so the schema and the meta tag cannot disagree. The visible
+  # hero copy above is a separate sentence and is unchanged; this is metadata
+  # only. Keep the title near 60 chars — Google's result title box is roughly
+  # 600px wide and truncates past that.
+  homeTitle = "James Street Tavern | Wings, Pizza & Burgers in Monroeville"
+  homeDescription = "James Street Tavern is a neighborhood bar and kitchen in Monroeville, PA serving jumbo whole wings, pizza, burgers, hoagies and cold beer. Come hungry, leave happy."
+
   # ---- Sections that are NOT part of the menu (§4 Chalkboard Panel) ----
   # Read by layouts/partials/menu-sections.html, which is the single source
   # of truth for the section list behind the homepage card grid, the mobile

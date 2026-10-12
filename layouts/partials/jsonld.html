@@ -33,9 +33,11 @@
        beside an always-open claim. Omitting it is the honest reading — a
        visitor checking the kitchen hours should see them on the page and judge
        for themselves, rather than have a validator tell them the kitchen never
-       closes. `nameSlogan` and `description` are the §10 tagline and blurb,
-       reused verbatim from params so the schema cannot describe the business
-       differently from the hero above the fold. */ -}}
+         closes. `nameSlogan` is the §10 kicker and `description` is
+         params.homeDescription — the same sentence the homepage
+         <meta name="description"> uses, so the schema and the search snippet
+         cannot describe the business differently. Both are params, not
+         literals. */ -}}
 {{- $site := .Site -}}
 {{- $cfg := $site.Params -}}
 {{- $graph := slice -}}
@@ -84,7 +86,7 @@
         "telephone" $cfg.phone
         "email" $cfg.email
         "nameSlogan" $cfg.heroKicker
-        "description" (partial "blurb.html" $site.Home | default $cfg.heroDescription) -}}
+        "description" ($cfg.homeDescription | default $cfg.heroDescription) -}}
 
   {{- with $cfg.streetAddress -}}
     {{- $restaurant = merge $restaurant (dict "address" (dict

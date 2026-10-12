@@ -1,37 +1,47 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{{- /* The homepage <title> is not the bare brand: it also names the town and
+       the food, because that is the page a "tavern in Monroeville" search
+       lands on and the brand alone matches none of those words. Every other
+       page keeps .Title. params.homeTitle is defined in hugo.toml, and the
+       same string feeds og:title / twitter:title below, so the tab, the result
+       and the share card cannot disagree. */ -}}
+{{- $siteTitle := .Site.Title -}}
+{{- $pageTitle := cond .IsHome (.Site.Params.homeTitle | default $siteTitle) (printf "%s — %s" .Title $siteTitle) -}}
 {{- /* The 404 layout has no front matter to title itself, so Hugo would fall
        back to its English default ("404 Page not found"). Say it in the same
        voice as the page body instead. Also kept out of search indexes — a soft
        404 is thin content and should never be a result. */ -}}
 {{- if eq .Kind "404" -}}
-<title>Page not found — {{ .Site.Title }}</title>
+<title>Page not found — {{ $siteTitle }}</title>
 <meta name="robots" content="noindex, follow">
 {{- else -}}
-<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}</title>
+<title>{{ $pageTitle }}</title>
 {{- end -}}
 {{- /* The blurb chain lives in partials/blurb.html so the homepage cards and
-       the meta tag can't disagree. `heroDescription` is the site-wide last
-       resort only: reaching it means a page has no blurb anywhere, which is
-       correct for the homepage and for 404, and should not happen to a section
-       that hugo.toml already describes. */ -}}
-{{- $description := partial "blurb.html" . | default .Site.Params.heroDescription -}}
+       the meta tag can't disagree. A page with no blurb anywhere falls to
+       params.homeDescription on the homepage (see hugo.toml) and to
+       heroDescription everywhere else; only the homepage and the 404 reach this
+       fallback, and neither should a section that hugo.toml already describes. */ -}}
+{{- $description := partial "blurb.html" . -}}
+{{- if not $description -}}
+  {{- $description = cond .IsHome (.Site.Params.homeDescription | default .Site.Params.heroDescription) .Site.Params.heroDescription -}}
+{{- end -}}
 <meta name="description" content="{{ $description }}">
 {{- /* Open Graph and Twitter Card metadata.
 
-       The image ladder mirrors the page's real share image: a menu item uses
-       its own dish photo, the homepage and any other page fall back to the
-       homepage hero, and only if neither resource exists does it drop to the
-       logo. Width/height are read off the derivative the partial returns
-       rather than hardcoded — the hero is square (1080×1080) while every dish
-       photo is 8:5, so a fixed pair would be wrong on one of the two, and both
-       would silently lie the day a photo is replaced. The 1200-wide hero step
-       is requested to match hero.html, and dish-image.html caps it at the
-       source, so the reported dimensions stay honest either way.
+       The share image is a dedicated 1200×630 (1.91:1) JPEG crop: a menu item
+       uses its own dish photo, the homepage and every other page fall back to
+       the homepage hero, and only with neither does it drop to the logo. It is
+       built by og-image.html rather than reusing the card/detail derivative,
+       because those keep each photo's own aspect ratio (the hero is square,
+       dish photos are 8:5) while a scraped card is framed at 1.91:1 — and Open
+       Graph only guarantees a large card at ≥1200×630. Width/height are read
+       off the derivative rather than hardcoded, so they stay honest when a
+       photo is replaced.
 
-       The JPEG fallback, not the largest WebP, is used as the share image:
-       scrapers are slower to support WebP than browsers, and og:image is the
-       one place a JPEG is still the safe default.
+       JPEG, not WebP: scraper support still lags browsers, and og:image is the
+       one place a JPEG remains the safe default.
 
        `og:type` is `website` throughout. It used to be `article` on every
        subpage, which is what Open Graph reserves for news/blog posts (and
@@ -49,37 +59,37 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ .Permalink }}">
-<meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}">
+<meta property="og:title" content="{{ $pageTitle }}">
 <meta property="og:description" content="{{ $description }}">
 {{- $ogImage := "" -}}
 {{- $ogWidth := 0 -}}
 {{- $ogHeight := 0 -}}
 {{- $ogAlt := .Title | default .Site.Title -}}
+{{- /* A dish or special page resolves its own photo; everything else falls
+       back to the homepage hero; only with neither does it drop to the logo.
+       Handed to og-image.html, which crops the 1.91:1 share frame. */ -}}
+{{- $ogSrc := "" -}}
 {{- if .IsPage -}}
   {{- $glob := .Site.Params.photoGlob | default "photo-*-hero.*" -}}
   {{- with .Resources.GetMatch $glob -}}
-    {{- if ne .MediaType.SubType "svg" -}}
-      {{- with partial "dish-image.html" (dict "src" .) -}}
-        {{- $ogImage = .fallback -}}
-        {{- $ogWidth = .width -}}
-        {{- $ogHeight = .height -}}
-      {{- end -}}
-    {{- end -}}
+    {{- if ne .MediaType.SubType "svg" -}}{{- $ogSrc = . -}}{{- end -}}
   {{- end -}}
 {{- end -}}
-{{- if not $ogImage -}}
-  {{- with resources.GetMatch "images/photo-*-hero.*" -}}
-    {{- with partial "dish-image.html" (dict "src" . "widths" (slice 480 768 1080 1200) "fallbackWidth" 1200) -}}
-      {{- $ogImage = .fallback -}}
-      {{- $ogWidth = .width -}}
-      {{- $ogHeight = .height -}}
-    {{- end -}}
+{{- if not $ogSrc -}}
+  {{- with resources.GetMatch "images/photo-*-hero.*" -}}{{- $ogSrc = . -}}{{- end -}}
+{{- end -}}
+{{- with $ogSrc -}}
+  {{- with partial "og-image.html" (dict "src" .) -}}
+    {{- $ogImage = .url -}}
+    {{- $ogWidth = .width -}}
+    {{- $ogHeight = .height -}}
   {{- end -}}
 {{- end -}}
 {{- if not $ogImage -}}
   {{- $ogImage = ("images/jst-logo.png" | absURL) -}}
 {{- end -}}
 <meta property="og:image" content="{{ if not (urls.Parse $ogImage).IsAbs }}{{ $ogImage | absURL }}{{ else }}{{ $ogImage }}{{ end }}">
+<meta property="og:image:type" content="{{ cond (hasSuffix (lower $ogImage) ".jpg") "image/jpeg" "image/png" }}">
 {{- with $ogWidth }}
 <meta property="og:image:width" content="{{ . }}">
 {{- end }}
@@ -89,7 +99,7 @@
 <meta property="og:image:alt" content="{{ $ogAlt }}">
 {{- /* Twitter Card */ -}}
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — {{ .Site.Title }}{{ end }}">
+<meta name="twitter:title" content="{{ $pageTitle }}">
 <meta name="twitter:description" content="{{ $description }}">
 <meta name="twitter:image" content="{{ if not (urls.Parse $ogImage).IsAbs }}{{ $ogImage | absURL }}{{ else }}{{ $ogImage }}{{ end }}">
 <meta name="twitter:image:alt" content="{{ $ogAlt }}">
@@ -120,6 +130,16 @@
        empty it emits nothing, so the tag can never be half-configured. */ -}}
 {{- with .Site.Params.googleSiteVerification }}
 <meta name="google-site-verification" content="{{ . }}">
+{{- end }}
+{{- /* The only third-party origin this site reaches is the Google Maps embed
+       in partials/contact.html, and that section is on the homepage only.
+       `dns-prefetch`, not `preconnect`: the iframe is `loading="lazy"`, so a
+       connection opened at page load would idle until its ~10s timeout and
+       close long before the map scrolls into view. Resolving the hostname up
+       front is the hint that survives to the actual load, and it is cheap. */ -}}
+{{- if .IsHome }}
+<link rel="dns-prefetch" href="//www.google.com">
+<link rel="dns-prefetch" href="//maps.gstatic.com">
 {{- end }}
 {{- /* Fonts are self-hosted — see partials/fonts.html for why, and for the
        variable-weight trick that turned six files into three. The Google

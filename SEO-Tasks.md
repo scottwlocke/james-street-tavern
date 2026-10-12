@@ -201,8 +201,8 @@ Still open, both harmless and both worth knowing:
 ### 5. ~~No Open Graph or Twitter tags~~ — done
 
 All 59 indexable pages now carry `og:site_name`, `og:locale`, `og:type`,
-`og:url`, `og:title`, `og:description`, `og:image` (plus `:width`, `:height`,
-`:alt`) and the matching `twitter:card` / `twitter:title` /
+`og:url`, `og:title`, `og:description`, `og:image` (plus `:type`, `:width`,
+`:height`, `:alt`) and the matching `twitter:card` / `twitter:title` /
 `twitter:description` / `twitter:image` / `twitter:image:alt`, emitted from
 `layouts/partials/head.html`.
 
@@ -211,12 +211,15 @@ All 59 indexable pages now carry `og:site_name`, `og:locale`, `og:type`,
   shareable card — and Hugo's default `.Title` ("404 Page not found") cannot
   leak into a preview card, which it did before the guard while the `<title>`
   above it already read "Page not found".
-- **`og:image` is the page's real image.** A dish or special page resolves its
-  own photo through the same `dish-image.html` pipe the card uses; every other
-  page falls back to the homepage hero. Width/height are read off the
-  derivative, so they stay honest when a photo is swapped; the JPEG fallback
-  (not the largest WebP) is the share image, because scrapers lag browsers on
-  WebP. The URL is absolute.
+- **`og:image` is the page's real image, cropped to the share frame.**
+  `layouts/partials/og-image.html` runs the page's photo through a `Fill`
+  **1200×630** crop (1.91:1) at JPEG `q82`, then sha256-fingerprints it and the
+  partial hands back the derivative's URL and measured dimensions. A dish or
+  special page resolves its own photo (same photoGlob the card uses); every
+  other page falls back to the homepage hero; only with neither does it drop to
+  the logo. Width/height are read off the derivative, so they stay honest when a
+  photo is swapped. JPEG, not WebP, because scrapers lag browsers on WebP. The
+  URL is absolute.
 - **`og:type` is `website` on every page.** The original note guessed at the
   `restaurant.menu_section` / `restaurant.menu_item` verticals; those are
   Facebook-vertical object types that cannot be verified here, and the first
@@ -226,12 +229,13 @@ All 59 indexable pages now carry `og:site_name`, `og:locale`, `og:type`,
   is not an article; the correct generic type is `website`.
 - `og:image:alt` / `twitter:image:alt` carry the page title.
 
-> **Still open.** The share image is under the recommended size. The hero is
-> **1080×1080** (the "1200×800" in the original finding was never the hero — it
-> is square) and the dish photos are 1080×675, while Open Graph wants ≥1200×630
-> and `summary_large_image` wants ~1.91:1. A dedicated 1200×630 JPEG crop would
-> clear the minimum and stop feeds from letterboxing a square; it is not done
-> here because it changes the image pipeline rather than the tags.
+> **Resolved.** The original finding named the share image as the one open gap:
+> the hero is square (1080×1080) and the dish photos are 8:5 (1600×1000), so at
+> the time every share fell under Open Graph's ≥1200×630 and letterboxed a
+> `summary_large_image`. `og-image.html` closes it by cropping a dedicated
+> 1200×630 frame from whichever photo the page resolves, independent of the
+> source's own ratio. The *in-page* photos still keep their real aspect ratios —
+> that is the layout's job and is unchanged.
 
 ---
 
@@ -446,11 +450,13 @@ Pages project URL, and the sitemap it advertises is the real one.
 Verified during the audit, recorded so the next pass does not re-check them:
 
 - **`<title>`** — unique across all 60 pages; length range 19–59 chars, so no
-  truncation risk. The 404 is titled separately, not left as Hugo's
-  "404 Page not found" default.
+  truncation risk. The homepage title is deliberately the location-and-cuisine
+  form from `params.homeTitle` (see §9), not the bare brand. The 404 is titled
+  separately, not left as Hugo's "404 Page not found" default.
 - **`<h1>`** — exactly one per page, across all 60.
-- **Meta descriptions** — present on all 60, 59 distinct (see task 7); the
-  one repeat is `/` and `/404.html`.
+- **Meta descriptions** — present on all 60 and (since the homepage took
+  `params.homeDescription`) all 60 distinct; the previous `/` and `/404.html`
+  collision from task 7 is gone.
 - **`<nav>`** — one `<nav aria-label="Main">` landmark per page.
 - **Sitemap** — 59 URLs, correctly excluding the 404.
 - **404 handling** — `noindex, follow` on a thin-content page is the correct
@@ -489,15 +495,15 @@ Stated plainly so the list is not mistaken for more than it is:
   how they render on a real connection is not.
 - **No rendering.** Chromium and Playwright are not installed, so nothing was
   checked in a browser. Layout claims are derived from the CSS.
-- **No visual confirmation of social previews.** The `og:image` dimensions are
-  read from the built derivatives (hero 1080×1080, dishes 1080×675), not from an
-  observed card on any platform.
+- **No visual confirmation of social previews.** The `og:image` is a built
+  1200×630 JPEG crop whose dimensions are read from the file headers, but it was
+  never seen rendered as a card on any platform.
 
 ---
 
 ## 9. Added after this audit
 
-Two changes that were not on the original list, recorded so the file stays the
+Changes that were not on the original list, recorded so the file stays the
 current state rather than a snapshot of 2026-10-06:
 
 - **Google Search Console verification hook.** `params.googleSiteVerification`
@@ -513,3 +519,16 @@ current state rather than a snapshot of 2026-10-06:
   into the one Restaurant node `jsonld.html` builds, so there is still a single
   source for the business facts. Both are `with`-guarded, so an empty value is
   omitted rather than published as an empty claim.
+- **Homepage `<title>` / meta description carry location and cuisine.**
+  `params.homeTitle` and `params.homeDescription` in `hugo.toml`; `head.html`
+  uses them when `.IsHome`, and `jsonld.html` reuses `homeDescription` as the
+  Restaurant node's description, so the search snippet and the schema cannot
+  disagree. Before this the homepage title was the bare brand — which names
+  neither the town nor the food a "tavern in Monroeville" search matches — and
+  the homepage and `/404.html` shared one identical description. All 60 pages
+  now have a distinct title and a distinct description.
+- **Homepage-only `dns-prefetch` for the Maps origin.** `head.html` emits
+  `dns-prefetch` for `//www.google.com` and `//maps.gstatic.com` on `.IsHome`
+  only, ahead of the lazy `contact.html` iframe. `dns-prefetch`, not
+  `preconnect`: the iframe is `loading="lazy"`, so a connection opened at load
+  would idle to its ~10s timeout before the map scrolls into view.
