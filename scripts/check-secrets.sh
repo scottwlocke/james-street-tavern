@@ -37,7 +37,19 @@ HIGH_CONFIDENCE="AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|gi
 # that is what keeps terminalToken = match[1].trim() and other ordinary
 # code out of the report. Six characters minimum likewise keeps
 # API_KEY_SOURCE = "env" from being a finding.
-GENERIC_ASSIGN="[A-Za-z0-9_-]*(password|passwd|pwd|secret|token|api[_-]?key|apikey|private[_-]?key|client[_-]?secret|passphrase|credential)[A-Za-z0-9_-]*[[:space:]]*[:=][[:space:]]*[\"'][^\"']{6,}"
+#
+# The value must also *begin* with an alphanumeric, and that is what keeps a
+# string concatenation out. A real secret is a literal — base64, hex, a vendor
+# key — and every one of those starts with a letter or digit; the class after
+# the first character still allows +, / and =, so base64url, JWTs and the rest
+# match wherever their later characters go. A concatenation does not: the
+# vendored browser tooling in the skills/ trees builds URLs like
+# `'.../status?token=' + TOKEN`, where the character after the quote is a
+# space. Without this rule the pattern read that expression's tail
+# (`token=' + TOKEN, { cache: `) as a value and reported 17 false positives per
+# copy of the file. Requiring a literal start is what tells a value from an
+# expression.
+GENERIC_ASSIGN="[A-Za-z0-9_-]*(password|passwd|pwd|secret|token|api[_-]?key|apikey|private[_-]?key|client[_-]?secret|passphrase|credential)[A-Za-z0-9_-]*[[:space:]]*[:=][[:space:]]*[\"'][A-Za-z0-9][^\"']{5,}"
 
 # user:password@host in a URL. Tokens in a URL path are not caught here
 # because they are indistinguishable from filenames.
