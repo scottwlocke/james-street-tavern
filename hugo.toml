@@ -16,6 +16,19 @@ title = 'James Street Tavern'
 # those pages off. Add `tag = "tags"` under `[taxonomies]` if that changes.
 disableKinds = ["taxonomy", "term"]
 
+# Ties each page's .Lastmod to the commit that last touched its file, which is
+# what writes <lastmod> into sitemap.xml (Hugo's default front matter config
+# uses `:git` for lastmod once this is on). Without it the sitemap shipped 59
+# URLs with no lastmod at all — no content file carries a `date` — so a crawler
+# had only its own re-crawl schedule to guess by.
+#
+# This only works if the repository history is present. A shallow clone stamps
+# every page with the tip commit, which is worse than no lastmod because it is
+# confidently wrong. The build job in .github/workflows/hugo.yml therefore
+# checks out with `fetch-depth: 0`, matching a local clone; both must stay full
+# for CI and a local `hugo` to keep producing the same bytes.
+enableGitInfo = true
+
 [outputs]
   # Two decisions in one block.
   #

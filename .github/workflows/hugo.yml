@@ -83,6 +83,11 @@ jobs:
           hugo version
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history so enableGitInfo in hugo.toml can date each page from
+          # the commit that last touched it. The default shallow clone would
+          # stamp every <lastmod> in sitemap.xml with this run's tip commit.
+          fetch-depth: 0
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Build with Hugo
